@@ -1,0 +1,229 @@
+﻿@inject IJSRuntime JS
+@inject ViewOptionService ViewOption
+
+
+
+<div class="containerComponent">
+
+    @if(InitDone)
+    {
+        @*Boucle pour afficher chaque type de component de maniere dynamique
+            Le component dynamique prend en parametre un type de model et ses parametres.
+            Les parametres doivent t'être un dictionnaire. C'est pourquoi le code plus bas donne mal a la tête.
+        *@
+        @foreach (Models.TheorieComponent component in Components)
+        { 
+            <DynamicComponent Type="@component.TypeComponent" Parameters="@component.Parameters"/>   
+        } 
+        <Reference References="References"/>
+    }
+</div>
+ 
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private List<Models.TheorieComponent> Components { get; set; } 
+    private List<Models.Reference> References { get; set; }
+    private bool InitDone { get; set; } = false;
+
+    protected override async void OnInitialized()
+    {
+        InitDone = false;
+        References  = new List<Models.Reference>();
+        Components = new List<Models.TheorieComponent>();
+    }
+
+    @*
+        Quand les parametres recoivent des valeurs, les informations de la page sont appelés de la bd et sont traités
+        pour être placés dans le bon ordre avec les bon parametres
+        
+        *@
+    protected override async void OnParametersSet()
+    {
+        Id = Id;
+        CallInfo();
+
+    }
+
+    @*Fonction qui appelle les informations et qui les tries*@
+    private async void CallInfo()
+    {
+        //Initialisaiton du client http avec contournement de certificat
+
+        Client client = SetupClient();
+
+        //Appel a l'api poura ller chercher tout les compoenents de la page en fonction de l'id du noeud
+        var componentsJson = await client.PageTheorieAsync(Id);
+        Components = new List<Models.TheorieComponent>();
+        References = new List<Models.Reference>();
+
+        //tri pour chaque component, voir le TheorieComposantController dans le backend pour voir la provenance des objets
+        SortComponentsByType(componentsJson);
+
+        InitDone = true;
+        await InvokeAsync(StateHasChanged);
+    }
+    #region 
+
+
+
+    private void SetTexteComponentParameters(object o)
+    {
+        Components.Add(new Models.Text()
+            {
+                Parameters = new Dictionary<string, object>()
+            {
+                {"TextModel", new Models.Text()
+                    {
+                        Content = o?.GetType()?.GetProperty("Contenu")?.GetValue(o, null).ToString(),
+                        PageId = Id
+                    } 
+                }
+            },
+            TypeComponent = typeof(Components.TheorieComponents.Texte)
+        });
+    }
+
+    private void SetVideoComponentParameters(object o)
+    {
+        Components.Add(new Models.Video()
+         {
+             Parameters = new()
+             {
+                 {"VideoModel", new Models.Video()
+                     {
+                         Width = Convert.ToInt32(o?.GetType()?.GetProperty("Largeur")?.GetValue(o, null).ToString()),
+                         Height = Convert.ToInt32(o?.GetType()?.GetProperty("Longueur")?.GetValue(o, null).ToString()),
+                         Url = o?.GetType()?.GetProperty("Url")?.GetValue(o, null).ToString(),
+                         Description = o?.GetType()?.GetProperty("Description")?.GetValue(o, null).ToString(),
+                         PageId = Id
+                     } 
+                 }
+             },
+             TypeComponent = typeof(Components.TheorieComponents.Video)
+         });
+    }
+
+    private void SetImageComponentParameters(object o)
+    {
+        Components.Add(new Models.Image()
+        {
+            Parameters = new()
+            {
+                {"ImageModel", new Models.Image()
+                    {
+                        Width = Convert.ToInt32(o?.GetType()?.GetProperty("Largeur")?.GetValue(o, null).ToString()),
+                        Height = Convert.ToInt32(o?.GetType()?.GetProperty("Longueur")?.GetValue(o, null).ToString()),
+                        Url = o?.GetType()?.GetProperty("Url")?.GetValue(o, null).ToString(),
+                        Description = o?.GetType()?.GetProperty("description")?.GetValue(o, null).ToString(),
+                        PageId = Id
+                    } 
+                }
+            },
+            TypeComponent = typeof(Components.TheorieComponents.Image)
+        });
+    }
+
+    private void SetReferenceComponentParameters(object o)
+    {
+        References.Add(new Models.Reference()
+        {
+            Url = o?.GetType()?.GetProperty("Url")?.GetValue(o, null).ToString(),
+            Description = o?.GetType()?.GetProperty("Description")?.GetValue(o, null).ToString(),
+            PageId = Id
+        });
+    }
+
+    private void SetExerciceComponentParameters(object o)
+    {
+        Components.Add(new Models.Exercice()
+        {
+            Parameters = new()
+            {
+                {"ExerciceModel", new Models.Exercice()
+                    {
+                        Id = Convert.ToInt32(o?.GetType()?.GetProperty("Id")?.GetValue(o, null).ToString()),
+                        PageId = Id
+                    }
+                }                                  
+            },
+            TypeComponent = typeof(Components.TheorieComponents.Exercice),
+        });
+    }
+
+    private void SetCodeComponentParameters(object o)
+    {
+        Components.Add(new Models.Code()
+        {
+            Parameters = new()
+            {
+                {"CodeModel", new Models.Code()
+                    {
+                        Content = o?.GetType()?.GetProperty("Contenu")?.GetValue(o, null).ToString(),
+                        Title = o?.GetType()?.GetProperty("Titre")?.GetValue(o, null).ToString(),
+                        PageId = Id
+                    } 
+                }
+            },
+            TypeComponent = typeof(Components.TheorieComponents.Code)
+        });
+    }
+#endregion 
+    private void SortComponent(object o, object typeComposant)
+    {
+        switch(typeComposant.ToString())
+        {
+            case "texte_formater":
+                SetTexteComponentParameters(o);
+                break;
+
+            case "image":
+                SetImageComponentParameters(o);
+                break;
+
+            case "video":
+                SetVideoComponentParameters(o);
+                break;
+
+            case "reference":
+                SetReferenceComponentParameters(o);
+                break;
+
+            case "code":
+                SetCodeComponentParameters(o);
+                break;
+
+            case "exercice":
+                SetExerciceComponentParameters(o);
+                break;
+            default: break;
+        }
+    }
+
+    private void SortComponentsByType(ICollection<string>? components)
+    {
+        var model = new { Id = 0, TypeComposant = "", Contenu = "", Longueur = 0, Largeur = 0, Url = "", Description = "", Titre = "", Solution = "" };
+        foreach (string component in components)
+        {
+            object o = JsonConvert.DeserializeAnonymousType(component, model);
+            object typeComposant = o?.GetType()?.GetProperty("TypeComposant")?.GetValue(o, null);
+            SortComponent(o, typeComposant);
+        }
+    }
+
+    private Client SetupClient()
+    {
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+        (httpRequestMessage, cert, cetChain, policyErrors) =>
+        {
+            return true;
+        };
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/") };
+        
+        return new Client(httpClient);
+    }
+}

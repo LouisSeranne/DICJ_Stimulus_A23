@@ -1,0 +1,65 @@
+﻿@inherits LayoutComponentBase
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
+@inject IJSRuntime JSRuntim
+@inject IUpdateService updateService
+
+@inject ViewOptionService ViewOption
+
+@using StimulusFrontEnd.Models
+@using Newtonsoft.Json
+
+<PageTitle>StimulusFrontEnd</PageTitle>
+
+
+<!---->
+@if(initDone)
+{
+    <div class="page">
+        <main>
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+   
+    </div>
+}
+
+    
+@code {
+    public int idGraphe,idCours;
+    private bool initDone,identifier;
+    private Client client;
+    private HttpClient httpClient;
+    //Initialisation de l'id du graph a la main pour l'instant en attente de la page de connexion pour avoir directement le graph avec l'étuidant
+    protected override async void OnInitialized()
+    {
+        
+
+        initDone = false;
+
+        identifier = false;
+
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+        httpClient = new HttpClient(handler);
+        httpClient.BaseAddress = new Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/"); 
+        client = new Client(httpClient);
+
+
+        initDone = true;
+
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+   
+    
+
+}
+

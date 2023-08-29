@@ -1,0 +1,7 @@
+﻿<div class="component">
+    <img src="@ImageModel.Url" height="@ImageModel.Height" width="@ImageModel.Width" alt="@ImageModel.Description"/>
+</div>
+@code {
+    [Parameter]
+    public Models.Image ImageModel { get; set; }
+}

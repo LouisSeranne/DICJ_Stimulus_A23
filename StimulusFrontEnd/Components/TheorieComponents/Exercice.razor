@@ -1,0 +1,264 @@
+﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
+ <!--Interpreteur-->
+@if(InitDone)
+{
+    <div class="fileSelector">
+        @foreach(Fichier fichier in FichierCode)
+        {
+            <button @onclick="() => ChangeTab(fichier.Id)">@fichier.Nom</button>
+        }
+        <button @onclick="AddPage">+</button>
+    </div>
+
+    <div>
+        @foreach(Fichier fichier in FichierCode)
+        {
+            <textarea class="col-sm-6 col-md-6 col-lg-6 @fichier.Css" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
+        }
+    </div>
+    <p style="white-space:pre-wrap">@Result</p>
+}
+
+
+    
+
+<!--Section bouton-->
+<div class="row">
+    <div class="col-sm-1 col-md-1 col-lg-1">
+        <button @onclick=@Post class="boutonExerciceGauche">Run</button>
+    </div>
+    <div class="col-sm-5 col-md-5 col-lg-5">
+        <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
+    </div>
+</div>
+
+
+
+<style>
+     .focused{
+      display: block;
+      }
+
+     .hidden{
+      display: none;
+      }
+</style>
+
+@code {
+    [Parameter]
+    public Models.Exercice ExerciceModel { get; set; }
+
+    [Inject] 
+    private IJSRuntime JS { get; set; }
+    private string FocusedTab { get; set; } = "focused";
+    private string HiddenTab { get; set; } = "hidden";
+    private string IdEtudiant { get; set; } = string.Empty;
+    private string Result { get; set; } = string.Empty;
+    private bool InitDone { get; set; } = false;
+    private Client ApiClient = null;
+
+    @*
+        FocusedTab : attribut pour afficher le textarea
+        HiddenTab : attribut pour cacher le textarea
+        Result : résultat du code python de l'étudiant
+        InitDone : Dit si oui ou non l'initialisation du component est fait
+
+    *@
+
+
+    @*
+        Classe interne pour les fichiers
+        Id: id du fichier qui provient de la bd
+        Css : Permet d'afficher ou cacher le textarea du fichier
+        Nom : Nom du ficheir
+        Contenu : Code du fichier
+
+        Le fichier est créé et est caché
+    *@
+    public class Fichier
+    {
+        public int Id { get; set; }
+        public string Css { get; set; }
+        public string Nom { get; set; }
+        public string Contenu { get; set; }
+
+        public Fichier(int id, string nom, string contenu)
+        {
+            Id = id;
+            Nom = nom;
+            Contenu = contenu;
+            Css = "hidden";
+        }
+
+        public Fichier()
+        {
+        }
+    }
+
+
+
+    private List<Fichier> FichierCode { get; set; }
+
+    @*Initialise le component en allant chercher les fichiers d'exercice correspondant*@
+    protected override async void OnInitialized()
+    {
+        SetupClient();
+
+        IdEtudiant = await sessionStorage.GetItemAsync<string>("idEtudiant");
+
+        var fichiersSauvegardesCall = await ApiClient.FichierSauvegardesAllAsync(ExerciceModel.PageId, ExerciceModel.Id, IdEtudiant);
+        List<Services.Base.FichierSauvegarderVM> fichierSauvegardes = fichiersSauvegardesCall.ToList();
+
+        FichierCode = new List<Fichier>();
+
+        foreach(FichierSauvegarderVM fichier in fichierSauvegardes)
+        {
+            FichierCode.Add(new Fichier()
+            {
+                Contenu = fichier.Contenu,
+                Nom = fichier.Nom,
+                Id = fichier.Id,
+                Css = HiddenTab
+            });
+        }
+
+        if(FichierCode.Count == 0)
+        {
+            var fichiers = await ApiClient.PageExerciceGETAsync(ExerciceModel.Id);
+            List<FichierSource>? fichiersSource = JsonConvert.DeserializeObject<List<FichierSource>>(fichiers.FichierSource);
+            foreach(FichierSource fichier in fichiersSource)
+            {
+                FichierCode.Add(new Fichier(-(FichierCode.Count+1), fichier.Nom, fichier.Contenu));
+            }
+        }
+        
+        FichierCode[0].Css = FocusedTab;
+        
+
+        InitDone = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+    @*Permet de faire des indentatios avec la touche tab a la place de faire 4 espaces manuellement*@
+    private async void Tab(int id)
+    {
+        //Attention de pas en ajouter plusieurs
+        await JS.InvokeVoidAsync("TabulationFunction.tab", id.ToString());
+    }
+
+    @*Permet de poster le code de l'étudiant pour le faire interpreter et avoir un retour*@
+    private async void Post()
+    {
+        List<object> fichiers = new List<object>();
+        string jsonString = "";
+
+        Result = "Interprétation du code...";
+        StateHasChanged();
+
+        foreach(Fichier f in FichierCode)
+        {
+            fichiers.Add(new
+            {
+                Nom = f.Nom,
+                Contenu = f.Contenu.Replace("\"", "\'")
+            });
+        }
+        jsonString = JsonConvert.SerializeObject(fichiers);
+
+        //Voir pour le mettre en post
+        Result = await ApiClient.PageExercicePOSTAsync(jsonString, 1);
+        StateHasChanged();
+    }
+
+    private async void Save()
+    {
+        List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
+        foreach(Fichier fichier in FichierCode)
+        {
+            fichiersSauvegardes.Add(new FichierSauvegarde()
+            {
+                Id = fichier.Id,
+                ProgressionPageId = ExerciceModel.PageId,
+                ExerciceId = ExerciceModel.Id,
+                FichierEtudiantDa = IdEtudiant,
+                Contenu = fichier.Contenu,
+                Nom = fichier.Nom,
+                Version = DateTime.Now
+            });
+        }
+        try
+        {
+            await ApiClient.FichierSauvegardesPOSTAsync(fichiersSauvegardes);
+            var fichiersSauvegardesCall = await ApiClient.FichierSauvegardesAllAsync(ExerciceModel.PageId, ExerciceModel.Id, IdEtudiant);
+            List<Services.Base.FichierSauvegarderVM> fichierSauvegardes = fichiersSauvegardesCall.ToList();
+
+            FichierCode = new List<Fichier>();
+
+            foreach(FichierSauvegarderVM fichier in fichierSauvegardes)
+            {
+                FichierCode.Add(new Fichier()
+                {
+                    Contenu = fichier.Contenu,
+                    Nom = fichier.Nom,
+                    Id = fichier.Id,
+                    Css = HiddenTab
+                });
+            }
+            FichierCode[0].Css = FocusedTab;
+        }
+        catch(Exception e)
+        {
+            Result = "Échech de l'enregistrement des fichiers";
+        }
+        Result = "Fichiers enregistrés";
+    }
+
+    @*Fonction pour changer le focus du fichier a editer*@
+    private void ChangeTab(int id)
+    {
+        foreach (Fichier fichier in FichierCode)
+        {
+            fichier.Css = HiddenTab;
+        }
+        FichierCode.Find(f => f.Id == id).Css = FocusedTab;
+    }
+
+
+    @*Fonction pour setup le client pour faire un call a l'api*@
+    private void SetupClient()
+    {
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+        (httpRequestMessage, cert, cetChain, policyErrors) =>
+        {
+            return true;
+        };
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/") };
+        ApiClient = new Client(httpClient);
+    }
+
+    @*Fonction pour ajouter un fichier *@
+    private async void AddPage()
+    {
+        var nomFichier = await JS.InvokeAsync<string>("PromptFunction.promptFunc", null);
+
+        foreach(Fichier f in FichierCode)
+        {
+            f.Css = HiddenTab;
+        }
+
+        FichierCode.Add(new Fichier()
+        {
+                Contenu = "",
+                Nom = nomFichier,
+                Id = -(FichierCode.Count+1),
+                Css = FocusedTab
+        });
+
+        StateHasChanged();
+    }
+
+    public EventCallback<List<FichierSource>> FichierSourceChanged { get; set; }
+}

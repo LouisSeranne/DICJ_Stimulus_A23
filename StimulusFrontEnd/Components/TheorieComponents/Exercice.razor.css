@@ -1,0 +1,16 @@
+﻿body {
+}
+
+.focused {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+.fileSelector {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll; 
+}

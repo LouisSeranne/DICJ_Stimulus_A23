@@ -1,0 +1,8 @@
+﻿<div class="component">
+    <iframe width="@VideoModel.Width" height="@VideoModel.Height" src="@VideoModel.Url"></iframe>
+</div>
+
+@code {
+    [Parameter]
+    public Models.Video VideoModel { get; set; }
+}

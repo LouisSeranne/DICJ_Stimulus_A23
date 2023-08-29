@@ -1,0 +1,14 @@
+﻿@using StimulusFrontEnd.Services.Authentification
+@page "/logout"
+@inject IAuthenticationService authService
+@inject NavigationManager navManager
+
+<h3>Vous etes déconnecté</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await authService.Logout();
+        navManager.NavigateTo("/");
+    }
+}

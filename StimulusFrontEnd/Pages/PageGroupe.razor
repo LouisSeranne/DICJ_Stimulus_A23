@@ -1,0 +1,116 @@
+﻿@page "/groupe"
+@inject NavigationManager NavManager
+
+    
+<AuthorizeView Roles="Professeur">
+    <Authorized>
+        @if (InitDone == true)
+        {
+        <div id="formulaire">
+            <EditForm  Model="@groupeModel" OnValidSubmit="@SubmitForm" Context="routeData">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+                <div id="coursProf">
+                    <h3 style="color:white">Création du groupe</h3>
+                    <div id="centre">
+                        <div class="select">
+                            <span class="input-group-text" id="spanCours">Choix du cours</span>
+                            <InputSelect name="coursDropdown" id="coursDropdown" @bind-Value = "groupeModel.CoursId">
+                                <option>Cours</option>
+                                @foreach (Cour cour in listCour)
+                                {
+                                <option value= "@cour.Id">@cour.CodeCours</option>
+                                }    
+                            </InputSelect>
+                        </div>
+                        <div class="select">
+                            <span class="input-group-text" id="spanProf">Choix de l'ensaignant</span>
+                            <InputSelect name="coursDropdown" id="profDropdown" @bind-Value = "groupeModel.ProfesseurId">
+                                <option>Enseignant</option>
+                                @foreach (Professeur prof in listProfesseur)
+                                {
+                                <option value= "@prof.Id">@prof.Prenom @prof.Nom</option>
+                                }    
+                            </InputSelect>
+                        </div>
+                    </div>      
+                </div>
+                    <div >
+                        <div id="nomGroupe" class="input-group input-group-sm mb-3" width="26vw">
+                            <span class="input-group-text" id="inputGroup-sizing-sm">Nom du groupe</span>
+                            <InputText id="nomCoursInput"  type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" @bind-Value="groupeModel.Nom"/>
+                        </div>
+                        <div id="divBtn">
+                            <button id="btnSubmit" type="submit" class="btn btn-outline-light" aria-pressed="true">Créer</button>
+                            <button id="btnReset" type="reset" class="btn btn-outline-light" aria-pressed="true" onclick="@ResetPage">Réinitialiser</button>                    
+                        </div>
+                        <p style="color:green">@message</p>
+                    </div>         
+            </EditForm>      
+        </div> 
+        }
+        </Authorized>
+    <NotAuthorized>
+        <h3>Vous n'êtes pas autorisé</h3>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>
+            
+        
+  
+}
+
+@code {
+    private List<Cour> listCour { get; set; } = new List<Cour>();
+    private List<Professeur> listProfesseur { get; set; } = new List<Professeur>();
+    private bool InitDone { get; set; } = false;
+    private HttpClient httpClient;
+    private Client client;
+    public Models.Groupe groupeModel= new();
+    private string message = "";
+
+    
+    protected override void OnInitialized()
+    {
+        InitDone = true;
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+        httpClient = new HttpClient(handler);
+        httpClient.BaseAddress = new Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/");
+        client = new Client(httpClient);
+        listCour = client.CoursAllAsync().Result.ToList();
+        listProfesseur = client.ProfesseursAllAsync().Result.ToList();
+    }
+
+    private async void SubmitForm()
+    {
+
+        Services.Base.Groupe groupeCréer = new Services.Base.Groupe
+        {
+            Nom = groupeModel.Nom,
+            ProfesseurId = groupeModel.ProfesseurId,
+            CoursId= groupeModel.CoursId
+
+        };
+
+        await client.GroupesPOSTAsync(groupeCréer);
+        message = "Votre groupe a été créé !";
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(2000);
+        message = "";
+        await InvokeAsync(StateHasChanged);
+
+
+    }
+
+    private void ResetPage()
+    {
+        NavManager.NavigateTo("/groupe", true);
+    }
+
+}

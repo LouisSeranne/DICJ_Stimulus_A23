@@ -1,0 +1,118 @@
+﻿@inject ViewOptionService ViewOption
+
+@page "/theorie/{Id:int}"
+@layout EtudiantLayout
+
+<AuthorizeView>
+    <Authorized>
+        @if(InitDone == true)
+        {
+            if(Pages.Count != 0)
+            {
+                <div class="containerNoeud">
+                    <div class="sidebar @ViewOption.NavBarClass">
+                        <NavMenu pages=@Pages @bind-PageValue=Page/>
+                    </div>
+                    <div class="containerBtnNavMenu">
+                        <button @onclick="ViewOption.Toggle" class="btnNavMenu">></button>
+                    </div>
+
+                    <div class="containerTheorie">
+                        @*Appelle le component en envoyant l'id de la page a aller chercher*@
+                        <TheorieComponent Id="@GetPage()"></TheorieComponent>
+
+                        @if(Page < Pages.Count)
+                        {
+                            <button type="button" class="boutonTheorie" @onclick="PageSuivante" formaction=""> Page Suivante </button>
+                        }
+                        @if(Page > 1)
+                        {
+                            <button type="button" class="boutonTheorie" @onclick="PagePrecedente"> Page Précédente </button>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <h5 style="color:white">Aucune page trouvée pour ce noeud :(</h5>
+            }
+
+       
+        }
+        else
+        {
+            <h5 style="color:white">chargement...</h5>
+        }
+
+
+    </Authorized>
+    <NotAuthorized>
+        <h3>Vous n'êtes pas autorisé</h3>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool InitDone { get; set; } 
+
+    private int Page { get; set; } = 1;
+
+    private ICollection<Services.Base.PageVM> Pages { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        ViewOption.OnChanged = () => { 
+            StateHasChanged();//Refresh
+        };
+
+        InitDone = false;
+
+        Client client = SetupClient();
+
+        //Va chercher les pages avec l'id du noeud
+        Pages = await client.PagesAll2Async(Id);
+
+        if(Pages.Count == 0)
+        {
+            Page = 0;
+        }
+        
+        InitDone = true;
+        
+        StateHasChanged();
+    }
+
+    private void PageSuivante()
+    {
+        Page++;
+        StateHasChanged();
+    }
+
+    private void PagePrecedente()
+    {
+        Page--;
+        StateHasChanged();
+    }
+
+    private Client SetupClient()
+    {
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+        (httpRequestMessage, cert, cetChain, policyErrors) =>
+        {
+            return true;
+        };
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/") };
+        return new Client(httpClient);
+    }
+
+    private int GetPage()
+    {
+        return Pages.ToList()[Page - 1].Id;
+    }
+}

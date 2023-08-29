@@ -1,0 +1,9 @@
+﻿<div class="componentTexte">
+    @((MarkupString)@TextModel.Content)
+
+</div>
+
+@code {
+    [Parameter]
+    public Text TextModel { get; set; }
+}

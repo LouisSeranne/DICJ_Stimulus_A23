@@ -1,0 +1,30 @@
+﻿@using StimulusFrontEnd.Services.Base
+@using StimulusFrontEnd.Services.Authentification
+@using StimulusFrontEnd.Providers
+@layout LoginLayout
+@page "/prof"
+@inject NavigationManager NavManager
+@inject IJSRuntime JsRunTime
+
+<AuthorizeView>
+    <Authorized>
+        <h3 style="color:white" >PageMenuProfesseur</h3>
+        <a class="btn btn-outline-light" role="button" aria-pressed="true" onclick=@PageGroupe>Page Création de groupe</a>
+    </Authorized>
+    <NotAuthorized>
+        <h3>Vous n'êtes pas autorisé</h3>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    private async void PageGroupe()
+    {
+        string message = "Page en cours de développement";
+        await JsRunTime.InvokeAsync<object>("alert", message);
+        //NavManager.NavigateTo("/groupe");
+    }
+
+
+}

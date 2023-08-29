@@ -1,0 +1,108 @@
+﻿@using StimulusFrontEnd.Services.Base
+@using StimulusFrontEnd.Services.Authentification
+@using StimulusFrontEnd.Providers
+
+@inject IAuthenticationService authService
+@inject ApiAuthenticationStateProvider apiAuthentificationStateProvider
+@inject IClient httpClient
+@inject NavigationManager NavigationManager
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IJSRuntime JsRunTime
+
+@layout LoginLayout
+
+@page "/"
+
+<div>
+
+
+    <AuthorizeView>
+        <Authorized>
+
+            <AuthorizeView Roles="Etudiant" Context="routeData">
+                <RedirectToGraph/>
+            </AuthorizeView>
+        <AuthorizeView Roles="Professeur" Context="routeData">
+                <RedirectToProf/>
+            </AuthorizeView>
+        <AuthorizeView Roles="Administrateur" Context="routeData">
+            <RedirectToAdmin />
+        </AuthorizeView>
+
+        </Authorized>
+
+        <NotAuthorized>
+            
+
+                <EditForm Model="appUser" OnValidSubmit="HandleLogin" Context="routeData" OnInvalidSubmit="CheckLogin" class="formLogin">
+
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+                    <div class="form-group">
+                    <label for="UserName" class="labelLogin">Utilisateur</label>
+                        <InputText class="form-control" @bind-Value="appUser.UserName"/>
+                        <ValidationMessage For="@(()=>appUser.UserName)"/>
+                    </div>
+                <br/>
+                    <div class="form-group">
+                    <label for="PasswordHash" class="labelLogin">Mot de passe</label>
+                        <InputText class="form-control inputLogin" type=password @bind-Value="appUser.PasswordHash"/>
+                        <ValidationMessage For="@(()=>appUser.PasswordHash)"/>
+                    </div>
+                <br/>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </EditForm>
+        </NotAuthorized>
+    </AuthorizeView>
+
+</div>
+
+@code {
+    UtilisateurApplication appUser = new UtilisateurApplication();
+    string message = string.Empty;
+
+    protected override async void OnInitialized()
+    {
+        apiAuthentificationStateProvider.LoggedOut();
+    }
+
+
+
+    public async Task HandleLogin()
+    {
+
+        try{
+            var response = await authService.AuthenticateAsync(appUser);
+            await sessionStorage.SetItemAsync<UtilisateurApplication>("user", appUser);
+
+        }
+        catch(ApiException e)
+        {
+            if(e.StatusCode >=200 && e.StatusCode <=299)
+            {
+
+            }
+            else if(e.StatusCode==401)
+            {
+                await CheckLogin();
+            }
+            message = e.Response;
+        }
+    }
+    
+    public async Task CheckLogin()
+    {
+
+        string message = "Utilisateur ou mot de passe invalid";
+        await JsRunTime.InvokeAsync<object>("alert", message);
+
+    }
+
+    
+
+    public void Navigate()
+    {
+        NavigationManager.NavigateTo("/index");
+    }
+
+}

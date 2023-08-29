@@ -1,0 +1,22 @@
+﻿div{
+    color: white;
+    display: flex;
+    justify-content: center;
+    text-align:center;
+    margin-top: 1.5%;
+}
+h3{
+    color : white;
+}
+form.formLogin {
+    text-align: center;
+    width: 30%;
+}
+.labelLogin{
+    width:70%;
+}
+
+.btn-primary{
+    width:100%;
+}
+

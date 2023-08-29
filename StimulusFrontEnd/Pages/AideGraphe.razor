@@ -1,0 +1,55 @@
+﻿@page "/graphe/aide"
+@inject NavigationManager NavigationManager
+@layout MainLayout
+
+<PageTitle>PageAide</PageTitle>
+
+<AuthorizeView Roles="Etudiant">
+    <Authorized>
+        <button @onclick="MoveToGraphe">retour au graphe</button>
+        <h1 style="color:white;">Page d'aide du graphe</h1>
+
+        <h2 style="color:white">Utilisation du graphe</h2>
+        <h3 style="color:white">Acceder aux pages de theories</h3>
+        <p style="color:white">Pour acceder au contenu des noeuds, vous devez cliquer sur le noeud sans deplacer votre souris</p>
+        <h3 style="color:white">Deplacer le graphe</h3>
+        <p style="color:white">Pour deplacer le graphique, maintenez le clic gauche a l'interieur du graphe, deplacer votre souris dans la direction opposer de celle que vous voulez aller et relacher le clic gauche de la souris</p>
+        <h3 style="color:white">Zoomer dans le graphe</h3>
+        <p style="color:white">Pour zoomer dans le graphe, maintenez la touche Maj▲ de votre clavier et utiliser la roulette de votre souris vers l'avant pour augmenter le zoom et vers l'arriere pour reduire le zoom. vous pouvez aussi utiliser les boutons  + et - présent en haut du graphe</p>
+        <h3 style="color:white">Réinitialiser</h3>
+        <p style="color:white">Pour réinitialiser le visuel du graphe a ce qu'il étais lors du chargement de la page vous pouvez utiliser le bouton réinitialiser situer en haut du graphe</p>
+
+        <svg style="height:300px; width:700px;">
+            <circle cx="30" cy="30" r="30" fill="rgb(140,140,140)"></circle>
+            <foreignObject x="70" y="30" width="500" height="30"><p style="color:white">Si un noeud est gris, s'est qu'il est indisponible</p></foreignObject>
+
+            <circle cx="30" cy="100" r="30" fill="rgb(228, 231, 245)"></circle>
+            <foreignObject x="70" y="100" width="500" height="30"><p style="color:white">Si un noeud est blanc, s'est qu'il est disponible mais pas encore consulté</p></foreignObject>
+
+            <circle cx="30" cy="170" r="30" fill="rgb(199,160,53)"></circle>
+            <foreignObject x="70" y="170" width="700" height="30"><p style="color:white">Si un noeud est jaune, s'est qu'il est disponible et qu'il a été consulté au moins une fois</p></foreignObject>
+
+            <circle cx="30" cy="240" r="30" fill="rgb(28, 90, 47)"></circle>
+            <foreignObject x="70" y="240" width="500" height="30"><p style="color:white">Si un noeud est vert, s'est qu'il est completé</p></foreignObject>
+    
+        </svg>
+
+        <h3 style="color:white">Information de survol</h3>
+        <p style="color:white">Nom : Nom du noeud</p>
+        <p style="color:white">Pts : Sommes des points des pages assosciées au noeud</p>
+        <p style="color:white">Desc : Description du noeud</p>
+        <p style="color:white">Prérequis : Liste des noeuds qui doivent être completés avant que le noeud survolé soit disponible</p>
+    </Authorized>
+    <NotAuthorized>
+        <h3>Vous n'êtes pas autorisé</h3>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private void MoveToGraphe()
+    {
+        NavigationManager.NavigateTo("/index");
+    }
+}

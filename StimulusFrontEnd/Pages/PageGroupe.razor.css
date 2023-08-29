@@ -1,0 +1,40 @@
+﻿body {
+}
+#formulaire{
+    display:flex;
+    justify-content:center;
+    padding-top:4%;
+}
+#coursProf {
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    
+}
+.select {
+    display: flex;
+    flex-direction: row;
+    padding-bottom:2%;
+}
+#divBtn{
+    display:flex;
+    flex-direction:row;
+    padding-bottom:5%;
+}
+#btnSubmit,#btnReset{
+    width:50%;
+}
+#spanCours{
+    width:70%;
+}
+#spanProf{
+    width:70%;
+}
+#nomGroupe{
+    height:20%;
+
+}
+h3{
+    padding-left:7%;
+    justify-content:center;
+}

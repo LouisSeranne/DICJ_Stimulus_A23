@@ -1,0 +1,195 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using StimulusAPI.Authorization;
+using StimulusAPI.Models;
+using StimulusAPI.Context;
+using StimulusAPI.LoginContext;
+
+namespace StimulusAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class LoginController : ControllerBase
+    {
+        private readonly UserManager<UtilisateurApplication> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IConfiguration _configuration;
+        private readonly DevProjetStimulusContext _context;
+        private readonly _2022_Projet_StimulusLoginContext _loginContext;
+
+        public LoginController(UserManager<UtilisateurApplication> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, DevProjetStimulusContext context, _2022_Projet_StimulusLoginContext loginContext)
+        {
+            this.userManager = userManager;
+            this.roleManager = roleManager;
+            _configuration = configuration;
+            _context = context;
+            _loginContext = loginContext;
+        }
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<ActionResult<Reponse>> Login([FromBody] UtilisateurApplication model)
+        {
+            var user = await userManager.FindByNameAsync(model.UserName);
+            if (user != null && await userManager.CheckPasswordAsync(user, model.PasswordHash))
+            {
+                var userRoles = await userManager.GetRolesAsync(user);
+                
+             
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
+
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                }
+
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+                var token = new JwtSecurityToken(
+                    issuer: _configuration["JWT:ValidIssuer"],
+                    audience: _configuration["JWT:ValidAudience"],
+                    expires: DateTime.Now.AddHours(3),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                    );
+                
+
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    expiration = token.ValidTo
+                });
+            }
+            return Unauthorized();
+        }
+
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> Register([FromBody] ModelEnregistrement model)
+        {
+            var userExists = await userManager.FindByNameAsync(model.UserName);
+            if (userExists != null)
+                return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "L'utilisateur existe!" });
+
+            UtilisateurApplication user = new UtilisateurApplication()
+            {
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = model.UserName
+            };
+
+            var result = await userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+                return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Création d'utilisateur a échoué! Vérifié les détails de l'utilisateur et réessayer." });
+            
+            if (!await roleManager.RoleExistsAsync(RolesUtilisateurs.Etudiant))
+                await roleManager.CreateAsync(new IdentityRole(RolesUtilisateurs.Etudiant));
+            if (await roleManager.RoleExistsAsync(RolesUtilisateurs.Etudiant))
+            {
+                await userManager.AddToRoleAsync(user, RolesUtilisateurs.Etudiant);
+            }
+            return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
+        }
+        [HttpPost]
+        [Route("register-prof")]
+        public async Task<IActionResult> RegisterProf([FromBody] ModelEnregistrement model)
+        {
+            var userExists = await userManager.FindByNameAsync(model.UserName);
+            if (userExists != null)
+                return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "L'utilisateur existe!" });
+
+            UtilisateurApplication user = new UtilisateurApplication()
+            {
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = model.UserName
+            };
+
+            var result = await userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+                return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Création d'utilisateur a échoué! Vérifié les détails de l'utilisateur et réessayer." });
+
+            if (!await roleManager.RoleExistsAsync(RolesUtilisateurs.Professeur))
+                await roleManager.CreateAsync(new IdentityRole(RolesUtilisateurs.Professeur));
+
+            if (await roleManager.RoleExistsAsync(RolesUtilisateurs.Professeur))
+            {
+                await userManager.AddToRoleAsync(user, RolesUtilisateurs.Professeur);
+            }
+
+            return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
+        }
+
+        [HttpPost]
+        [Route("register-admin")]
+        public async Task<IActionResult> RegisterAdmin([FromBody] ModelEnregistrement model)
+        {
+            var userExists = await userManager.FindByNameAsync(model.UserName);
+            if (userExists != null)
+                return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "L'utilisateur existe!" });
+
+            UtilisateurApplication user = new UtilisateurApplication()
+            {
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = model.UserName
+            };
+            var result = await userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+                return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Création d'utilisateur a échoué! Vérifié les détails de l'utilisateur et réessayer." });
+
+            if (!await roleManager.RoleExistsAsync(RolesUtilisateurs.Administrateur))
+                await roleManager.CreateAsync(new IdentityRole(RolesUtilisateurs.Administrateur));
+            if (!await roleManager.RoleExistsAsync(RolesUtilisateurs.Etudiant))
+                await roleManager.CreateAsync(new IdentityRole(RolesUtilisateurs.Etudiant));
+
+            if (await roleManager.RoleExistsAsync(RolesUtilisateurs.Administrateur))
+            {
+                await userManager.AddToRoleAsync(user, RolesUtilisateurs.Administrateur);
+            }
+
+            return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
+        }
+        private async Task<string> GenerateToken(UtilisateurApplication appUser)
+        {
+
+            //possible d'utiliser les roles pour faire des claims differents en fonction du role de l'utilisateur
+            var roles = await userManager.GetRolesAsync(appUser);
+            string errmsg = "user role = " + roles.ToString();
+
+            var roleClaims = roles.Select(q => new Claim(ClaimTypes.Role, q)).ToList();
+            var userClaims = await userManager.GetClaimsAsync(appUser); 
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, appUser.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                //il est possible de cree d'autre claim
+                //ex:  new Claim(JwtRegisteredClaimNames.Email, appUser.Email), new Claim(CustomClaimTypes.Uid, user.Id)
+            }
+            .Union(roleClaims)
+            .Union(userClaims);
+            
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JWT:ValidIssuer"],
+                audience: _configuration["JWT:ValidAudience"],
+                claims: claims,
+                expires:DateTime.Now.AddHours(3),
+                signingCredentials: new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
+                );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+    }
+}

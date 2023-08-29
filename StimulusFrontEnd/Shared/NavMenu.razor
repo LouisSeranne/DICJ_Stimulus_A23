@@ -1,0 +1,46 @@
+﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand">Changement de page</a>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass">
+    <nav class="flex-column">
+        @foreach(PageVM page in pages)
+        {
+            <div class="nav-item px-3">
+            <NavLink class="nav-link">
+                <bouton class="oi" aria-hidden="true" @onclick="() => ChangerPage(page.Ordre)"> @(page.Ordre) </bouton> 
+            </NavLink>
+            </div> 
+        }
+    </nav>
+</div>
+
+@code {
+    [Parameter]
+    public ICollection<Services.Base.PageVM> pages { get; set; }
+
+    [Parameter]
+    public EventCallback<int> PageValueChanged { get; set; }
+
+    [Parameter]
+    public int PageValue { get; set; }
+
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    async Task ChangerPage(int id)
+    {
+        PageValue = id;
+        await PageValueChanged.InvokeAsync(PageValue);
+    }
+}

@@ -1,0 +1,24 @@
+﻿<div class="codeSample component">
+    <div class="head">
+        <p class="title">
+            @CodeModel.Title
+        </p>
+    </div>
+    <pre class="code"><code class="python">
+        @CodeModel.Content
+    </code></pre>
+</div>
+
+
+
+@code {
+    [Inject] private IJSRuntime js { get; set; }
+
+    [Parameter]
+    public Models.Code CodeModel { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("HighlightFunctions.highlightSnippets");
+    }
+}

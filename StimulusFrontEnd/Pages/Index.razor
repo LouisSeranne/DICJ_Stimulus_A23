@@ -1,0 +1,23 @@
+﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IJSRuntime JS
+@page "/index"
+@layout EtudiantLayout
+@*@attribute [Authorize(Roles = "Etudiant")]
+*@
+<PageTitle>Index</PageTitle>
+
+<AuthorizeView Roles="Etudiant">
+    <Authorized>
+        <StimulusFrontEnd.Components.GrapheComponent></StimulusFrontEnd.Components.GrapheComponent>
+    </Authorized>
+    <NotAuthorized>
+        <h3>Vous n'êtes pas autorisé</h3>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+
+    
+}

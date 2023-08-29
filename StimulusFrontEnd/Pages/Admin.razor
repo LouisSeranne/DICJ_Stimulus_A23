@@ -1,0 +1,29 @@
+﻿@using StimulusFrontEnd.Services.Base
+@using StimulusFrontEnd.Services.Authentification
+@using StimulusFrontEnd.Providers
+
+
+
+@page "/admin"
+
+<h3>Admin</h3>
+
+<div>
+
+
+    <AuthorizeView Roles="Administrateur">
+        <Authorized>
+            <h3>page admin authorized</h3>
+        </Authorized>
+        <NotAuthorized>
+
+            <h3>page admin not authorized</h3>
+        </NotAuthorized>
+    </AuthorizeView>
+
+</div>
+
+@code {
+
+
+}

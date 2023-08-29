@@ -1,0 +1,11 @@
+﻿@foreach (Models.Reference reference in References)
+{
+    <div class="componentReference">
+        @reference.Description : <a href="@reference.Url">@reference.Url</a>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<Models.Reference> References { get; set; }
+}

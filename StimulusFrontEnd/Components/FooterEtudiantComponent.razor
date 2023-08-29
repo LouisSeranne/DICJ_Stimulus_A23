@@ -1,0 +1,113 @@
+﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IUpdateService updateService
+
+<AuthorizeView>
+    <Authorized>
+        @if(initDone)
+        {
+            <div class="containerFooter">
+                <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <h4 class="h4Footer">CEPI</h4>
+                    </div>
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <h4 class="h4Footer">À propos</h4>
+                    </div>
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <h4 class="h4Footer">Liens Utiles</h4>
+                    </div>
+                    </div>
+                <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <p  class="pFooter"><a class="liensUtiles" href="https://www.youtube.com/watch?v=oHg5SJYRHA0" target="_blank">Nous contacter</a></p>
+                    </div>
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <p class="pFooter">Conditions générales</p>
+                        <p class="pFooter">Mentions légales</p>
+                    </div>
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <!--Boucle sur la liste des liens pour afficher tous les liens-->
+
+                        @if(listLiensUtiles.Count() != 0)
+                        {
+                            @foreach(LienUtileVM link in listLiensUtiles)
+                            {
+                                <p  class="pFooter"><a class="liensUtiles" href="@link.Url" target="_blank">@link.NomUrl</a></p>
+                            }
+                        }
+                        else{
+                            <p>Aucun lien utile</p>
+                        }
+
+                    </div>
+                </div>
+            
+                @*<div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                       <img src="/image/cepi_logo_pas_officiel.png" alt="Logo CEPI" class="logoCEPIFooter"/>
+                    </div>
+                </div>*@
+            </div>
+        }
+        
+    </Authorized>
+    <NotAuthorized>
+
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+@code {
+
+    ICollection<LienUtileVM> listLiensUtiles;
+    private Client client;
+    private int idGraphe;
+    private bool initDone;
+
+    protected override void OnInitialized()
+    {
+        initDone = false;
+        updateService.RefreshRequested += this.RefreshState;
+
+
+        //Handler : Permet de contourner les certifications sinon le projet crash
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+
+        //Set une nouvelle Uri pour lien le Front-End a la Bd
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/") };
+        client = new Client(httpClient);
+
+        //Requete utilisée pour aller chercher les données des liens en fonction de l'id du graphe
+
+        UpdateLien();
+
+    }
+
+    private async void UpdateLien()
+    {
+        try
+        {
+            idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+            var requeteLiens = client.LienUtilesAll2Async(idGraphe);
+            var infoLiensUtiles = requeteLiens.Result;
+            listLiensUtiles = infoLiensUtiles;
+            initDone = true;
+            StateHasChanged();
+        }
+        catch(Exception e)
+        {}
+       
+    }
+
+    public async void RefreshState()
+    {
+        UpdateLien();
+    }
+}
