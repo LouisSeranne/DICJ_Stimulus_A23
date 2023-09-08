@@ -13,6 +13,7 @@ using StimulusAPI.Authorization;
 using StimulusAPI.Models;
 using StimulusAPI.Context;
 using StimulusAPI.LoginContext;
+using Microsoft.Data.SqlClient;
 
 namespace StimulusAPI.Controllers
 {
@@ -93,13 +94,13 @@ namespace StimulusAPI.Controllers
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Création d'utilisateur a échoué! Vérifié les détails de l'utilisateur et réessayer." });
-            
             if (!await roleManager.RoleExistsAsync(RolesUtilisateurs.Etudiant))
                 await roleManager.CreateAsync(new IdentityRole(RolesUtilisateurs.Etudiant));
             if (await roleManager.RoleExistsAsync(RolesUtilisateurs.Etudiant))
             {
                 await userManager.AddToRoleAsync(user, RolesUtilisateurs.Etudiant);
             }
+            await AjoutBD(model, RolesUtilisateurs.Etudiant);
             return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
         }
         [HttpPost]
@@ -119,15 +120,13 @@ namespace StimulusAPI.Controllers
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Création d'utilisateur a échoué! Vérifié les détails de l'utilisateur et réessayer." });
-
             if (!await roleManager.RoleExistsAsync(RolesUtilisateurs.Professeur))
                 await roleManager.CreateAsync(new IdentityRole(RolesUtilisateurs.Professeur));
-
             if (await roleManager.RoleExistsAsync(RolesUtilisateurs.Professeur))
             {
                 await userManager.AddToRoleAsync(user, RolesUtilisateurs.Professeur);
             }
-
+            await AjoutBD(model, RolesUtilisateurs.Professeur);
             return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
         }
 
@@ -157,7 +156,7 @@ namespace StimulusAPI.Controllers
             {
                 await userManager.AddToRoleAsync(user, RolesUtilisateurs.Administrateur);
             }
-
+            await AjoutBD(model, RolesUtilisateurs.Administrateur);
             return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
         }
         private async Task<string> GenerateToken(UtilisateurApplication appUser)
@@ -190,6 +189,81 @@ namespace StimulusAPI.Controllers
                 signingCredentials: new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        private async Task<IActionResult> AjoutBD(ModelEnregistrement user, string role)
+        {
+            // A changer car c'est dégueu
+            string connectionString = "Data Source=dicjwin01;Initial Catalog=TestStimulusProjet;User ID=P2022-Dev;Password=9jj96wqwoFYSj6Dxw26w;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
+            switch (role)
+            {
+                default:
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Erreur inattendue liée à la base de données, contactez un administrateur" });
+                case "Etudiant":
+                    await using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        try
+                        {
+                            connection.Open();
+                            string insertQuery = "INSERT INTO dbo.etudiant (code_da, nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3, @Valeur4)";
+                            using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                            {
+                                command.Parameters.AddWithValue("@Valeur1", user.UserName);
+                                command.Parameters.AddWithValue("@Valeur2", user.UserName);
+                                command.Parameters.AddWithValue("@Valeur3", user.UserName);
+                                command.Parameters.AddWithValue("@Valeur4", user.Password);
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Erreur inattendue liée à la base de données, contactez un administrateur" });
+                        }
+                    }
+                    break;
+                case "Professeur":
+                    await using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        try
+                        {
+                            connection.Open();
+                            string insertQuery = "INSERT INTO dbo.professeur (nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3)";
+                            using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                            {
+                                command.Parameters.AddWithValue("@Valeur1", user.UserName);
+                                command.Parameters.AddWithValue("@Valeur2", user.UserName);
+                                command.Parameters.AddWithValue("@Valeur3", user.Password);
+                                command.ExecuteNonQuery();
+                            }                            
+                        }
+                        catch (Exception ex)
+                        {
+                            return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Erreur inattendue liée à la base de données, contactez un administrateur" });
+                        }
+                    }
+                    break;
+                case "Administrateur":
+                    await using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        try
+                        {
+                            connection.Open();
+                            string insertQuery = "INSERT INTO dbo.administrateur (nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3)";
+                            using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                            {
+                                command.Parameters.AddWithValue("@Valeur1", user.UserName);
+                                command.Parameters.AddWithValue("@Valeur2", user.UserName);
+                                command.Parameters.AddWithValue("@Valeur3", user.Password);
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Erreur inattendue liée à la base de données, contactez un administrateur" });
+                        }
+                    }
+                    break;
+            }
+            return Ok(new Reponse { Status = "200 Ok", Message = "200 Ok" });
         }
     }
 }

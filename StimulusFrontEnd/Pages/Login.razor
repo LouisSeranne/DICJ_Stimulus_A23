@@ -31,10 +31,8 @@
 
         </Authorized>
 
-        <NotAuthorized>
-            
-
-                <EditForm Model="appUser" OnValidSubmit="HandleLogin" Context="routeData" OnInvalidSubmit="CheckLogin" class="formLogin">
+        <NotAuthorized>       
+            <EditForm Model="appUser" OnValidSubmit="HandleLogin" Context="routeData" OnInvalidSubmit="CheckLogin" class="formLogin">
 
                 <DataAnnotationsValidator/>
                 <ValidationSummary/>
@@ -82,7 +80,7 @@
             {
 
             }
-            else if(e.StatusCode==401)
+            else if(e.StatusCode==401 || e.StatusCode == 404) // 404 pour test, sinon 401
             {
                 await CheckLogin();
             }
@@ -93,7 +91,7 @@
     public async Task CheckLogin()
     {
 
-        string message = "Utilisateur ou mot de passe invalid";
+        string message = "Utilisateur ou mot de passe invalide";
         await JsRunTime.InvokeAsync<object>("alert", message);
 
     }
