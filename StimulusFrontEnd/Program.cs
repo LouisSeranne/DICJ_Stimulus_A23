@@ -14,6 +14,7 @@ using System;
 using Microsoft.AspNetCore.Authentication;
 using StimulusFrontEnd;
 using Microsoft.AspNetCore.Components.Authorization;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,7 @@ builder.Services.AddBlazoredLocalStorage();
 
 //configure le client utiliser par les autres services avec la validation custom
 
-builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/")).ConfigurePrimaryHttpMessageHandler(() =>
+builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri("https://p22e1api-dicjprojet.cegepjonquiere.ca/")).ConfigurePrimaryHttpMessageHandler(() =>
 {
     return new HttpClientHandler()
     {
@@ -60,7 +61,8 @@ builder.Services.AddSingleton<IUpdateService,UpdateService>();
 builder.Services.AddSingleton<ViewOptionService>();
 
 
-
+builder.Host.UseSerilog((ctx, lc) =>
+    lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
 
 var app = builder.Build();
