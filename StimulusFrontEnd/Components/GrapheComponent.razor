@@ -28,7 +28,7 @@
         
         <svg id="svgGraphiqueComponent" style="user-select:none" viewBox=@(0 + " " + 0 + " " + sizeSvgDictionary["width"] + " " + sizeSvgDictionary["height"] + "") @onmousewheel="OnWheelMove" @onwheel="OnWheelMove" @onmousedown="OnMouseDown" @onmousemove="OnMouseMove" @onmouseup="OnMouseUp">
             <svg viewBox=@(viewboxDictionary["x"] + " " + viewboxDictionary["y"] + " " + viewboxDictionary["width"] + " " + viewboxDictionary["height"] + "") >
-            <!--
+                <!--
                 fonction : affiche le tableau 2d qui contients les noeuds.
                     la premiere boucle calcul la hauteur a laquelle les noeuds vont etre afficher pour chaque ligne(donc leur position en y)
                     la deuxieme boucle calcul le positionemment de chaque noeuds sur leur ligne(donc leur position en x)
@@ -548,7 +548,7 @@
                                 {
                                     topNoeudRecommander.Add(new GrapheView(){Id = noeudAffiche.Where(n => n.Code == hover.CodeParent).Where(n => n.GrapheId == hover.GrapheId).Select(n => n.Id).FirstOrDefault(), Code = hover.CodeParent});        
                                 }
-                                    
+
                             }
 
                         }
@@ -579,7 +579,7 @@
                         }
                     }
 
-                        
+
 
                     initFinis = true;
 
@@ -592,10 +592,10 @@
         {
             //ignore voir https://stackoverflow.com/questions/72488563/blazor-server-side-application-throwing-system-invalidoperationexception-javas
         }
-       
+
     }
 
-    
+
 
     /*
     * fonction : recupere la taille de la balise svg pour adapter les valeurs visuel a la taille de la page
@@ -613,7 +613,7 @@
     {
         if(initFinis)
         {
-             try
+            try
             {
                 element = await JSRuntim.InvokeAsync<BoundingClientRect>("GetSizeElement", "svgGraphiqueComponent");
             }
@@ -657,7 +657,7 @@
                 await InvokeAsync(StateHasChanged);
             }
         }
-       
+
     }
 
     /*
@@ -813,7 +813,7 @@
             return CalculEtage(noeudAffiche.Where(n => n.Id == noeud.LiaisonPrincipal).FirstOrDefault(), etage + 1);
         }
     }
-
+    
     /*
     * fonction : trie chaque ligne du tableau pour que les enfants soit dans le meme ordre que leur parent
     * variables : 

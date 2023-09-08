@@ -16,17 +16,30 @@ var builder = WebApplication.CreateBuilder(args);
 
 SqlConnectionStringBuilder sqlConnStringBuilder = new SqlConnectionStringBuilder()
 {
+  /*
     DataSource = builder.Configuration["BDServeur"],
     InitialCatalog = builder.Configuration["BDNom"],
     UserID = builder.Configuration["BDUser"],
     Password = builder.Configuration["BDPassword"]
+  */
+    DataSource = "dicjwin01",
+    InitialCatalog = "TestStimulusProjet",   
+    UserID = "P2022-Dev",
+    Password = "9jj96wqwoFYSj6Dxw26w"
 };
+
 SqlConnectionStringBuilder sqlLoginConnStringBuilder = new SqlConnectionStringBuilder()
 {
+  /*
     DataSource = builder.Configuration["BDServeur"],
     InitialCatalog = builder.Configuration["BDLoginNom"],
     UserID = builder.Configuration["BDUser"],
     Password = builder.Configuration["BDPassword"]
+  */
+    DataSource = "dicjwin01",
+    InitialCatalog = "TestStimulusProjet",
+    UserID = "P2022-Dev",
+    Password = "9jj96wqwoFYSj6Dxw26w"
 };
 //Ajout des contexts
 
@@ -80,7 +93,7 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n " +
-        "Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
+        "Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer ByYM000OLlMQG6VVVp1OH7Xzyr7gHuw1qvUC5dcGt3SNM\"",
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement {
         {
@@ -108,7 +121,7 @@ builder.Services.AddCors(options => {
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
