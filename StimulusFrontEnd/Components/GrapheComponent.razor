@@ -400,12 +400,10 @@
                 {
                     idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
 
-
                     noeudAffiche = client.GrapheView2Async(idGraphe).Result;
                     infoHover = client.Hover2Async(idGraphe).Result;
                     noeudComplete = noeudAffiche.Where(n => n.CodeStatus == 4).Count();
                     pourcentageCompleter = (int)Math.Round((double)noeudComplete * 100 / (noeudAffiche.Count() - 1));
-
 
                     enumerator = noeudAffiche.GetEnumerator();
 
