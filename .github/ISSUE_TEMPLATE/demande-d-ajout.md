@@ -2,7 +2,7 @@
 name: Demande d'Ajout
 about: Demande lier à un ajout dans l'application
 title: ''
-labels: '1'
+labels: 3, ajout
 assignees: ''
 
 ---
