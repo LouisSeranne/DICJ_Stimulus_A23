@@ -79,7 +79,7 @@
 
     protected async override void OnAfterRender(bool firstRender)
     {
-        
+
         if(firstRender)
         {
             Console.WriteLine("layout afterrender first");
@@ -91,7 +91,7 @@
 
                 if(await sessionStorage.ContainKeyAsync("idGroupe") == false)
                 {
-                    
+
                     var idEtu = await sessionStorage.GetItemAsync<string>("idEtudiant");
 
                     var etu = client.EtudiantsGETAsync(idEtu).Result;
@@ -109,9 +109,10 @@
 
                 if(await sessionStorage.ContainKeyAsync("idGraphe") == false)
                 {
+                    int idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
                     var graphe = await client.GraphesAllAsync();
-                    //graphe = graphe.Where(g => g.GroupeId)
-                    await sessionStorage.SetItemAsync<int>("idGraphe", 1); 
+                    var grapheFiltered = graphe.Where(g => g.GroupeId == idGroupe);
+                    await sessionStorage.SetItemAsync<int>("idGraphe", grapheFiltered.FirstOrDefault().Id);
                     idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
                     updateService.CallRequestRefresh();
                 }
