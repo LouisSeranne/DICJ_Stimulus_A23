@@ -14,6 +14,7 @@ using StimulusAPI.Models;
 using StimulusAPI.Context;
 using StimulusAPI.LoginContext;
 using Microsoft.Data.SqlClient;
+using StimulusAPI.Config;
 
 namespace StimulusAPI.Controllers
 {
@@ -193,6 +194,9 @@ namespace StimulusAPI.Controllers
         private async Task<IActionResult> AjoutBD(ModelEnregistrement user, string role)
         {
             // A changer car c'est dégueu
+            DbConfig dbConfig = new DbConfig();
+            string connectionStringTest = dbConfig.SqlConnStringBuilder.ToString();
+
             string connectionString = "Data Source=dicjwin01;Initial Catalog=TestStimulusProjet;User ID=P2022-Dev;Password=9jj96wqwoFYSj6Dxw26w;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
             switch (role)
             {

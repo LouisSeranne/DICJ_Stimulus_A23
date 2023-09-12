@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using StimulusAPI.Authorization;
+using StimulusAPI.Config;
 using StimulusAPI.LoginContext;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -14,37 +15,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-SqlConnectionStringBuilder sqlConnStringBuilder = new SqlConnectionStringBuilder()
-{
-  /*
-    DataSource = builder.Configuration["BDServeur"],
-    InitialCatalog = builder.Configuration["BDNom"],
-    UserID = builder.Configuration["BDUser"],
-    Password = builder.Configuration["BDPassword"]
-  */
-    DataSource = "dicjwin01",
-    InitialCatalog = "TestStimulusProjet",   
-    UserID = "P2022-Dev",
-    Password = "9jj96wqwoFYSj6Dxw26w"
-};
+DbConfig dbConfig = new DbConfig();
 
-SqlConnectionStringBuilder sqlLoginConnStringBuilder = new SqlConnectionStringBuilder()
-{
-  /*
-    DataSource = builder.Configuration["BDServeur"],
-    InitialCatalog = builder.Configuration["BDLoginNom"],
-    UserID = builder.Configuration["BDUser"],
-    Password = builder.Configuration["BDPassword"]
-  */
-    DataSource = "dicjwin01",
-    InitialCatalog = "TestStimulusProjet",
-    UserID = "P2022-Dev",
-    Password = "9jj96wqwoFYSj6Dxw26w"
-};
 //Ajout des contexts
 
-builder.Services.AddDbContext<StimulusAPI.Context.DevProjetStimulusContext>(option => option.UseSqlServer(sqlConnStringBuilder.ConnectionString));
-builder.Services.AddDbContext<_2022_Projet_StimulusLoginContext>(option => option.UseSqlServer(sqlLoginConnStringBuilder.ConnectionString));
+builder.Services.AddDbContext<StimulusAPI.Context.DevProjetStimulusContext>(option => option.UseSqlServer(dbConfig.SqlConnStringBuilder.ConnectionString));
+builder.Services.AddDbContext<_2022_Projet_StimulusLoginContext>(option => option.UseSqlServer(dbConfig.SqlLoginConnStringBuilder.ConnectionString));
 //Ajout de Identity
 builder.Services.AddIdentity<UtilisateurApplication, IdentityRole>()
     .AddEntityFrameworkStores<_2022_Projet_StimulusLoginContext>()
