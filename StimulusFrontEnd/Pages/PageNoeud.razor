@@ -18,17 +18,25 @@
                     </div>
 
                     <div class="containerTheorie">
-                        @*Appelle le component en envoyant l'id de la page a aller chercher*@
-                        <TheorieComponent Id="@GetPage()"></TheorieComponent>
-
-                        @if(Page < Pages.Count)
-                        {
-                            <button type="button" class="boutonTheorie" @onclick="PageSuivante" formaction=""> Page Suivante </button>
-                        }
                         @if(Page > 1)
                         {
                             <button type="button" class="boutonTheorie" @onclick="PagePrecedente"> Page Précédente </button>
                         }
+                        else
+                        {
+                            <button type="button" class="boutonTheorie" disabled> Page Précédente </button>
+                        }
+                        @if(Page < Pages.Count)
+                        {
+                            <button type="button" class="boutonTheorie" @onclick="PageSuivante" formaction=""> Page Suivante </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="boutonTheorie" disabled> Page Suivante </button>
+                        }
+                        @*Appelle le component en envoyant l'id de la page a aller chercher*@
+                        <TheorieComponent Id="@GetPage()"></TheorieComponent>
+
                     </div>
                 </div>
             }
