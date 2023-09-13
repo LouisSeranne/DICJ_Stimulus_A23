@@ -3,7 +3,7 @@
     public class ModelEnregistrement
     {
         [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Le nom d'utilisateur est essentiel.")]
-        public string UserName { get; set; }
+        public string Code { get; set; }
 
         [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Le nom de famille est essentiel.")]
         public string Nom { get; set; }

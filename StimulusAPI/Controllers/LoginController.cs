@@ -82,14 +82,14 @@ namespace StimulusAPI.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] ModelEnregistrement model)
         {
-            var userExists = await userManager.FindByNameAsync(model.UserName);
+            var userExists = await userManager.FindByNameAsync(model.Code);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "L'utilisateur existe!" });
 
             UtilisateurApplication user = new UtilisateurApplication()
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.UserName
+                UserName = model.Code
             };
 
             var result = await userManager.CreateAsync(user, model.Password);
@@ -107,15 +107,15 @@ namespace StimulusAPI.Controllers
         [HttpPost]
         [Route("register-prof")]
         public async Task<IActionResult> RegisterProf([FromBody] ModelEnregistrement model)
-        {
-            var userExists = await userManager.FindByNameAsync(model.UserName);
+        {            
+            var userExists = await userManager.FindByNameAsync(model.Code);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "L'utilisateur existe!" });
 
             UtilisateurApplication user = new UtilisateurApplication()
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.UserName
+                UserName = model.Code
             };
 
             var result = await userManager.CreateAsync(user, model.Password);
@@ -135,14 +135,14 @@ namespace StimulusAPI.Controllers
         [Route("register-admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] ModelEnregistrement model)
         {
-            var userExists = await userManager.FindByNameAsync(model.UserName);
+            var userExists = await userManager.FindByNameAsync(model.Code);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "L'utilisateur existe!" });
 
             UtilisateurApplication user = new UtilisateurApplication()
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.UserName
+                UserName = model.Code
             };
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -208,7 +208,7 @@ namespace StimulusAPI.Controllers
                             string insertQuery = "INSERT INTO dbo.etudiant (code_da, nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3, @Valeur4)";
                             using (SqlCommand command = new SqlCommand(insertQuery, connection))
                             {
-                                command.Parameters.AddWithValue("@Valeur1", user.UserName);
+                                command.Parameters.AddWithValue("@Valeur1", user.Code);
                                 command.Parameters.AddWithValue("@Valeur2", user.Nom);
                                 command.Parameters.AddWithValue("@Valeur3", user.Prenom);
                                 command.Parameters.AddWithValue("@Valeur4", user.Password);
