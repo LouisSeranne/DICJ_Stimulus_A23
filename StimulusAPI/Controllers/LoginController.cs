@@ -227,12 +227,13 @@ namespace StimulusAPI.Controllers
                         try
                         {
                             connection.Open();
-                            string insertQuery = "INSERT INTO dbo.professeur (nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3)";
+                            string insertQuery = "INSERT INTO dbo.professeur (code_empl, nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3, @Valeur4)";
                             using (SqlCommand command = new SqlCommand(insertQuery, connection))
                             {
-                                command.Parameters.AddWithValue("@Valeur1", user.Nom);
-                                command.Parameters.AddWithValue("@Valeur2", user.Prenom);
-                                command.Parameters.AddWithValue("@Valeur3", user.Password);
+                                command.Parameters.AddWithValue("@Valeur1", user.Code);
+                                command.Parameters.AddWithValue("@Valeur2", user.Nom);
+                                command.Parameters.AddWithValue("@Valeur3", user.Prenom);
+                                command.Parameters.AddWithValue("@Valeur4", user.Password);
                                 command.ExecuteNonQuery();
                             }                            
                         }
@@ -248,12 +249,13 @@ namespace StimulusAPI.Controllers
                         try
                         {
                             connection.Open();
-                            string insertQuery = "INSERT INTO dbo.administrateur (nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3)";
+                            string insertQuery = "INSERT INTO dbo.administrateur (code_empl, nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3, @Valeur4)";
                             using (SqlCommand command = new SqlCommand(insertQuery, connection))
                             {
-                                command.Parameters.AddWithValue("@Valeur1", user.Nom);
-                                command.Parameters.AddWithValue("@Valeur2", user.Prenom);
-                                command.Parameters.AddWithValue("@Valeur3", user.Password);
+                                command.Parameters.AddWithValue("@Valeur1", user.Code);
+                                command.Parameters.AddWithValue("@Valeur2", user.Nom);
+                                command.Parameters.AddWithValue("@Valeur3", user.Prenom);
+                                command.Parameters.AddWithValue("@Valeur4", user.Password);
                                 command.ExecuteNonQuery();
                             }
                         }
