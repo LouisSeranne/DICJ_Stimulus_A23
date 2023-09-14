@@ -6,32 +6,23 @@ namespace StimulusAPI.Config
     {
         public DbConfig()
         {
+            string db = "TestStimulusProjet";
+            var builder = WebApplication.CreateBuilder();
+
             SqlConnStringBuilder = new SqlConnectionStringBuilder()
-            {
-                /*
-                  DataSource = builder.Configuration["BDServeur"],
-                  InitialCatalog = builder.Configuration["BDNom"],
-                  UserID = builder.Configuration["BDUser"],
-                  Password = builder.Configuration["BDPassword"]
-                */
-                DataSource = "dicjwin01",
-                InitialCatalog = "TestStimulusProjet",
-                UserID = "P2022-Dev",
-                Password = "9jj96wqwoFYSj6Dxw26w"
+            {                
+                DataSource = builder.Configuration[$"{db}:BDServeur"],
+                InitialCatalog = builder.Configuration[$"{db}:BDNom"],
+                UserID = builder.Configuration[$"{db}:BDUser"],
+                Password = builder.Configuration[$"{db}:BDPassword"]
             };
 
             SqlLoginConnStringBuilder = new SqlConnectionStringBuilder()
-            {
-                /*
-                  DataSource = builder.Configuration["BDServeur"],
-                  InitialCatalog = builder.Configuration["BDLoginNom"],
-                  UserID = builder.Configuration["BDUser"],
-                  Password = builder.Configuration["BDPassword"]
-                */
-                DataSource = "dicjwin01",
-                InitialCatalog = "TestStimulusProjet",
-                UserID = "P2022-Dev",
-                Password = "9jj96wqwoFYSj6Dxw26w"
+            {               
+                DataSource = builder.Configuration[$"{db}:BDServeur"],
+                InitialCatalog = builder.Configuration[$"{db}:BDNom"],
+                UserID = builder.Configuration[$"{db}:BDUser"],
+                Password = builder.Configuration[$"{db}:BDPassword"]
             };
         }
 
