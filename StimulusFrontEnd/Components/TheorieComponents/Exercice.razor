@@ -5,7 +5,10 @@
     <div class="fileSelector">
         @foreach(Fichier fichier in FichierCode)
         {
-            <button @onclick="() => ChangeTab(fichier.Id)">@fichier.Nom</button>
+            <div>
+                <button @onclick="() => ChangeTab(fichier.Id)">@fichier.Nom</button>
+                <button @onclick="() => Delete(fichier.Id)">X</button>
+            </div>
         }
         <button @onclick="AddPage">+</button>
     </div>
@@ -139,6 +142,26 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    @*Permet de DELETE un fichier_sauvegarde*@
+    private async void Delete(int id)
+    {
+        try
+        {
+            await ApiClient.FichierSauvegardesDELETEAsync(id);
+
+            var deletedTab = FichierCode.Find(tab => tab.Id == id);
+            FichierCode.Remove(deletedTab);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Failed to delete : " + e.Message);
+            Result = "Échec de la supression des fichiers";
+        }
+        Result = "Fichier supprimé";
+
+        StateHasChanged();
+    }
+
 
     @*Permet de faire des indentatios avec la touche tab a la place de faire 4 espaces manuellement*@
     private async void Tab(int id)
@@ -209,7 +232,7 @@
         }
         catch(Exception e)
         {
-            Result = "Échech de l'enregistrement des fichiers";
+            Result = "Échec de l'enregistrement des fichiers";
         }
         Result = "Fichiers enregistrés";
     }
