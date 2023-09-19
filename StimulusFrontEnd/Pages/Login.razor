@@ -15,8 +15,21 @@
 
 <div class="loginCenter">
     <AuthorizeView>
+        <Authorized>
+            <AuthorizeView Roles="Etudiant" Context="routeData">
+                <RedirectToGraph />
+            </AuthorizeView>
+            <AuthorizeView Roles="Professeur" Context="routeData">
+                <RedirectToProf />
+            </AuthorizeView>
+            <AuthorizeView Roles="Administrateur" Context="routeData">
+                <RedirectToAdmin />
+            </AuthorizeView>
+        </Authorized>
         <NotAuthorized>
             <EditForm Model="appUser" OnValidSubmit="HandleLogin" Context="routeData" OnInvalidSubmit="CheckLogin" class="formLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
                 <h2 class="h2Login">Page Connexion</h2>
                 <div class="form-group">
                     <InputText class="form-control" @bind-Value="appUser.UserName" placeholder="CodeDA"><img src="/Image/Avatar.jpg" alt="Logo utilisateur" class="user-image" /></InputText>
