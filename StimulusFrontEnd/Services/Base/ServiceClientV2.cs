@@ -8968,6 +8968,7 @@ namespace StimulusFrontEnd.Services.Base
                         var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
                         var typedBody = serializer.Deserialize<T>(jsonTextReader);
                         return new ObjectResponseResult<T>(typedBody, string.Empty);
+
                     }
                 }
                 catch (Newtonsoft.Json.JsonException exception)
@@ -9543,6 +9544,9 @@ namespace StimulusFrontEnd.Services.Base
 
         [Newtonsoft.Json.JsonProperty("noeudId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? NoeudId { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("nom", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Nom { get; set; }
 
     }
 
