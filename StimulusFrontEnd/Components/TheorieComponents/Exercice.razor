@@ -145,19 +145,27 @@
     @*Permet de DELETE un fichier_sauvegarde*@
     private async void Delete(int id)
     {
-        try
+        if(id <= 0)
         {
-            await ApiClient.FichierSauvegardesDELETEAsync(id);
+            Result = "Erreur : Ne peut pas supprimer ce qui n'existe pas. Avez-vous sauvegardé?";
+        }
+        else
+        {
+            Console.WriteLine("Trying to delete fichier_sauvegarde #" + id);
+            try
+            {
+                await ApiClient.FichierSauvegardesDELETEAsync(id);
 
-            var deletedTab = FichierCode.Find(tab => tab.Id == id);
-            FichierCode.Remove(deletedTab);
+                var deletedTab = FichierCode.Find(tab => tab.Id == id);
+                FichierCode.Remove(deletedTab);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed to delete : " + e.Message);
+                Result = "Échec de la supression des fichiers";
+            }
+            Result = "Fichier supprimé";
         }
-        catch (Exception e)
-        {
-            Console.WriteLine("Failed to delete : " + e.Message);
-            Result = "Échec de la supression des fichiers";
-        }
-        Result = "Fichier supprimé";
 
         StateHasChanged();
     }
@@ -235,6 +243,8 @@
             Result = "Échec de l'enregistrement des fichiers";
         }
         Result = "Fichiers enregistrés";
+
+        StateHasChanged();
     }
 
     @*Fonction pour changer le focus du fichier a editer*@
