@@ -13,46 +13,25 @@
 
 @page "/"
 
-<div>
-
-
+<div class="loginCenter">
     <AuthorizeView>
-        <Authorized>
-
-            <AuthorizeView Roles="Etudiant" Context="routeData">
-                <RedirectToGraph/>
-            </AuthorizeView>
-        <AuthorizeView Roles="Professeur" Context="routeData">
-                <RedirectToProf/>
-            </AuthorizeView>
-        <AuthorizeView Roles="Administrateur" Context="routeData">
-            <RedirectToAdmin />
-        </AuthorizeView>
-
-        </Authorized>
-
-        <NotAuthorized>       
+        <NotAuthorized>
             <EditForm Model="appUser" OnValidSubmit="HandleLogin" Context="routeData" OnInvalidSubmit="CheckLogin" class="formLogin">
-
-                <DataAnnotationsValidator/>
-                <ValidationSummary/>
-                    <div class="form-group">
-                    <label for="UserName" class="labelLogin">Utilisateur</label>
-                        <InputText class="form-control" @bind-Value="appUser.UserName"/>
-                        <ValidationMessage For="@(()=>appUser.UserName)"/>
-                    </div>
-                <br/>
-                    <div class="form-group">
-                    <label for="PasswordHash" class="labelLogin">Mot de passe</label>
-                        <InputText class="form-control inputLogin" type=password @bind-Value="appUser.PasswordHash"/>
-                        <ValidationMessage For="@(()=>appUser.PasswordHash)"/>
-                    </div>
-                <br/>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                <h2 class="h2Login">Page Connexion</h2>
+                <div class="form-group">                 
+                    <InputText class="form-control" @bind-Value="appUser.UserName" placeholder="CodeDA"><img src="/Image/Avatar.jpg" alt="Logo utilisateur" class="user-image" /></InputText>
+                    <ValidationMessage For="@(()=>appUser.UserName)" />
+                </div>
+                    <br />
+                <div class="form-group">
+                    <InputText class="form-control inputLogin" type="password" @bind-Value="appUser.PasswordHash" placeholder="Mot De Passe" />
+                    <ValidationMessage For="@(()=>appUser.PasswordHash)" />
+                </div>
+                    <br />
+                <button type="submit" class="btn btn-primary btn-block">Connexion</button>
             </EditForm>
         </NotAuthorized>
     </AuthorizeView>
-
 </div>
 
 @code {
