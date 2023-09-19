@@ -6,16 +6,24 @@
 
 @page "/admin"
 
-<h3>Admin</h3>
+<h1>Admin</h1>
 
 <div>
     <AuthorizeView Roles="Administrateur">
         <Authorized>
-            <h3>page admin authorized</h3>
+            <h2>Page admin authorized</h2>
+            <div>
+                <h3>Test links</h3>
+                <br />
+                <a href="/index">To /index</a>
+                <br />
+                <a href="/prof">To /prof</a>
+                <br />
+                <a href="/groupe">To /groupe</a>
+            </div>
         </Authorized>
         <NotAuthorized>
-
-            <h3>page admin not authorized</h3>
+            <h3>Page admin not authorized</h3>
         </NotAuthorized>
     </AuthorizeView>
 </div>
