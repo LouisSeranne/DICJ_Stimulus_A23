@@ -2708,13 +2708,14 @@ namespace StimulusFrontEnd.Services.Base
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 204) // Added code 204 because this function doesn't return any content, so 204 is used instead of 200
                         {
                             return;
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            Console.WriteLine("The HTTP status code of the response was not expected in FichierSauvegardeDELETEAsync (" + status_ + ").", status_, responseData_, headers_, null);
                             throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
@@ -2786,6 +2787,7 @@ namespace StimulusFrontEnd.Services.Base
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            Console.WriteLine("The HTTP status code of the response was not expected in FichierSauvegardePOSTAsync (" + status_ + ").", status_, responseData_, headers_, null);
                             throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
