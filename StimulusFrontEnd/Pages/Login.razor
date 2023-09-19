@@ -13,25 +13,46 @@
 
 @page "/"
 
-<div class="loginCenter">
+<div>
+
+
     <AuthorizeView>
+        <Authorized>
+
+            <AuthorizeView Roles="Etudiant" Context="routeData">
+                <RedirectToGraph />
+            </AuthorizeView>
+            <AuthorizeView Roles="Professeur" Context="routeData">
+                <RedirectToProf />
+            </AuthorizeView>
+            <AuthorizeView Roles="Administrateur" Context="routeData">
+                <RedirectToAdmin />
+            </AuthorizeView>
+
+        </Authorized>
+
         <NotAuthorized>
             <EditForm Model="appUser" OnValidSubmit="HandleLogin" Context="routeData" OnInvalidSubmit="CheckLogin" class="formLogin">
-                <h2 class="h2Login">Page Connexion</h2>
-                <div class="form-group">                 
-                    <InputText class="form-control" @bind-Value="appUser.UserName" placeholder="CodeDA"><img src="/Image/Avatar.jpg" alt="Logo utilisateur" class="user-image" /></InputText>
+
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group">
+                    <label for="UserName" class="labelLogin">Utilisateur</label>
+                    <InputText class="form-control" @bind-Value="appUser.UserName" />
                     <ValidationMessage For="@(()=>appUser.UserName)" />
                 </div>
-                    <br />
+                <br />
                 <div class="form-group">
-                    <InputText class="form-control inputLogin" type="password" @bind-Value="appUser.PasswordHash" placeholder="Mot De Passe" />
+                    <label for="PasswordHash" class="labelLogin">Mot de passe</label>
+                    <InputText class="form-control inputLogin" type=password @bind-Value="appUser.PasswordHash" />
                     <ValidationMessage For="@(()=>appUser.PasswordHash)" />
                 </div>
-                    <br />
-                <button type="submit" class="btn btn-primary btn-block">Connexion</button>
+                <br />
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
             </EditForm>
         </NotAuthorized>
     </AuthorizeView>
+
 </div>
 
 @code {
@@ -48,25 +69,26 @@
     public async Task HandleLogin()
     {
 
-        try{
+        try
+        {
             var response = await authService.AuthenticateAsync(appUser);
             await sessionStorage.SetItemAsync<UtilisateurApplication>("user", appUser);
 
         }
-        catch(ApiException e)
+        catch (ApiException e)
         {
-            if(e.StatusCode >=200 && e.StatusCode <=299)
+            if (e.StatusCode >= 200 && e.StatusCode <= 299)
             {
 
             }
-            else if(e.StatusCode==401 || e.StatusCode == 404) // 404 pour test, sinon 401
+            else if (e.StatusCode == 401 || e.StatusCode == 404) // 404 pour test, sinon 401
             {
                 await CheckLogin();
             }
             message = e.Response;
         }
     }
-    
+
     public async Task CheckLogin()
     {
 
@@ -75,7 +97,7 @@
 
     }
 
-    
+
 
     public void Navigate()
     {
@@ -83,3 +105,4 @@
     }
 
 }
+
