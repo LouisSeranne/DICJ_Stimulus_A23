@@ -24,12 +24,12 @@
                             </InputSelect>
                         </div>
                         <div class="select">
-                            <span class="input-group-text" id="spanProf">Choix de l'ensaignant</span>
+                            <span class="input-group-text" id="spanProf">Choix de l'enseignant</span>
                             <InputSelect name="coursDropdown" id="profDropdown" @bind-Value = "groupeModel.ProfesseurId">
                                 <option>Enseignant</option>
                                 @foreach (Professeur prof in listProfesseur)
                                 {
-                                <option value= "@prof.Id">@prof.Prenom @prof.Nom</option>
+                                    <option value= "@prof.Id">@prof.Prenom @prof.Nom</option>
                                 }    
                             </InputSelect>
                         </div>
