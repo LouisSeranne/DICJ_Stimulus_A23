@@ -181,7 +181,10 @@ main {
 
 .logoHeader {
     text-align: center;
-    width:15%;
+    width: 15%;
+    float: right;
+    width: 50px; /* Ajustez la taille de l'image selon vos besoins */
+    height: 50px; /* Ajustez la taille de l'image selon vos besoins */
 }
 
 .pHeader {
@@ -377,3 +380,9 @@ main {
     display: flex;
     align-items: center;
 }
+
+.zoom {
+    margin-left: 8px;
+}
+
+

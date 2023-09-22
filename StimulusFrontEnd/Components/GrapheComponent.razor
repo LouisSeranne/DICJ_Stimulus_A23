@@ -17,7 +17,7 @@
 
         <div id="divGraphiqueComponent">
 
-        <div id="divGrapheEntete">
+        <div id="divGrapheEntete" class="zoom">
             <p class="grapheEnteteElement" style="color:white;">zoom : @(Math.Round(scaleZoom * 100))%</p>
             <button class="grapheEnteteElement" style="font-size:15px" type="button" @onclick="AugmenterZoom">+</button>
             <button class="grapheEnteteElement" style="font-size:15px" type="button" @onclick="ReduireZoom">-</button>
@@ -62,23 +62,19 @@
                     la formule mathematique qui calcul widthRepartition pourrais etre ameliorer
             -->
     
-                @{
-                    
-            
-                hauteurEtage = (int)Math.Round((double)sizeSvgDictionary["height"] / structureGraphe.GetLength(0));
-                paddingTop = (int)Math.Round((double)hauteurEtage / 2);
-                positionY = 0;
-                widthRepartition = 0;
-                paddingLeft = 0;
-                marginLeft = 0;
-                largeurNoeud = 0;
+                @{                              
+                    hauteurEtage = (int)Math.Round((double)sizeSvgDictionary["height"] / structureGraphe.GetLength(0));
+                    paddingTop = (int)Math.Round((double)hauteurEtage / 2);
+                    positionY = 0;
+                    widthRepartition = 0;
+                    paddingLeft = 0;
+                    marginLeft = 0;
+                    largeurNoeud = 0;
 
 
-                positionX = 0;
-                couleurAffichageCercle = "";
-                couleurAffichageTexte = "";
-
-            
+                    positionX = 0;
+                    couleurAffichageCercle = "";
+                    couleurAffichageTexte = "";            
                 }
 
                 <circle visibility="@displayHover" cx="@xBordureHover" cy="@yBordureHover" r="@rayonCercleSvg" fill-opacity="0.0" fill="PatWasHere" stroke="#6e9cc4" stroke-width="10px" ></circle>
@@ -173,10 +169,6 @@
                     }
 
                 }
-
-                
-
-
                 <rect visibility="@displayHover" x="@positionXRectHover" y="@positionYRectHover" width="@widthRectHover" height="@heightRectHover" fill="grey"></rect>
                 <polygon visibility="@displayHover" points="@("" + pointAXPolyHover + "," + pointAYPolyHover + " " + pointBXPolyHover + "," + pointBYPolyHover + " " + pointCXPolyHover + "," + pointCYPolyHover)" fill="grey" ></polygon>
         
@@ -187,13 +179,8 @@
                 @for(int k =0;k < liaisonSecHover.Length;k++)
                 {
                     <foreignObject visibility="@displayHover" x="@(positionXRectHover + (widthRectHover / 2))" y="@(positionYRectHover + ((heightRectHover / 6) * (k + 3)))" width="@(widthRectHover / 2)" height="@(heightRectHover / 6)"> <p style="color:white; font-size:@(viewboxDictionary["width"] / 100)px;">@liaisonSecHover[k]</p> </foreignObject>            
-                }
-
-                
-
+                }              
             </svg>
-
-
             <!--
                 fonction : affichage de la legende et des statistique
                 variables :
@@ -201,7 +188,7 @@
             -->
             <rect width="@widthRectLegend" height="@heightRectLegend" x="5" y="5" fill="#32587a"></rect>
             <foreignObject x="5" y="5" width="@widthRectLegend" height="@heightRectLegend">
-                <div>
+                <div class="BlockIndex">
                     <p style="color:#442f1c; margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">  zoom : Maj▲ + roulette</p>
                     <p style="color:rgb(140,140,140); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">  gris : bloqué</p>
                     <p style="color:rgb(228, 231, 245); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">  blanc: disponible</p>
@@ -212,7 +199,7 @@
 
             <rect width="@widthRectLegend" height="@heightRectStats" x="@(sizeSvgDictionary["width"] - widthRectLegend - 5)" y="5" fill="#32587a"></rect>
             <foreignObject x="@(sizeSvgDictionary["width"] - widthRectLegend - 5)" y="5" width="@widthRectLegend" height="@heightRectStats">
-                <div> 
+                <div class="BlockIndex">
                     <p style="color:rgb(228, 231, 245); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">@pourcentageCompleter % noeuds completés</p>
                     <p style="color:rgb(228, 231, 245); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">@noeudComplete / @(noeudAffiche.Count() - 1) noeuds completés</p>
                     <p style="color:rgb(228, 231, 245); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">noeuds recommandés :</p>
@@ -225,17 +212,10 @@
                     {
                         <p style="color:rgb(228, 231, 245); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">aucun noeud recommandé</p>
                     }
-
-
                 </div>
-            </foreignObject>
-        
-
-        
-        
+            </foreignObject>       
         </svg>
     </div>
-
 }
 
 
@@ -292,8 +272,7 @@
 
     private GrapheView[] noeudsTest;
 
-
-    <!--
+ <!--
         fonction : initialise les variables du components pour eviter les references nulls et appele les fonction de trie pour organiser les noeuds de la bonne facon.
         variables :
             avant boucle : 
@@ -483,15 +462,10 @@
                         noeudsTest[54].LiaisonPrincipal = (int)noeudsTest[41].Id;
                     }
 
-
-
                     structureGraphe = new GrapheView[][] {};
                     structureGrapheTemporaire = new GrapheView[][] {};
                     noeudsParEtages = new int[] {};
                     noeudsParEtagesTemporaire = new int[] {};
-
-
-
 
                     while(enumerator.MoveNext())
                     {
@@ -577,8 +551,6 @@
                         }
                     }
 
-
-
                     initFinis = true;
 
                     Console.WriteLine("param finis statehaschanged");
@@ -592,8 +564,6 @@
         }
 
     }
-
-
 
     /*
     * fonction : recupere la taille de la balise svg pour adapter les valeurs visuel a la taille de la page
@@ -619,9 +589,6 @@
             {
                 await InvokeAsync(StateHasChanged);
             }
-
-
-
 
             if(Math.Round(element.Width) > sizeSvgDictionary["width"] + 20 || Math.Round(element.Width) < sizeSvgDictionary["width"] - 20 || Math.Round(element.Height) > sizeSvgDictionary["height"] + 20 || Math.Round(element.Height) < sizeSvgDictionary["height"] - 20)
             {
@@ -650,14 +617,11 @@
 
                 noeudsCoordonneDictionnary.Clear();
 
-
-
                 await InvokeAsync(StateHasChanged);
             }
         }
 
     }
-
     /*
     * fonction : permet de zoomer dans le graphe
     * variable :

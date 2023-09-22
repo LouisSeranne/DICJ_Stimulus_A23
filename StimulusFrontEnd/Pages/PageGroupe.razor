@@ -1,12 +1,12 @@
 ﻿@page "/groupe"
 @inject NavigationManager NavManager
-
+@layout GroupeLayout
     
 <AuthorizeView Roles="Professeur">
-    <Authorized>
+    <Authorized>       
         @if (InitDone == true)
         {
-        <div id="formulaire">
+            <div id="formulaire" class="loginCenterGroupe">
             <EditForm  Model="@groupeModel" OnValidSubmit="@SubmitForm" Context="routeData">
                 <DataAnnotationsValidator/>
                 <ValidationSummary/>
