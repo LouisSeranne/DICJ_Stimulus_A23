@@ -2,7 +2,7 @@
 @inject NavigationManager NavManager
 
     
-<AuthorizeView Roles="Professeur">
+<AuthorizeView Roles="Professeur, Administrateur">
     <Authorized>
         @if (InitDone == true)
         {
