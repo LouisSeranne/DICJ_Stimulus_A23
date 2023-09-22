@@ -11,19 +11,20 @@
 <div>
     <AuthorizeView Roles="Administrateur">
         <Authorized>
-            <h2>Page admin authorized</h2>
+            <h2>Page admin autorisée</h2>
             <div>
-                <h3>Test links</h3>
+                <h3>Liens Test</h3>
                 <br />
-                <a href="/index">To /index</a>
+                <a href="/index">Redirection /index</a>
                 <br />
-                <a href="/prof">To /prof</a>
+                <a href="/prof">Redirection /prof</a>
                 <br />
-                <a href="/groupe">To /groupe</a>
+                <a href="/groupe">Redirection /groupe</a>
             </div>
         </Authorized>
         <NotAuthorized>
-            <h3>Page admin not authorized</h3>
+            <h3>Page admin non autorisée</h3>
+            <RedirectToLogin></RedirectToLogin>
         </NotAuthorized>
     </AuthorizeView>
 </div>
