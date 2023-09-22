@@ -6,7 +6,7 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JsRunTime
 
-<AuthorizeView>
+<AuthorizeView Roles="Professeur, Administrateur">
     <Authorized>
         <h3 style="color:white" >PageMenuProfesseur</h3>
         <a class="btn btn-outline-light" role="button" aria-pressed="true" onclick=@PageGroupe>Page Création de groupe</a>
