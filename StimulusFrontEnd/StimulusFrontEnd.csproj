@@ -50,4 +50,8 @@
     <Folder Include="logs\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StimulusAPI\StimulusAPI.csproj" />
+  </ItemGroup>
+
 </Project>

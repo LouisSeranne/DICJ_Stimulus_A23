@@ -9463,6 +9463,15 @@ namespace StimulusFrontEnd.Services.Base
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Status { get; set; }
 
+        [Newtonsoft.Json.JsonProperty("posx", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double? PosX { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("posy", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double? PosY { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("rayon", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double? Rayon { get; set; }
+
         [Newtonsoft.Json.JsonProperty("graphe", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Graphe Graphe { get; set; }
 
