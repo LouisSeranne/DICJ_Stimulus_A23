@@ -1,9 +1,9 @@
 ﻿@page "/groupe"
 @inject NavigationManager NavManager
-@layout GroupeLayout
+
     
-<AuthorizeView Roles="Professeur">
-    <Authorized>       
+<AuthorizeView Roles="Professeur, Administrateur">
+    <Authorized>
         @if (InitDone == true)
         {
             <div id="formulaire" class="loginCenterGroupe">
@@ -24,7 +24,7 @@
                             </InputSelect>
                         </div>
                         <div class="select">
-                            <span class="input-group-text" id="spanProf">Choix de l'ensaignant</span>
+                            <span class="input-group-text" id="spanProf">Choix de l'enseignant</span>
                             <InputSelect name="coursDropdown" id="profDropdown" @bind-Value = "groupeModel.ProfesseurId">
                                 <option>Enseignant</option>
                                 @foreach (Professeur prof in listProfesseur)

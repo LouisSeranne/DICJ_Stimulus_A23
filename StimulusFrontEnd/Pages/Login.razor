@@ -56,11 +56,8 @@
         apiAuthentificationStateProvider.LoggedOut();
     }
 
-
-
     public async Task HandleLogin()
     {
-
         try
         {
             var response = await authService.AuthenticateAsync(appUser);
@@ -73,7 +70,7 @@
             {
 
             }
-            else if (e.StatusCode == 401 || e.StatusCode == 404) // 404 pour test, sinon 401
+            else if (e.StatusCode == 401)
             {
                 await CheckLogin();
             }
@@ -88,8 +85,6 @@
         await JsRunTime.InvokeAsync<object>("alert", message);
 
     }
-
-
 
     public void Navigate()
     {

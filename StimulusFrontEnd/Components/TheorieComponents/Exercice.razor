@@ -28,7 +28,7 @@
 <!--Section bouton-->
 <div class="row">
     <div class="col-sm-1 col-md-1 col-lg-1">
-        <button @onclick=@Post class="boutonExerciceGauche">Run</button>
+        <button @onclick=@Post class="boutonExerciceGauche">Executer</button>
     </div>
     <div class="col-sm-5 col-md-5 col-lg-5">
         <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
@@ -51,6 +51,12 @@
     [Parameter]
     public Models.Exercice ExerciceModel { get; set; }
 
+    /// <summary>
+    /// FocusedTab : attribut pour afficher le textarea
+    /// HiddenTab : attribut pour cacher le textarea
+    /// Result : résultat du code python de l'étudiant
+    /// InitDone : Dit si oui ou non l'initialisation du component est fait
+    /// </summary>
     [Inject] 
     private IJSRuntime JS { get; set; }
     private string FocusedTab { get; set; } = "focused";
@@ -60,24 +66,15 @@
     private bool InitDone { get; set; } = false;
     private Client ApiClient = null;
 
-    @*
-        FocusedTab : attribut pour afficher le textarea
-        HiddenTab : attribut pour cacher le textarea
-        Result : résultat du code python de l'étudiant
-        InitDone : Dit si oui ou non l'initialisation du component est fait
 
-    *@
-
-
-    @*
-        Classe interne pour les fichiers
-        Id: id du fichier qui provient de la bd
-        Css : Permet d'afficher ou cacher le textarea du fichier
-        Nom : Nom du ficheir
-        Contenu : Code du fichier
-
-        Le fichier est créé et est caché
-    *@
+    /// <summary>
+    /// Classe interne pour les fichiers
+    /// Le fichier est caché par défaut
+    /// </summary>
+    /// <param name="Id"> id du fichier provenant de la BD </param>
+    /// <param name="Css"> Permet d'afficher ou cacher le textarea </param>
+    /// <param name="Nom"> Nom du fichier </param>
+    /// <param name="Contenu"> Code du fichier </param>
     public class Fichier
     {
         public int Id { get; set; }
@@ -102,7 +99,9 @@
 
     private List<Fichier> FichierCode { get; set; }
 
-    @*Initialise le component en allant chercher les fichiers d'exercice correspondant*@
+    /// <summary>
+    /// Initialise le composant en allant chercher les fichiers d'ecercice correspondants
+    /// </summary>
     protected override async void OnInitialized()
     {
         SetupClient();
@@ -134,15 +133,18 @@
                 FichierCode.Add(new Fichier(-(FichierCode.Count+1), fichier.Nom, fichier.Contenu));
             }
         }
-        
+
         FichierCode[0].Css = FocusedTab;
-        
+
 
         InitDone = true;
         await InvokeAsync(StateHasChanged);
     }
 
-    @*Permet de DELETE un fichier_sauvegarde*@
+    /// <summary>
+    /// Permet de DELETE un ficher_sauvegarde
+    /// </summary>
+    /// <param name="id"> id du fichier a supprimer </param>
     private async void Delete(int id)
     {
         if(id <= 0)
@@ -171,14 +173,19 @@
     }
 
 
-    @*Permet de faire des indentatios avec la touche tab a la place de faire 4 espaces manuellement*@
+    /// <summary>
+    /// Permet de faire des indentations avec la touche tab à la place de faire 4 espaces manuellement
+    /// </summary>
+    /// <param name="id"> id du fichier qui requiert des tabulations </param>
     private async void Tab(int id)
     {
         //Attention de pas en ajouter plusieurs
         await JS.InvokeVoidAsync("TabulationFunction.tab", id.ToString());
     }
 
-    @*Permet de poster le code de l'étudiant pour le faire interpreter et avoir un retour*@
+    /// <summary>
+    /// Envoit le code de l'étudiant à l'interpréteur
+    /// </summary>
     private async void Post()
     {
         List<object> fichiers = new List<object>();
@@ -202,6 +209,9 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Sauvegarde le fichier python de l'étudiant
+    /// </summary>
     private async void Save()
     {
         List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
@@ -247,7 +257,10 @@
         StateHasChanged();
     }
 
-    @*Fonction pour changer le focus du fichier a editer*@
+    /// <summary>
+    /// Change le focus du fichier à éditer
+    /// </summary>
+    /// <param name="id"> id du fichier qui récupère le focus </param>
     private void ChangeTab(int id)
     {
         foreach (Fichier fichier in FichierCode)
@@ -258,7 +271,9 @@
     }
 
 
-    @*Fonction pour setup le client pour faire un call a l'api*@
+    /// <summary>
+    /// Setup le client pour faire des appels API
+    /// </summary>
     private void SetupClient()
     {
         var handler = new HttpClientHandler();
@@ -272,7 +287,9 @@
         ApiClient = new Client(httpClient);
     }
 
-    @*Fonction pour ajouter un fichier *@
+    /// <summary>
+    /// Ajoute un fichier
+    /// </summary>
     private async void AddPage()
     {
         var nomFichier = await JS.InvokeAsync<string>("PromptFunction.promptFunc", null);

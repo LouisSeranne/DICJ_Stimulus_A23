@@ -104,6 +104,7 @@ namespace StimulusAPI.Controllers
             await AjoutBD(model, RolesUtilisateurs.Etudiant);
             return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
         }
+
         [HttpPost]
         [Route("register-prof")]
         public async Task<IActionResult> RegisterProf([FromBody] ModelEnregistrement model)
@@ -160,6 +161,7 @@ namespace StimulusAPI.Controllers
             await AjoutBD(model, RolesUtilisateurs.Administrateur);
             return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
         }
+
         private async Task<string> GenerateToken(UtilisateurApplication appUser)
         {
 
@@ -191,6 +193,13 @@ namespace StimulusAPI.Controllers
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        /// <summary>
+        /// Ajoute l'utilisateur dans les tables de données usuelles (autre que ASP.NET)
+        /// </summary>
+        /// <param name="user"> Informations de l'utilisateur à inscrire </param>
+        /// <param name="role"> Rôle attribué à l'utilisateur </param>
+        /// <returns> Code de status HTTP en fonction de la réussite de l'action </returns>
         private async Task<IActionResult> AjoutBD(ModelEnregistrement user, string role)
         {
             DbConfig dbConfig = new DbConfig();

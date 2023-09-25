@@ -15,8 +15,8 @@
 <body>
     <div class="main">
         <div class="content px-4">
-            <h1 class="text-danger">Error.</h1>
-            <h2 class="text-danger">An error occurred while processing your request.</h2>
+            <h1 class="text-danger">Erreur.</h1>
+            <h2 class="text-danger">Une erreur est apparu pendant le traitement de votre requête.</h2>
 
             @if (Model.ShowRequestId)
             {
@@ -25,15 +25,15 @@
                 </p>
             }
 
-            <h3>Development Mode</h3>
+            <h3>Mode développeur</h3>
             <p>
-                Swapping to the <strong>Development</strong> environment displays detailed information about the error that occurred.
+                Changer pour l'environnement <strong>Development</strong> affiche des informations détaillées sur l'erreur occurente.
             </p>
             <p>
-                <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-                It can result in displaying sensitive information from exceptions to end users.
-                For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-                and restarting the app.
+                <strong>L'environnement Development ne doit pas être activé pour une application déployée.</strong>
+                Cela pourrait afficher des informations sensibles sur les exceptions aux utilisateurs finaux.
+                Pour du débogage local, utilisez l'environnement <strong>Development</strong> en mettant la variable d'environnement <strong>ASPNETCORE_ENVIRONMENT</strong> sur <strong>Development</strong>
+                et redémarrer l'application.
             </p>
         </div>
     </div>
