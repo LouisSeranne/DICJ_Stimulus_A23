@@ -15,7 +15,12 @@ using Microsoft.AspNetCore.Authentication;
 using StimulusFrontEnd;
 using Microsoft.AspNetCore.Components.Authorization;
 using Serilog;
+<<<<<<< HEAD
 using StimulusFrontEnd.Services;
+=======
+using Microsoft.JSInterop;
+
+>>>>>>> origin/dev
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,15 +32,18 @@ builder.Services.AddServerSideBlazor();
 //Initialise les local et session storage
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredLocalStorage();
+<<<<<<< HEAD
 builder.Services
             .AddSingleton<MouseService>()
             .AddSingleton<IMouseService>(ff => ff.GetRequiredService<MouseService>());
 
 
+=======
+>>>>>>> origin/dev
 
 //configure le client utiliser par les autres services avec la validation custom
 
-builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri("https://p22e1api-dicjprojet.cegepjonquiere.ca/")).ConfigurePrimaryHttpMessageHandler(() =>
+builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri("https://p22e1api-dev-dicjprojet.cegepjonquiere.ca/")).ConfigurePrimaryHttpMessageHandler(() =>
 {
     return new HttpClientHandler()
     {
@@ -47,14 +55,11 @@ builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => 
     };
 });
 
-
-
-
 builder.Services.AddScoped<StimulusFrontEnd.Services.Authentification.IAuthenticationService, StimulusFrontEnd.Services.Authentification.AuthenticationService>();
 builder.Services.AddScoped<ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(p =>
             p.GetRequiredService<ApiAuthenticationStateProvider>());
-//Initialise la sérialisation de Json
+//Initialise la sÃ©rialisation de Json
 
 builder.Services.AddMvc().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
@@ -77,7 +82,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
 
 app.UseHttpsRedirection();
 

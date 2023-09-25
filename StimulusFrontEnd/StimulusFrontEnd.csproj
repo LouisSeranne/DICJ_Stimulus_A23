@@ -11,6 +11,7 @@
     <None Remove="Pages\Admin.razor.css" />
     <None Remove="Pages\Login.razor.css" />
     <None Remove="Pages\Prof.razor.css" />
+    <None Remove="Shared\LoginLayout - Copier.razor.css" />
     <None Remove="Shared\LoginLayout.razor.css" />
   </ItemGroup>
 
