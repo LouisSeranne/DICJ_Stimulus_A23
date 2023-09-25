@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
+using System;
 
 namespace StimulusFrontEnd.Services {
     public interface IMouseService {
@@ -14,6 +15,10 @@ namespace StimulusFrontEnd.Services {
 
         public void FireMove(object obj, MouseEventArgs evt) => OnMove?.Invoke(obj, evt);
         public void FireUp(object obj, MouseEventArgs evt) => OnUp?.Invoke(obj, evt);
-        public void FireLeave(object obj, MouseEventArgs evt) => OnLeave?.Invoke(obj, evt);
+        public void FireLeave(object obj, MouseEventArgs evt, Action SaveChange)
+        {
+            OnLeave?.Invoke(obj, evt);
+            SaveChange.Invoke();
+        }
     }
 }

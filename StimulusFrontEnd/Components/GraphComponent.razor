@@ -6,14 +6,15 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject IUpdateService updateService
 @inject MouseService mouseSrv;
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
 
 <div class="row mt-2">
     <div class="col">
-        <svg class="bg-light" width="100%" height="500" xmlns="http://www.w3.org/2000/svg"
+        <svg class="bg-transparent" width="100%" height="500" xmlns="http://www.w3.org/2000/svg"
         @onmousemove=@(e => mouseSrv.FireMove(this, e))
         @onmouseup=@(e => mouseSrv.FireUp(this, e))
-        @onmouseout=@(e => mouseSrv.FireLeave(this, e))>
+        @onmousewheel=@(e => mouseSrv.FireLeave(this, e, SaveChange))>
             @foreach (var item in Nodes)
             {
                 <Cercle Node="@item" Nodes="@Nodes"></Cercle>
@@ -27,7 +28,9 @@
     private Client client;
 
     public List<Noeud> Nodes { get; set; } = new();
-    protected override async void OnInitialized()
+    private List<Noeud> NodesTemp { get; set; } = new();
+
+    protected override void OnInitialized()
     {
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
@@ -39,12 +42,28 @@
         httpClient = new HttpClient(handler);
         httpClient.BaseAddress = new Uri("https://localhost:7266/");
         client = new Client(httpClient);
+        UpdateGrahe();
+    }
+    private async void UpdateGrahe()
+    {
+        if(sessionStorage != null)
+        {
+            await sessionStorage.ContainKeyAsync("idGraphe");
 
-
-        Nodes = client.NoeudsAllAsync().Result.ToList();
+            int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+            NodesTemp = client.NoeudsAllAsync().Result.ToList();
+            foreach (var item in NodesTemp)
+            {
+                if (item.GrapheId == idGraphe)
+                    Nodes.Add(item);
+            }
+        }
+    }
+    private void SaveChange()
+    {
         foreach (var item in Nodes)
         {
-            var t = item.NoeudParents;
+            client.NoeudsPUTAsync(item.Id, item);
         }
     }
 

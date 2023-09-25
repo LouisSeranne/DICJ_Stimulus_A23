@@ -6,7 +6,6 @@
 
 
 
-
 <AuthorizeView>
     <Authorized>
         @if (initDone)
@@ -110,7 +109,7 @@
             listCourGroupe.Add(new CoursGroupeHeader(etu.Groupes.Where(gr => gr.CoursId == cour.Id).FirstOrDefault(),cour));
         }
 
-       
+
         listCourGroupeOrdered.Add(listCourGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());
 
         foreach(CoursGroupeHeader cour in listCourGroupe)
@@ -121,7 +120,7 @@
             }
         }
 
-        
+
         initDone = true;
 
         await InvokeAsync(StateHasChanged);

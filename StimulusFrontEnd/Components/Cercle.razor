@@ -1,12 +1,8 @@
 ﻿@using StimulusFrontEnd.Services;
 @using static StimulusFrontEnd.Components.Connector;
-@foreach(var parent in Node.NoeudParents)
-{
-    <Connector X1=parent.PosX Y1=parent.PosY X2=Node.PosX Y2=Node.PosY />
-}
 @for (int i = 0; i < Nodes.Count; i++)
 {
-    @if(Node.LiaisonPrincipal == Nodes[i].LiaisonPrincipal)
+    @if (Node.Id == Nodes[i].LiaisonPrincipal && Nodes[i].LiaisonPrincipal != null)
     {
         <Connector X1=Node.PosX Y1=Node.PosY X2=Nodes[i].PosX Y2=Nodes[i].PosY />
     }
