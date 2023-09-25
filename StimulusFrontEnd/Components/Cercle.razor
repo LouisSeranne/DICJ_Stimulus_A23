@@ -34,7 +34,7 @@
 
     .cercle {
         z-index: 1;
-        fill: blue;
+        fill: @Couleur;
         stroke: #fff;
         stroke-width: 1;
     }
@@ -43,5 +43,6 @@
 
     [Parameter] public StimulusFrontEnd.Services.Base.Noeud Node { get; set; }
     [Parameter] public List<StimulusFrontEnd.Services.Base.Noeud> Nodes { get; set; }
+    [Parameter] public string Couleur { get; set; }
 
 }
