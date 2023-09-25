@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using StimulusAPI.Models;
-
 namespace StimulusAPI.Context
 {
     public partial class DevProjetStimulusContext : DbContext
@@ -17,6 +16,13 @@ namespace StimulusAPI.Context
         {
         }
 
+        public virtual DbSet<Administrateur> Administrateurs { get; set; } = null!;
+        public virtual DbSet<AspNetRole> AspNetRoles { get; set; } = null!;
+        public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; } = null!;
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; } = null!;
+        public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; } = null!;
+        public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; } = null!;
+        public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; } = null!;
         public virtual DbSet<Code> Codes { get; set; } = null!;
         public virtual DbSet<Cour> Cours { get; set; } = null!;
         public virtual DbSet<Etudiant> Etudiants { get; set; } = null!;
@@ -44,15 +50,130 @@ namespace StimulusAPI.Context
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=dicjwin01;Initial Catalog=DevProjetStimulus;User ID=P2022-Dev;Password=9jj96wqwoFYSj6Dxw26w;");
+                optionsBuilder.UseSqlServer("Data Source=dicjwin01; Initial Catalog=TestStimulusProjet; Integrated Security=True; TrustServerCertificate=True; Encrypt=False;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Administrateur>(entity =>
+            {
+                entity.ToTable("administrateur", "dbo");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.MotDePasse)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("mot_de_passe");
+
+                entity.Property(e => e.Nom)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("nom");
+
+                entity.Property(e => e.Prenom)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("prenom");
+            });
+
+            modelBuilder.Entity<AspNetRole>(entity =>
+            {
+                entity.ToTable("AspNetRoles", "dbo");
+
+                entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
+                    .IsUnique()
+                    .HasFilter("([NormalizedName] IS NOT NULL)");
+
+                entity.Property(e => e.Name).HasMaxLength(256);
+
+                entity.Property(e => e.NormalizedName).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<AspNetRoleClaim>(entity =>
+            {
+                entity.ToTable("AspNetRoleClaims", "dbo");
+
+                entity.HasIndex(e => e.RoleId, "IX_AspNetRoleClaims_RoleId");
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.AspNetRoleClaims)
+                    .HasForeignKey(d => d.RoleId);
+            });
+
+            modelBuilder.Entity<AspNetUser>(entity =>
+            {
+                entity.ToTable("AspNetUsers", "dbo");
+
+                entity.HasIndex(e => e.NormalizedEmail, "EmailIndex");
+
+                entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
+                    .IsUnique()
+                    .HasFilter("([NormalizedUserName] IS NOT NULL)");
+
+                entity.Property(e => e.Email).HasMaxLength(256);
+
+                entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
+
+                entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+
+                entity.Property(e => e.UserName).HasMaxLength(256);
+
+                entity.HasMany(d => d.Roles)
+                    .WithMany(p => p.Users)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "AspNetUserRole",
+                        l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
+                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
+                        j =>
+                        {
+                            j.HasKey("UserId", "RoleId");
+
+                            j.ToTable("AspNetUserRoles", "dbo");
+
+                            j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
+                        });
+            });
+
+            modelBuilder.Entity<AspNetUserClaim>(entity =>
+            {
+                entity.ToTable("AspNetUserClaims", "dbo");
+
+                entity.HasIndex(e => e.UserId, "IX_AspNetUserClaims_UserId");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.AspNetUserClaims)
+                    .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<AspNetUserLogin>(entity =>
+            {
+                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+
+                entity.ToTable("AspNetUserLogins", "dbo");
+
+                entity.HasIndex(e => e.UserId, "IX_AspNetUserLogins_UserId");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.AspNetUserLogins)
+                    .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<AspNetUserToken>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+
+                entity.ToTable("AspNetUserTokens", "dbo");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.AspNetUserTokens)
+                    .HasForeignKey(d => d.UserId);
+            });
+
             modelBuilder.Entity<Code>(entity =>
             {
-                entity.ToTable("code");
+                entity.ToTable("code", "dbo");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -65,7 +186,7 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<Cour>(entity =>
             {
-                entity.ToTable("cours");
+                entity.ToTable("cours", "dbo");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -83,7 +204,7 @@ namespace StimulusAPI.Context
                 entity.HasKey(e => e.CodeDa)
                     .HasName("PK__etudiant__9A4862BDCE8C19B2");
 
-                entity.ToTable("etudiant");
+                entity.ToTable("etudiant", "dbo");
 
                 entity.Property(e => e.CodeDa)
                     .HasMaxLength(9)
@@ -106,7 +227,7 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<Exercice>(entity =>
             {
-                entity.ToTable("exercice");
+                entity.ToTable("exercice", "dbo");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -115,7 +236,11 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<FichierSauvegarde>(entity =>
             {
-                entity.ToTable("fichier_sauvegarde");
+                entity.ToTable("fichier_sauvegarde", "dbo");
+
+                entity.HasIndex(e => e.ExerciceId, "IX_fichier_sauvegarde_exercice_id");
+
+                entity.HasIndex(e => new { e.ProgressionPageId, e.FichierEtudiantDa }, "IX_fichier_sauvegarde_progression_page_id_fichier_etudiant_da");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -155,7 +280,9 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<FichierSource>(entity =>
             {
-                entity.ToTable("fichier_source");
+                entity.ToTable("fichier_source", "dbo");
+
+                entity.HasIndex(e => e.ExerciceId, "IX_fichier_source_exercice_id");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -173,7 +300,11 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<Graphe>(entity =>
             {
-                entity.ToTable("graphe");
+                entity.ToTable("graphe", "dbo");
+
+                entity.HasIndex(e => e.GroupeId, "IX_graphe_groupe_id");
+
+                entity.HasIndex(e => e.StatusCode, "IX_graphe_status_code");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -208,7 +339,7 @@ namespace StimulusAPI.Context
             {
                 entity.HasNoKey();
 
-                entity.ToView("graphe_view");
+                entity.ToView("graphe_view", "dbo");
 
                 entity.Property(e => e.Code)
                     .HasMaxLength(10)
@@ -229,7 +360,11 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<Groupe>(entity =>
             {
-                entity.ToTable("groupe");
+                entity.ToTable("groupe", "dbo");
+
+                entity.HasIndex(e => e.CoursId, "IX_groupe_cours_id");
+
+                entity.HasIndex(e => e.ProfesseurId, "IX_groupe_professeur_id");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -261,7 +396,9 @@ namespace StimulusAPI.Context
                         {
                             j.HasKey("GroupeId", "EtudiantDa");
 
-                            j.ToTable("groupe_etudiant");
+                            j.ToTable("groupe_etudiant", "dbo");
+
+                            j.HasIndex(new[] { "EtudiantDa" }, "IX_groupe_etudiant_etudiant_da");
 
                             j.IndexerProperty<int>("GroupeId").HasColumnName("groupe_id");
 
@@ -273,7 +410,7 @@ namespace StimulusAPI.Context
             {
                 entity.HasNoKey();
 
-                entity.ToView("hover_view");
+                entity.ToView("hover_view", "dbo");
 
                 entity.Property(e => e.Code)
                     .HasMaxLength(10)
@@ -300,7 +437,7 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<Image>(entity =>
             {
-                entity.ToTable("image");
+                entity.ToTable("image", "dbo");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -315,7 +452,9 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<LienUtile>(entity =>
             {
-                entity.ToTable("lien_utile");
+                entity.ToTable("lien_utile", "dbo");
+
+                entity.HasIndex(e => e.GrapheId, "IX_lien_utile_graphe_id");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -337,7 +476,11 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<Noeud>(entity =>
             {
-                entity.ToTable("noeud");
+                entity.ToTable("noeud", "dbo");
+
+                entity.HasIndex(e => e.GrapheId, "IX_noeud_graphe_id");
+
+                entity.HasIndex(e => e.LiaisonPrincipal, "IX_noeud_liaison_principal");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -363,7 +506,13 @@ namespace StimulusAPI.Context
 
                 entity.Property(e => e.Obligatoire).HasColumnName("obligatoire");
 
+                entity.Property(e => e.PosX).HasColumnType("decimal(10, 5)");
+
+                entity.Property(e => e.PosY).HasColumnType("decimal(10, 5)");
+
                 entity.Property(e => e.Pts).HasColumnName("pts");
+
+                entity.Property(e => e.Rayon).HasColumnType("decimal(10, 5)");
 
                 entity.Property(e => e.Status).HasColumnName("status");
 
@@ -387,7 +536,9 @@ namespace StimulusAPI.Context
                         {
                             j.HasKey("NoeudParent", "NoeudEnfant");
 
-                            j.ToTable("liaison_secondaire");
+                            j.ToTable("liaison_secondaire", "dbo");
+
+                            j.HasIndex(new[] { "NoeudEnfant" }, "IX_liaison_secondaire_noeud_enfant");
 
                             j.IndexerProperty<int>("NoeudParent").HasColumnName("noeud_parent");
 
@@ -404,7 +555,9 @@ namespace StimulusAPI.Context
                         {
                             j.HasKey("NoeudParent", "NoeudEnfant");
 
-                            j.ToTable("liaison_secondaire");
+                            j.ToTable("liaison_secondaire", "dbo");
+
+                            j.HasIndex(new[] { "NoeudEnfant" }, "IX_liaison_secondaire_noeud_enfant");
 
                             j.IndexerProperty<int>("NoeudParent").HasColumnName("noeud_parent");
 
@@ -414,11 +567,17 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<Page>(entity =>
             {
-                entity.ToTable("page");
+                entity.ToTable("page", "dbo");
+
+                entity.HasIndex(e => e.NoeudId, "IX_page_noeud_id");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.NoeudId).HasColumnName("noeud_id");
+
+                entity.Property(e => e.Nom)
+                    .HasMaxLength(50)
+                    .HasColumnName("nom");
 
                 entity.Property(e => e.Ordre).HasColumnName("ordre");
 
@@ -432,7 +591,9 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<PageComposant>(entity =>
             {
-                entity.ToTable("page_composant");
+                entity.ToTable("page_composant", "dbo");
+
+                entity.HasIndex(e => e.PageId, "IX_page_composant_page_id");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -454,7 +615,7 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<Professeur>(entity =>
             {
-                entity.ToTable("professeur");
+                entity.ToTable("professeur", "dbo");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -475,7 +636,9 @@ namespace StimulusAPI.Context
             {
                 entity.HasKey(e => new { e.PageId, e.EtudiantDa });
 
-                entity.ToTable("progression");
+                entity.ToTable("progression", "dbo");
+
+                entity.HasIndex(e => e.EtudiantDa, "IX_progression_etudiant_da");
 
                 entity.Property(e => e.PageId).HasColumnName("page_id");
 
@@ -502,7 +665,7 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<Reference>(entity =>
             {
-                entity.ToTable("reference");
+                entity.ToTable("reference", "dbo");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -516,7 +679,7 @@ namespace StimulusAPI.Context
                 entity.HasKey(e => e.Code)
                     .HasName("PK__status_g__357D4CF8B4C3344F");
 
-                entity.ToTable("status_graphe");
+                entity.ToTable("status_graphe", "dbo");
 
                 entity.Property(e => e.Code)
                     .HasMaxLength(3)
@@ -531,7 +694,7 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<TexteFormater>(entity =>
             {
-                entity.ToTable("texte_formater");
+                entity.ToTable("texte_formater", "dbo");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -540,7 +703,7 @@ namespace StimulusAPI.Context
 
             modelBuilder.Entity<Video>(entity =>
             {
-                entity.ToTable("video");
+                entity.ToTable("video", "dbo");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 

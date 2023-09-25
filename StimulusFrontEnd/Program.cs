@@ -27,10 +27,10 @@ builder.Services.AddServerSideBlazor();
 //Initialise les local et session storage
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredLocalStorage();
-
 builder.Services
             .AddSingleton<MouseService>()
             .AddSingleton<IMouseService>(ff => ff.GetRequiredService<MouseService>());
+
 
 
 //configure le client utiliser par les autres services avec la validation custom

@@ -3,16 +3,22 @@
 @foreach(var parent in Node.NoeudParents)
 {
     <Connector X1=parent.PosX Y1=parent.PosY X2=Node.PosX Y2=Node.PosY />
-
+}
+@for (int i = 0; i < Nodes.Count; i++)
+{
+    @if(Node.LiaisonPrincipal == Nodes[i].LiaisonPrincipal)
+    {
+        <Connector X1=Node.PosX Y1=Node.PosY X2=Nodes[i].PosX Y2=Nodes[i].PosY />
+    }
 }
 
     <Draggable @bind-X=Node.PosX @bind-Y=Node.PosY>
         <circle r="@Node.Rayon" class="cercle" />
-@*         <NavLink href="@Node.Link"> *@
+        <NavLink href="/">
             <text text-anchor="middle" alignment-baseline="central">@Node.Code</text>
-@*         </NavLink> *@
-
-</Draggable>
+         </NavLink> 
+                                                  
+    </Draggable>
 
 <style>
     a{
@@ -40,6 +46,7 @@
     }
 </style>
 @code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     [Parameter] public StimulusFrontEnd.Services.Base.Noeud Node { get; set; }
     [Parameter] public List<StimulusFrontEnd.Services.Base.Noeud> Nodes { get; set; }
