@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication;
 using StimulusFrontEnd;
 using Microsoft.AspNetCore.Components.Authorization;
 using Serilog;
+using Microsoft.JSInterop;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,8 +30,8 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredLocalStorage();
 
 //configure le client utiliser par les autres services avec la validation custom
-
 builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri(builder.Configuration["API:Use"])).ConfigurePrimaryHttpMessageHandler(() =>
+
 {
     return new HttpClientHandler()
     {
@@ -41,12 +43,11 @@ builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => 
     };
 });
 
-
 builder.Services.AddScoped<StimulusFrontEnd.Services.Authentification.IAuthenticationService, StimulusFrontEnd.Services.Authentification.AuthenticationService>();
 builder.Services.AddScoped<ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(p =>
             p.GetRequiredService<ApiAuthenticationStateProvider>());
-//Initialise la sérialisation de Json
+//Initialise la sÃ©rialisation de Json
 
 builder.Services.AddMvc().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 

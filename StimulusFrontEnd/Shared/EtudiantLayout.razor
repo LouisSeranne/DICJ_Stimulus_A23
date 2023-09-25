@@ -63,6 +63,7 @@
             };
         httpClient = new HttpClient(handler);
         httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
+
         client = new Client(httpClient);
 
 

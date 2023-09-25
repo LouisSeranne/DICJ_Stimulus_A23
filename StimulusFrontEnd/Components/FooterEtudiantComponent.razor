@@ -80,6 +80,7 @@
 
         //Set une nouvelle Uri pour lien le Front-End a la Bd
         HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri(builder.Configuration["API:Use"]) };
+
         client = new Client(httpClient);
 
         //Requete utilisée pour aller chercher les données des liens en fonction de l'id du graphe
