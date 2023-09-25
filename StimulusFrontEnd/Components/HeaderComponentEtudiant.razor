@@ -78,7 +78,7 @@
             };
 
         //Set une nouvelle Uri pour lien le Front-End a la Bd
-        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api-dicjprojet.cegepjonquiere.ca/") };
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api-dev-dicjprojet.cegepjonquiere.ca/") };
         client = new Client(httpClient);
 
         //Requete utilisée pour aller chercher les données du cours en fonction de l'id du graphe
