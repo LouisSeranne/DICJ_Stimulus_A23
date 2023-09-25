@@ -15,7 +15,7 @@
     couleurTexteConsulter = "#0000FF";
     couleurTexteCompleter = "#0000FF";
 
-        <div id="divGraphiqueComponent">
+    <div id="divGraphiqueComponent">
 
         <div id="divGrapheEntete" class="zoom">
             <p class="grapheEnteteElement" style="color:white;">zoom : @(Math.Round(scaleZoom * 100))%</p>
@@ -27,7 +27,7 @@
         </div>
         
         <svg id="svgGraphiqueComponent" style="user-select:none" viewBox=@(0 + " " + 0 + " " + sizeSvgDictionary["width"] + " " + sizeSvgDictionary["height"] + "") @onmousewheel="OnWheelMove" @onwheel="OnWheelMove" @onmousedown="OnMouseDown" @onmousemove="OnMouseMove" @onmouseup="OnMouseUp">
-            <svg viewBox=@(viewboxDictionary["x"] + " " + viewboxDictionary["y"] + " " + viewboxDictionary["width"] + " " + viewboxDictionary["height"] + "") >
+            <svg viewBox=@(viewboxDictionary["x"] + " " + viewboxDictionary["y"] + " " + viewboxDictionary["width"] + " " + viewboxDictionary["height"] + "")>
                 <!--
                 fonction : affiche le tableau 2d qui contients les noeuds.
                     la premiere boucle calcul la hauteur a laquelle les noeuds vont etre afficher pour chaque ligne(donc leur position en y)
@@ -60,8 +60,7 @@
                     les balises <use> sont utiliser pour faire afficher les noeuds parent pardessus les lignes car sinon, les lignes etant dessiner apres, elles étaient afficher pardessus
                     la blaise svg affichant les noeuds est a l'interieur d'une autre balise svg, cela permet d'avoir plusieur couche de svg avec differente viewbox. utiliser pour toujours avoir l'entete au meme endroit
                     la formule mathematique qui calcul widthRepartition pourrais etre ameliorer
-            -->
-    
+            -->   
                 @{                              
                     hauteurEtage = (int)Math.Round((double)sizeSvgDictionary["height"] / structureGraphe.GetLength(0));
                     paddingTop = (int)Math.Round((double)hauteurEtage / 2);
@@ -76,14 +75,11 @@
                     couleurAffichageCercle = "";
                     couleurAffichageTexte = "";            
                 }
-
                 <circle visibility="@displayHover" cx="@xBordureHover" cy="@yBordureHover" r="@rayonCercleSvg" fill-opacity="0.0" fill="PatWasHere" stroke="#6e9cc4" stroke-width="10px" ></circle>
 
                 @for(int i = 0; i < structureGraphe.GetLength(0); i++)
                 {
                     positionY = (int)(hauteurEtage * i + paddingTop);
-            
-            
 
                     if(i > 0 && structureGraphe[i].Length >= 1 && structureGraphe[i].Length < 5)
                     {
@@ -108,15 +104,13 @@
                     else
                     {
                         widthRepartition = sizeSvgDictionary["width"];
-                    }
-                    
+                    }                   
 
                     marginLeft = (int)Math.Round((double)(sizeSvgDictionary["width"] - widthRepartition) / 2);
                     paddingLeft = (int)Math.Round((double)(widthRepartition / structureGraphe[i].Length) / 2);
 
                     largeurNoeud = (int)Math.Round((double)widthRepartition / structureGraphe[i].Length);
             
-
                     for(int j = 0; j < structureGraphe[i].Length; j++)
                     {
                         positionX = marginLeft + (largeurNoeud * j) + paddingLeft;
@@ -154,7 +148,7 @@
                         <g id=@("group" + structureGraphe[i][j].Id) >
                             <circle id=@("noeud" + structureGraphe[i][j].Id) cx="@positionX" cy="@positionY" r="@rayonCercleSvg" fill="@couleurAffichageCercle" ></circle>
                             <text id=@("text" + structureGraphe[i][j].Id) x=@positionX y=@positionY text-anchor="middle" dominant-baseline="middle" fill="@couleurAffichageTexte" font-size="@(rayonCercleSvg / 2)" textLength="@(Math.Round(rayonCercleSvg * 1.8))" lengthAdjust="spacingAndGlyphs" >@(structureGraphe[i][j].Code)</text>
-                            <circle id=@("noeudInv" + structureGraphe[i][j].Id) cx="@positionX" cy="@positionY" r="@rayonCercleSvg" fill-opacity="0.0" fill="PatWasHereTo" @onclick="() => OnClick(structureGraphe[iTemporaire][jTemporaire].Id)" @onmouseover="() => OnMouseOverNoeuds(structureGraphe[iTemporaire][jTemporaire].Id)" @onmouseout="() => OnMouseOut()" ></circle>
+                            <circle id=@("noeudInv" + structureGraphe[i][j].Id) cx="@positionX" cy="@positionY" r="@rayonCercleSvg" fill-opacity="0.0" fill="PatWasHereTo" @onclick="() => OnClick(structureGraphe[iTemporaire][jTemporaire].Id)" @onmouseover="() => OnMouseOverNoeuds(structureGraphe[iTemporaire][jTemporaire].Id)" @onmouseout="() => OnMouseOut()"></circle>
                         </g>
 
                         if(!noeudsCoordonneDictionnary.ContainsKey(structureGraphe[i][j].Id))
@@ -167,10 +161,9 @@
                             noeudsCoordonneDictionnary[structureGraphe[i][j].Id].y = positionY;
                         }
                     }
-
                 }
                 <rect visibility="@displayHover" x="@positionXRectHover" y="@positionYRectHover" width="@widthRectHover" height="@heightRectHover" fill="grey"></rect>
-                <polygon visibility="@displayHover" points="@("" + pointAXPolyHover + "," + pointAYPolyHover + " " + pointBXPolyHover + "," + pointBYPolyHover + " " + pointCXPolyHover + "," + pointCYPolyHover)" fill="grey" ></polygon>
+                <polygon visibility="@displayHover" points="@("" + pointAXPolyHover + "," + pointAYPolyHover + " " + pointBXPolyHover + "," + pointBYPolyHover + " " + pointCXPolyHover + "," + pointCYPolyHover)" fill="grey"></polygon>
         
                 <foreignObject visibility="@displayHover" x="@positionXRectHover" y="@positionYRectHover" width="@(Math.Round(widthRectHover / 2.1))" height="@(heightRectHover / 3)"><p style="color:white; font-size:@(viewboxDictionary["width"] / 100)px;">nom: @nomHover</p></foreignObject>
                 <foreignObject visibility="@displayHover" x="@(positionXRectHover + (widthRectHover / 2))" y="@positionYRectHover" width="@(widthRectHover / 2)" height="@(heightRectHover / 3)"><p style="color:white; font-size:@(viewboxDictionary["width"] / 100)px;">pts: @ptsHover</p></foreignObject>
@@ -218,9 +211,6 @@
     </div>
 }
 
-
-
-
 @code {
     //methode pour le debugage : JSRuntim.InvokeVoidAsync("console.log",x);
     
@@ -259,16 +249,12 @@
     private int[] noeudsParEtages = new int[1];
     private int[] noeudsParEtagesTemporaire = new int[1];
 
-
-
     private BoundingClientRect? element = null;
 
     //données des boucle d'affichages
 
     private int hauteurEtage, paddingTop, positionY, positionParentY, widthRepartition, widthParentRepartition, paddingLeft, marginLeft, paddingLeftParent, marginLeftParent, largeurNoeud, largeurNoeudParent, positionX, positionParentX, indexNoeudParent;
     private string couleurAffichageCercle,couleurAffichageTexte,couleurBloquer,couleurNonConsulter,couleurConsulter,couleurCompleter,couleurTexteBloquer,couleurTexteNonConsulter,couleurTexteConsulter,couleurTexteCompleter;
-
-
 
     private GrapheView[] noeudsTest;
 
@@ -313,9 +299,7 @@
         initFinis = false;
         debug = false;
        
-
         updateService.RefreshRequested += this.RefreshState;
-
 
         viewboxDictionary.Add("x", 0);
         viewboxDictionary.Add("y", 0);
@@ -337,8 +321,6 @@
         scaleZoom = 1;
         topNoeudRecommander = new List<GrapheView>();
 
-
-
         displayHover = "hidden";
         liaisonSecHover = new string[0];
         xBordureHover = 0;
@@ -355,13 +337,10 @@
             };
         httpClient = new HttpClient(handler);
 
-
         httpClient.BaseAddress = new Uri("https://p22e1api-dicjprojet.cegepjonquiere.ca/");
         client = new Client(httpClient);
 
-
         UpdateGraphe();
-
     }
 
     <!--
@@ -884,8 +863,6 @@
         yBordureHover = noeudsCoordonneDictionnary[id].y;
 
         displayHover = "visible";
-
-
     }
    
     /*

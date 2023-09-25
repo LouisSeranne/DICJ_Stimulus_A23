@@ -8,30 +8,30 @@
     <Authorized>
         @if (initDone)
         {         
-        <div class="containerHeader">
-            <div class="row">
+            <div class="containerHeader">
+                <div class="row">
                     <div class="col-sm-4 col-md-4 col-lg-4">
-                        <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI" />
-                </div>
-                <div class="col-sm-3 col-md-3 col-lg-3">
+                        <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
                         <p class="pHeader"> Description: @cours.Description</p>
                         <p class="pHeader">Code: @cours.CodeCours</p> 
-                </div>                  
-                <div class ="col-sm-1 col-md-1 col-lg-1">
-                    <select @onchange="ChangeCours" name="cours" value=@listCourGroupeOrdered[0].IdGroupe>
-                       @for (int i = 0; i < listCourGroupeOrdered.Count; i++)
-                       {
-                           <option value="@listCourGroupeOrdered[i].IdGroupe">@listCourGroupeOrdered[i].Nom</option>
-                       }
-                       </select>
-                </div>
-                <div class="col-sm-4 col-md-4 col-lg-4 divDroiteHeader">
+                    </div>                  
+                    <div class ="col-sm-1 col-md-1 col-lg-1">
+                        <select @onchange="ChangeCours" name="cours" value=@listCourGroupeOrdered[0].IdGroupe>
+                           @for (int i = 0; i < listCourGroupeOrdered.Count; i++)
+                           {
+                               <option value="@listCourGroupeOrdered[i].IdGroupe">@listCourGroupeOrdered[i].Nom</option>
+                           }
+                        </select>
+                    </div>
+                    <div class="col-sm-4 col-md-4 col-lg-4 divDroiteHeader">
                         <a href="/index"><img src="/image/Graph.jpg" alt="Logo Graph" class="logoHeader"/></a>
-                        <a href="/logout"><img src="/image/logout.png" alt="Logo Graph" class="logoHeader" /></a>
-                        <img src="/image/Avatar.jpg" alt="Logo Avatar" class="logoHeader" />
+                        <a href="/logout"><img src="/image/logout.png" alt="Logo Graph" class="logoHeader"/></a>
+                        <img src="/image/Avatar.jpg" alt="Logo Avatar" class="logoHeader"/>
+                    </div>
                 </div>
             </div>
-        </div>
         }
     </Authorized>
     <NotAuthorized>
@@ -106,7 +106,6 @@
                 listCourGroupeOrdered.Add(cour);
             }
         }
-
         
         initDone = true;
 
@@ -132,9 +131,7 @@
         updateService.CallRequestRefresh();
         NavigationManager.NavigateTo("/index");
     }
-
-     
-
+   
     private class CoursGroupeHeader
     {
         public CoursGroupeHeader(GroupeVM groupe, Cour cour)
