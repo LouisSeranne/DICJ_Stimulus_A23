@@ -30,8 +30,8 @@
                         <p class="pFooter">Tout droits réservés</p>
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-3">
-                        <img class="LogoFooter" src="/RessourceVisuel/Logo Cegep.jpg" />
-                        <img class="LogoFooter" src="/RessourceVisuel/LogoDICJ.jpg" />
+                        <img class="LogoFooter" src="/RessourceVisuel/Logo Cegep.jpg"/>
+                        <img class="LogoFooter" src="/RessourceVisuel/LogoDICJ.jpg"/>
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-3">
                         <!--Boucle sur la liste des liens pour afficher tous les liens-->
@@ -47,21 +47,16 @@
                             <p>Aucun lien utile</p>
                         }
                     </div>
-                </div>                                   
-                
+                </div>                                                 
             </div>
-        }
-        
+        }   
     </Authorized>
     <NotAuthorized>
 
     </NotAuthorized>
 </AuthorizeView>
 
-
-
 @code {
-
     ICollection<LienUtileVM> listLiensUtiles;
     private Client client;
     private int idGraphe;
@@ -71,7 +66,6 @@
     {
         initDone = false;
         updateService.RefreshRequested += this.RefreshState;
-
 
         //Handler : Permet de contourner les certifications sinon le projet crash
         var handler = new HttpClientHandler();
@@ -104,12 +98,12 @@
             StateHasChanged();
         }
         catch(Exception e)
-        {}
-       
+        {}      
     }
 
     public async void RefreshState()
     {
         UpdateLien();
     }
+
 }
