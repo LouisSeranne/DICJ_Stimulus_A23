@@ -231,7 +231,7 @@ main {
     text-align: center;
     align-items: center;
     margin-top: auto;
-    padding-bottom:1vh;
+    padding-bottom: 1vh;
     height: auto;
     order: 3;
 }
@@ -317,8 +317,6 @@ main {
     border-color: var(--principale-couleur);
 }
 
-
-
 /*Modifs pour les boubidibap components*/
 .component{
     margin-bottom: 2%;
@@ -333,7 +331,6 @@ main {
 .componentReference {
     margin-bottom:0.4%;
 }
-
 
 /*Css Page Nod*/
 .containerNoeud {

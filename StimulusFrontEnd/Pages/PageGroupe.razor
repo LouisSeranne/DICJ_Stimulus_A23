@@ -55,11 +55,7 @@
         <RedirectToLogin/>
     </NotAuthorized>
 </AuthorizeView>
-            
-        
-  
-}
-
+                 
 @code {
     private List<Cour> listCour { get; set; } = new List<Cour>();
     private List<Professeur> listProfesseur { get; set; } = new List<Professeur>();
@@ -68,7 +64,6 @@
     private Client client;
     public Models.Groupe groupeModel= new();
     private string message = "";
-
     
     protected override void OnInitialized()
     {
@@ -104,13 +99,10 @@
         await Task.Delay(2000);
         message = "";
         await InvokeAsync(StateHasChanged);
-
-
     }
 
     private void ResetPage()
     {
         NavManager.NavigateTo("/groupe", true);
     }
-
 }
