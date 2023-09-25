@@ -86,7 +86,7 @@ namespace StimulusAPI.Controllers
         // POST: api/Groupes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(201)]
         public async Task<ActionResult<Groupe>> PostGroupe(Groupe groupe)
         {
             _context.Groupes.Add(groupe);
