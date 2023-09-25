@@ -181,7 +181,10 @@ main {
 
 .logoHeader {
     text-align: center;
-    width:15%;
+    width: 15%;
+    float: right;
+    width: 50px; /* Ajustez la taille de l'image selon vos besoins */
+    height: 50px; /* Ajustez la taille de l'image selon vos besoins */
 }
 
 .pHeader {
@@ -228,7 +231,7 @@ main {
     text-align: center;
     align-items: center;
     margin-top: auto;
-    padding-bottom:1vh;
+    padding-bottom: 1vh;
     height: auto;
     order: 3;
 }
@@ -314,8 +317,6 @@ main {
     border-color: var(--principale-couleur);
 }
 
-
-
 /*Modifs pour les boubidibap components*/
 .component{
     margin-bottom: 2%;
@@ -330,7 +331,6 @@ main {
 .componentReference {
     margin-bottom:0.4%;
 }
-
 
 /*Css Page Nod*/
 .containerNoeud {
@@ -377,3 +377,9 @@ main {
     display: flex;
     align-items: center;
 }
+
+.zoom {
+    margin-left: 8px;
+}
+
+
