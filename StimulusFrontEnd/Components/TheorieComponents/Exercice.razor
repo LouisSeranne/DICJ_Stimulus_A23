@@ -134,9 +134,9 @@
                 FichierCode.Add(new Fichier(-(FichierCode.Count+1), fichier.Nom, fichier.Contenu));
             }
         }
-
-        FichierCode[0].Css = FocusedTab;
-
+        
+        //FichierCode[0].Css = FocusedTab;
+        
 
         InitDone = true;
         await InvokeAsync(StateHasChanged);
@@ -157,10 +157,11 @@
             Console.WriteLine("Trying to delete fichier_sauvegarde #" + id);
             try
             {
-                await ApiClient.FichierSauvegardesDELETEAsync(id);
-
                 var deletedTab = FichierCode.Find(tab => tab.Id == id);
+                deletedTab.Css = FocusedTab;
                 FichierCode.Remove(deletedTab);
+                
+                await ApiClient.FichierSauvegardesDELETEAsync(id);
             }
             catch (Exception e)
             {
@@ -169,7 +170,6 @@
             }
             Result = "Fichier supprimé";
         }
-
         StateHasChanged();
     }
 
@@ -197,6 +197,7 @@
         string jsonString = "";
 
         Result = "Interprétation du code...";
+        Console.WriteLine("Running python code...");
         StateHasChanged();
 
         foreach(Fichier f in FichierCode)
@@ -251,13 +252,15 @@
                     Css = HiddenTab
                 });
             }
-            FichierCode[0].Css = FocusedTab;
+            //FichierCode[0].Css = FocusedTab;
         }
         catch(Exception e)
         {
             Result = "Échec de l'enregistrement des fichiers";
         }
         Result = "Fichiers enregistrés";
+
+        Console.WriteLine("File saved");
 
         StateHasChanged();
     }
@@ -299,18 +302,25 @@
     {
         var nomFichier = await JS.InvokeAsync<string>("PromptFunction.promptFunc", null);
 
-        foreach(Fichier f in FichierCode)
+        if(nomFichier == "")
         {
-            f.Css = HiddenTab;
+            Result = "Nom de fichier invalide";
         }
-
-        FichierCode.Add(new Fichier()
+        else
         {
+            foreach (Fichier f in FichierCode)
+            {
+                f.Css = HiddenTab;
+            }
+
+            FichierCode.Add(new Fichier()
+            {
                 Contenu = "",
                 Nom = nomFichier,
-                Id = -(FichierCode.Count+1),
+                Id = -(FichierCode.Count + 1),
                 Css = FocusedTab
-        });
+            });
+        }
 
         StateHasChanged();
     }
