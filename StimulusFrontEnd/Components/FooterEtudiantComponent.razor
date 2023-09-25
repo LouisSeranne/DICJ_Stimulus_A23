@@ -7,59 +7,56 @@
         {
             <div class="containerFooter">
                 <div class="row">
-                    <div class="col-sm-4 col-md-4 col-lg-4">
+                    <div class="col-sm-3 col-md-3 col-lg-3">
                         <h4 class="h4Footer">CEPI</h4>
                     </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4">
-                        <h4 class="h4Footer">À propos</h4>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <h4 class="h4Footer">2023 copyright</h4>
                     </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4">
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <h4 class="h4Footer">Nos partenaires</h4>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
                         <h4 class="h4Footer">Liens Utiles</h4>
                     </div>
-                    </div>
+                </div>
                 <div class="row">
-                    <div class="col-sm-4 col-md-4 col-lg-4">
-                        <p  class="pFooter"><a class="liensUtiles" href="https://www.youtube.com/watch?v=oHg5SJYRHA0" target="_blank">Nous contacter</a></p>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <p class="pFooter"><a class="liensUtiles" href="https://www.youtube.com/watch?v=oHg5SJYRHA0" target="_blank">Nous contacter</a></p>
+                        <p class="pFooter">Contact: +1(418)541-2205</p>
+                        <p class="pFooter">E-Mail: aidecepi@gmail.com</p>
                     </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4">
-                        <p class="pFooter">Conditions générales</p>
-                        <p class="pFooter">Mentions légales</p>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <p class="pFooter">Tout droits réservés</p>
                     </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4">
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <img class="LogoFooter" src="/RessourceVisuel/Logo Cegep.jpg"/>
+                        <img class="LogoFooter" src="/RessourceVisuel/LogoDICJ.jpg"/>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
                         <!--Boucle sur la liste des liens pour afficher tous les liens-->
-
-                        @if(listLiensUtiles.Count() != 0)
+                        @if (listLiensUtiles.Count() != 0)
                         {
-                            @foreach(LienUtileVM link in listLiensUtiles)
+                            @foreach (LienUtileVM link in listLiensUtiles)
                             {
-                                <p  class="pFooter"><a class="liensUtiles" href="@link.Url" target="_blank">@link.NomUrl</a></p>
+                                <p class="pFooter"><a class="liensUtiles" href="@link.Url" target="_blank">@link.NomUrl</a></p>
                             }
                         }
-                        else{
+                        else
+                        {
                             <p>Aucun lien utile</p>
                         }
-
                     </div>
-                </div>
-            
-                @*<div class="row">
-                    <div class="col-sm-4 col-md-4 col-lg-4">
-                       <img src="/image/cepi_logo_pas_officiel.png" alt="Logo CEPI" class="logoCEPIFooter"/>
-                    </div>
-                </div>*@
+                </div>                                                 
             </div>
-        }
-        
+        }   
     </Authorized>
     <NotAuthorized>
 
     </NotAuthorized>
 </AuthorizeView>
 
-
-
 @code {
-
     ICollection<LienUtileVM> listLiensUtiles;
     private Client client;
     private int idGraphe;
@@ -69,7 +66,6 @@
     {
         initDone = false;
         updateService.RefreshRequested += this.RefreshState;
-
 
         //Handler : Permet de contourner les certifications sinon le projet crash
         var handler = new HttpClientHandler();
@@ -81,7 +77,7 @@
             };
 
         //Set une nouvelle Uri pour lien le Front-End a la Bd
-        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api-dicjprojet.cegepjonquiere.ca/") };
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api-dev-dicjprojet.cegepjonquiere.ca/") };
         client = new Client(httpClient);
 
         //Requete utilisée pour aller chercher les données des liens en fonction de l'id du graphe
@@ -102,12 +98,12 @@
             StateHasChanged();
         }
         catch(Exception e)
-        {}
-       
+        {}      
     }
 
     public async void RefreshState()
     {
         UpdateLien();
     }
+
 }
