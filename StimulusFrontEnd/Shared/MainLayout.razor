@@ -37,6 +37,8 @@
 
         identifier = false;
 
+        var builder = WebApplication.CreateBuilder();
+
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
         handler.ServerCertificateCustomValidationCallback =
@@ -45,7 +47,8 @@
                 return true;
             };
         httpClient = new HttpClient(handler);
-        httpClient.BaseAddress = new Uri("https://p22e1api-dev-dicjprojet.cegepjonquiere.ca/");
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
+
         client = new Client(httpClient);
 
 

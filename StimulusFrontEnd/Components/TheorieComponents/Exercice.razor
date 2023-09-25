@@ -284,6 +284,7 @@
     /// </summary>
     private void SetupClient()
     {
+        var builder = WebApplication.CreateBuilder();
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
         handler.ServerCertificateCustomValidationCallback =
@@ -291,7 +292,8 @@
         {
             return true;
         };
-        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api-dev-dicjprojet.cegepjonquiere.ca/") };
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri(builder.Configuration["API:Use"]) };
+
         ApiClient = new Client(httpClient);
     }
 

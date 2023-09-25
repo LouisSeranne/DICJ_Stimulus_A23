@@ -30,8 +30,8 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredLocalStorage();
 
 //configure le client utiliser par les autres services avec la validation custom
+builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri(builder.Configuration["API:Use"])).ConfigurePrimaryHttpMessageHandler(() =>
 
-builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri("https://p22e1api-dev-dicjprojet.cegepjonquiere.ca/")).ConfigurePrimaryHttpMessageHandler(() =>
 {
     return new HttpClientHandler()
     {
