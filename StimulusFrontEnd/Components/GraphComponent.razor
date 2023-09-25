@@ -5,15 +5,18 @@
 @inject IJSRuntime JSRuntim
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject IUpdateService updateService
+@inject MouseService mouseSrv;
 
 
 <div class="row mt-2">
     <div class="col">
         <svg class="bg-light" width="100%" height="500" xmlns="http://www.w3.org/2000/svg"
-        >
+        @onmousemove=@(e => mouseSrv.FireMove(this, e))
+        @onmouseup=@(e => mouseSrv.FireUp(this, e))
+        @onmouseout=@(e => mouseSrv.FireLeave(this, e))>
             @foreach (var item in Nodes)
             {
-                <Cercle Node="@item"></Cercle>
+                <Cercle Node="@item" Nodes="@Nodes"></Cercle>
             }
         </svg>
     </div>
@@ -34,10 +37,15 @@
                 return true;
             };
         httpClient = new HttpClient(handler);
-        httpClient.BaseAddress = new Uri("https://p22e1api-dicjprojet.cegepjonquiere.ca/");
+        httpClient.BaseAddress = new Uri("https://localhost:7266/");
         client = new Client(httpClient);
-        var id = client.GraphesGETAsync(3).Result;
+
+
         Nodes = client.NoeudsAllAsync().Result.ToList();
+        foreach (var item in Nodes)
+        {
+            var t = item.NoeudParents;
+        }
     }
 
 }

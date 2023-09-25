@@ -9472,15 +9472,14 @@ namespace StimulusFrontEnd.Services.Base
         [Newtonsoft.Json.JsonProperty("rayon", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Rayon { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("graphe", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Graphe Graphe { get; set; }
+        
 
-        [Newtonsoft.Json.JsonProperty("liaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Noeud LiaisonPrincipalNavigation { get; set; }
+       /*[Newtonsoft.Json.JsonProperty("liaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Noeud? LiaisonPrincipalNavigation { get; set; }
 
         [Newtonsoft.Json.JsonProperty("inverseLiaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Noeud> InverseLiaisonPrincipalNavigation { get; set; }
-
+        public System.Collections.Generic.ICollection<Noeud>? InverseLiaisonPrincipalNavigation { get; set; }
+       */
         [Newtonsoft.Json.JsonProperty("pages", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Page> Pages { get; set; }
 

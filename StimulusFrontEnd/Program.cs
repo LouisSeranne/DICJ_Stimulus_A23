@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication;
 using StimulusFrontEnd;
 using Microsoft.AspNetCore.Components.Authorization;
 using Serilog;
+using StimulusFrontEnd.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,9 @@ builder.Services.AddServerSideBlazor();
 //Initialise les local et session storage
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredLocalStorage();
-
+builder.Services
+            .AddSingleton<MouseService>()
+            .AddSingleton<IMouseService>(ff => ff.GetRequiredService<MouseService>());
 
 
 
