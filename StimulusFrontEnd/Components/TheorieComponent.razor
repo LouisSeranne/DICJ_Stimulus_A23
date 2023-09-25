@@ -7,18 +7,18 @@
 
     @if(InitDone)
     {
-        @*Boucle pour afficher chaque type de component de maniere dynamique
-            Le component dynamique prend en parametre un type de model et ses parametres.
-            Les parametres doivent t'être un dictionnaire. C'est pourquoi le code plus bas donne mal a la tête.
-        *@
+        /// <summary>
+        /// Boucle pour afficher chaque type de component de maniere dynamique
+        /// Le component dynamique prend en parametre un type de model et ses parametres.
+        /// Les parametres doivent t'être un dictionnaire. C'est pourquoi le code plus bas donne mal a la tête.
+        /// </summary>
         @foreach (Models.TheorieComponent component in Components)
         { 
             <DynamicComponent Type="@component.TypeComponent" Parameters="@component.Parameters"/>   
         } 
         <Reference References="References"/>
     }
-</div>
- 
+</div> 
 
 @code {
     [Parameter]
@@ -35,11 +35,9 @@
         Components = new List<Models.TheorieComponent>();
     }
 
-    @*
-        Quand les parametres recoivent des valeurs, les informations de la page sont appelés de la bd et sont traités
-        pour être placés dans le bon ordre avec les bon parametres
-        
-        *@
+    /// <summary>
+    /// Quand les parametres recoivent des valeurs, les informations de la page sont appelés de la bd et sont traités pour être placés dans le bon ordre avec les bon parametres
+    /// </summary>
     protected override async void OnParametersSet()
     {
         Id = Id;
@@ -47,7 +45,9 @@
 
     }
 
-    @*Fonction qui appelle les informations et qui les tries*@
+    /// <summary>
+    /// Fonction qui appelle les informations et qui les tries
+    /// </summary>
     private async void CallInfo()
     {
         //Initialisaiton du client http avec contournement de certificat

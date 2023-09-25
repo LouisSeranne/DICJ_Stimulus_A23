@@ -21,7 +21,6 @@
                 @Body
             </article>
         </main>
-   
     </div>
 }
 
@@ -33,9 +32,7 @@
     private HttpClient httpClient;
     //Initialisation de l'id du graph a la main pour l'instant en attente de la page de connexion pour avoir directement le graph avec l'étuidant
     protected override async void OnInitialized()
-    {
-        
-
+    {       
         initDone = false;
 
         identifier = false;
@@ -56,10 +53,6 @@
 
 
         await InvokeAsync(StateHasChanged);
-    }
-
-   
-    
-
+    }       
 }
 

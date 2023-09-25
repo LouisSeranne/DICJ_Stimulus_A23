@@ -13,18 +13,15 @@
 
 <PageTitle>StimulusFrontEndEtudiant</PageTitle>
 
-
 <!---->
 @if(initDone)
 {
     <div class="page">
-        <main>
-            
+        <main>          
             @if(identifier)
             {
                 <HeaderComponentEtudiant/>
-            }
-            
+            }         
             <article class="content px-4">
 
                 @Body
@@ -32,10 +29,8 @@
             @if(identifier)
             {
                 <FooterEtudiantComponent/>
-            }
-            
-        </main>
-   
+            }         
+        </main>  
     </div>
 }
 
@@ -48,7 +43,6 @@
     //Initialisation de l'id du graph a la main pour l'instant en attente de la page de connexion pour avoir directement le graph avec l'étuidant
     protected override async void OnInitialized()
     {
-
         Console.WriteLine("layout initialized");
         ViewOption.OnChanged = () => { 
             StateHasChanged();//Refresh
@@ -78,7 +72,6 @@
 
     protected async override void OnAfterRender(bool firstRender)
     {
-
         if(firstRender)
         {
             Console.WriteLine("layout afterrender first");
@@ -126,14 +119,9 @@
         
     }
 
-
-
     public async void Clear()
     {
         //Fonction de test pour supprimer le session storage a la main
         await sessionStorage.ClearAsync();
     }
-
-    
-
 }
