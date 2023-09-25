@@ -7,47 +7,47 @@
         @if (InitDone == true)
         {
             <div id="formulaire" class="loginCenterGroupe">
-            <EditForm  Model="@groupeModel" OnValidSubmit="@SubmitForm" Context="routeData">
-                <DataAnnotationsValidator/>
-                <ValidationSummary/>
-                <div id="coursProf">
-                    <h3 style="color:white">Création du groupe</h3>
-                    <div id="centre">
-                        <div class="select">
-                            <span class="input-group-text" id="spanCours">Choix du cours</span>
-                            <InputSelect name="coursDropdown" id="coursDropdown" @bind-Value = "groupeModel.CoursId">
-                                <option>Cours</option>
-                                @foreach (Cour cour in listCour)
-                                {
-                                <option value= "@cour.Id">@cour.CodeCours</option>
-                                }    
-                            </InputSelect>
-                        </div>
-                        <div class="select">
-                            <span class="input-group-text" id="spanProf">Choix de l'enseignant</span>
-                            <InputSelect name="coursDropdown" id="profDropdown" @bind-Value = "groupeModel.ProfesseurId">
-                                <option>Enseignant</option>
-                                @foreach (Professeur prof in listProfesseur)
-                                {
-                                <option value= "@prof.Id">@prof.Prenom @prof.Nom</option>
-                                }    
-                            </InputSelect>
-                        </div>
-                    </div>      
-                </div>
-                    <div >
-                        <div id="nomGroupe" class="input-group input-group-sm mb-3" width="26vw">
-                            <span class="input-group-text" id="inputGroup-sizing-sm">Nom du groupe</span>
-                            <InputText id="nomCoursInput"  type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" @bind-Value="groupeModel.Nom"/>
-                        </div>
-                        <div id="divBtn">
-                            <button id="btnSubmit" type="submit" class="btn btn-outline-light" aria-pressed="true">Créer</button>
-                            <button id="btnReset" type="reset" class="btn btn-outline-light" aria-pressed="true" onclick="@ResetPage">Réinitialiser</button>                    
-                        </div>
-                        <p style="color:green">@message</p>
-                    </div>         
-            </EditForm>      
-        </div> 
+                <EditForm  Model="@groupeModel" OnValidSubmit="@SubmitForm" Context="routeData">
+                    <DataAnnotationsValidator/>
+                    <ValidationSummary/>
+                    <div id="coursProf">
+                        <h3 style="color:white">Création du groupe</h3>
+                        <div id="centre">
+                            <div class="select">
+                                <span class="input-group-text" id="spanCours">Choix du cours</span>
+                                <InputSelect name="coursDropdown" id="coursDropdown" @bind-Value = "groupeModel.CoursId">
+                                    <option>Cours</option>
+                                    @foreach (Cour cour in listCour)
+                                    {
+                                    <option value= "@cour.Id">@cour.CodeCours</option>
+                                    }    
+                                </InputSelect>
+                            </div>
+                            <div class="select">
+                                <span class="input-group-text" id="spanProf">Choix de l'enseignant</span>
+                                <InputSelect name="coursDropdown" id="profDropdown" @bind-Value = "groupeModel.ProfesseurId">
+                                    <option>Enseignant</option>
+                                    @foreach (Professeur prof in listProfesseur)
+                                    {
+                                    <option value= "@prof.Id">@prof.Prenom @prof.Nom</option>
+                                    }    
+                                </InputSelect>
+                            </div>
+                        </div>      
+                    </div>
+                        <div >
+                            <div id="nomGroupe" class="input-group input-group-sm mb-3" width="26vw">
+                                <span class="input-group-text" id="inputGroup-sizing-sm">Nom du groupe</span>
+                                <InputText id="nomCoursInput"  type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" @bind-Value="groupeModel.Nom"/>
+                            </div>
+                            <div id="divBtn">
+                                <button id="btnSubmit" type="submit" class="btn btn-outline-light" aria-pressed="true">Créer</button>
+                                <button id="btnReset" type="reset" class="btn btn-outline-light" aria-pressed="true" onclick="@ResetPage">Réinitialiser</button>                    
+                            </div>
+                            <p style="color:green">@message</p>
+                        </div>         
+                </EditForm>      
+            </div> 
         }
         </Authorized>
     <NotAuthorized>
