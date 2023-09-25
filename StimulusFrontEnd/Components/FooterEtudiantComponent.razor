@@ -67,6 +67,8 @@
         initDone = false;
         updateService.RefreshRequested += this.RefreshState;
 
+        var builder = WebApplication.CreateBuilder();
+
         //Handler : Permet de contourner les certifications sinon le projet crash
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
@@ -77,7 +79,7 @@
             };
 
         //Set une nouvelle Uri pour lien le Front-End a la Bd
-        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api-dicjprojet.cegepjonquiere.ca/") };
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri(builder.Configuration["API:Use"]) };
         client = new Client(httpClient);
 
         //Requete utilisée pour aller chercher les données des liens en fonction de l'id du graphe
