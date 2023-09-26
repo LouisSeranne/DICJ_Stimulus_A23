@@ -15,8 +15,12 @@
 
 
 
-    <rect x="@((Node.Rayon*2- Node.Rayon/2 -10))" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="180" height="150" style="fill: rgba(255,255,255,255)" />
-
+    <rect x="@((Node.Rayon*2- Node.Rayon/2 -10))" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />
+    <foreignObject x="@((Node.Rayon*2- Node.Rayon/2 -10))" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
+        <span> Nom :  @Node.Code / ID : @Node.Id</span><br />
+        <span>Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
+        <span> Desc : @Node.Description</span>
+    </foreignObject>
 
 
     <NavLink href="@link">
@@ -56,7 +60,10 @@
     [Parameter] public List<StimulusFrontEnd.Services.Base.Noeud> Nodes { get; set; }
     private string link;
     private string displayHover = "hidden";
-
+    private string TestParent()
+    {
+        return (Node.LiaisonPrincipal != null) ? Node.LiaisonPrincipal.ToString() : "Aucun";
+    }
     protected override void OnInitialized()
     {
         link = "index/" + Node.Code + Node.GrapheId + Node.Id;
