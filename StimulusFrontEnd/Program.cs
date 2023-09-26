@@ -15,12 +15,9 @@ using Microsoft.AspNetCore.Authentication;
 using StimulusFrontEnd;
 using Microsoft.AspNetCore.Components.Authorization;
 using Serilog;
-<<<<<<< HEAD
 using StimulusFrontEnd.Services;
-=======
 using Microsoft.JSInterop;
 
->>>>>>> origin/dev
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,18 +29,15 @@ builder.Services.AddServerSideBlazor();
 //Initialise les local et session storage
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredLocalStorage();
-<<<<<<< HEAD
 builder.Services
             .AddSingleton<MouseService>()
             .AddSingleton<IMouseService>(ff => ff.GetRequiredService<MouseService>());
 
 
-=======
->>>>>>> origin/dev
 
 //configure le client utiliser par les autres services avec la validation custom
 
-builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri("https://p22e1api-dev-dicjprojet.cegepjonquiere.ca/")).ConfigurePrimaryHttpMessageHandler(() =>
+builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri("http://localhost:5000")).ConfigurePrimaryHttpMessageHandler(() =>
 {
     return new HttpClientHandler()
     {

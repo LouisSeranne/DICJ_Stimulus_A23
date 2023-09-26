@@ -9,8 +9,17 @@
 }
 
     <Draggable @bind-X=Node.PosX @bind-Y=Node.PosY>
-        <circle r="@Node.Rayon" class="cercle" />
-        <NavLink href="/">
+    <circle visibility="@displayHover" r="@(Node.Rayon + 3)" class="cercle" style="fill: rgba(255,255,255,5); opacity:0.5" />
+
+    <circle @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) r="@Node.Rayon" class="cercle" />
+
+
+
+    <rect x="@((Node.Rayon*2- Node.Rayon/2 -10))" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="180" height="150" style="fill: rgba(255,255,255,255)" />
+
+
+
+    <NavLink href="@link">
             <text text-anchor="middle" alignment-baseline="central">@Node.Code</text>
          </NavLink> 
                                                   
@@ -43,8 +52,22 @@
 </style>
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
-
     [Parameter] public StimulusFrontEnd.Services.Base.Noeud Node { get; set; }
     [Parameter] public List<StimulusFrontEnd.Services.Base.Noeud> Nodes { get; set; }
+    private string link;
+    private string displayHover = "hidden";
+
+    protected override void OnInitialized()
+    {
+        link = "index/" + Node.Code + Node.GrapheId + Node.Id;
+    }
+    private void OnMouseHover()
+    {
+        displayHover = "visible";
+    }
+    private void OnMouseLeave()
+    {
+        displayHover = "hidden";
+    }
 
 }
