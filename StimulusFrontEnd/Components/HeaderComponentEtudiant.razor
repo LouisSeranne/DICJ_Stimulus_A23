@@ -3,12 +3,6 @@
 
 @inject NavigationManager NavigationManager
 @inject IUpdateService updateService
-
-<<<<<<< HEAD
-
-
-=======
->>>>>>> origin/dev
 <AuthorizeView>
     <Authorized>
         @if (initDone)
@@ -71,7 +65,7 @@
             };
 
         //Set une nouvelle Uri pour lien le Front-End a la Bd
-        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api-dev-dicjprojet.cegepjonquiere.ca/") };
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("http://localhost:5000") };
         client = new Client(httpClient);
 
         //Requete utilisée pour aller chercher les données du cours en fonction de l'id du graphe
@@ -111,12 +105,6 @@
                 listCourGroupeOrdered.Add(cour);
             }
         }
-<<<<<<< HEAD
-
-
-=======
-        
->>>>>>> origin/dev
         initDone = true;
 
         await InvokeAsync(StateHasChanged);

@@ -18,6 +18,7 @@ using Serilog;
 using StimulusFrontEnd.Services;
 using Microsoft.JSInterop;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -32,9 +33,11 @@ builder.Services
             .AddSingleton<MouseService>()
             .AddSingleton<IMouseService>(ff => ff.GetRequiredService<MouseService>());
 
+
+
 //configure le client utiliser par les autres services avec la validation custom
 
-builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri("https://localhost:5000/")).ConfigurePrimaryHttpMessageHandler(() =>
+builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri("http://localhost:5000")).ConfigurePrimaryHttpMessageHandler(() =>
 {
     return new HttpClientHandler()
     {
