@@ -40,11 +40,11 @@
                 return true;
             };
         httpClient = new HttpClient(handler);
-        httpClient.BaseAddress = new Uri("https://localhost:7266/");
+        httpClient.BaseAddress = new Uri("https://localhost:5000/");
         client = new Client(httpClient);
-        UpdateGrahe();
+        UpdateGraph();
     }
-    private async void UpdateGrahe()
+    private async void UpdateGraph()
     {
         if(sessionStorage != null)
         {
