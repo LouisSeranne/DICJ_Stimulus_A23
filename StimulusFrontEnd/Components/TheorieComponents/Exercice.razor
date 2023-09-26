@@ -1,4 +1,7 @@
 ﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
+@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using BlazorMonaco.Languages
 
 <!--Interpreteur-->
 @if(InitDone)
@@ -17,6 +20,8 @@
     <div>
         @foreach(Fichier fichier in FichierCode)
         {
+            <StandaloneCodeEditor Id="1" ConstructionOptions="EditorConstructionOptions" />
+
             <textarea class="textareaCode col-sm-6 col-md-6 col-lg-6 @fichier.Css" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
         }
     </div>
@@ -49,6 +54,19 @@
 </style>
 
 @code {
+
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+	{
+		return new StandaloneEditorConstructionOptions
+			{
+				AutomaticLayout = true,
+				Language = "python",
+				Value = "text = 'Hello World!'\n" +
+						"print(text)"
+			};
+
+	}
+
     [Parameter]
     public Models.Exercice ExerciceModel { get; set; }
 
