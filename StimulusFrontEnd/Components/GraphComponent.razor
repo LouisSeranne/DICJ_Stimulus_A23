@@ -1,4 +1,6 @@
-﻿@using StimulusFrontEnd.Services;
+﻿@using Microsoft.CodeAnalysis;
+@using System.Text;
+@using StimulusFrontEnd.Services;
 @using static StimulusFrontEnd.Components.Connector
 @using static StimulusFrontEnd.Components.Cercle
 @inject NavigationManager NavigationManager
@@ -6,16 +8,21 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject IUpdateService updateService
 @inject MouseService mouseSrv;
-@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
 
 <div class="row mt-2">
     <div class="col">
+        <foreignObject x="5" y="5" width="180" height="50">
+            <div id="divGrapheEntete">                
+                <button style="font-size:15px" type="button" @onclick="AugmenterZoom">+</button>
+                <button style="font-size:15px" type="button" @onclick="ReduireZoom">-</button>
+                <button type="button" @onclick="ResetViewbox">Réinitialiser</button>
+                <p class="grapheEnteteElement" style="color:white;">                zoom : @(Math.Round(zoomIncrement * 100))%</p>
+            </div>
+        </foreignObject>
         <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg">
-
-            <rect width="180" height="180" x="5" y="5" fill="#32587a"></rect>
-
-            <foreignObject x="5" y="5" width="180" height="180">
+            <rect width="180" height="180" x="0" y="5" fill="#32587a"></rect>
+            <foreignObject x="0" y="5" width="180" height="180">
                 <div>
                     <p style="color:rgb(140,140,140); margin-left:10px;">  gris : bloqué</p>
                     <p style="color:rgb(228, 231, 245); margin-left:10px;">  blanc: disponible</p>
@@ -23,22 +30,20 @@
                     <p style="color:rgb(88,150,105); margin-left:10px;">  vert : completé</p>
                 </div>
             </foreignObject>
-            <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg"
+            
+                <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox="@viewBoxX @viewBoxY @viewBoxWidth @viewBoxHeight"
             @onmousemove=@(e => mouseSrv.FireMove(this, e))
             @onmouseup=@(e => mouseSrv.FireUp(this, e,SaveChange))
-            @onmousewheel=@(e => mouseSrv.FireLeave(this, e))>
+            @onmousewheel="Zoom">
                 <Draggable X="0" Y="0">
-                    <rect width="2000" height="2000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgb(0,0,0)" />
+                    <rect width="2000" height="2000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgba(0,0,0,1)" />
                     @foreach (var noeud in Nodes)
                     {
                         <Cercle Node="@noeud" Nodes="@Nodes"></Cercle>
                     }
                 </Draggable>
-
+                </svg>
             </svg>
-        </svg>
-
-
 
     </div>
 </div>
@@ -49,6 +54,13 @@
     private string displayHover;
     public List<Noeud> Nodes { get; set; } = new();
     private List<Noeud> NodesTemp { get; set; } = new();
+    private double viewBoxX = 0;
+    private double viewBoxY = 0;
+    private double viewBoxWidth = 2000;
+    private double viewBoxHeight = 2000;
+    private double zoomIncrement = 1;
+
+
 
     protected override void OnInitialized()
     {
@@ -128,5 +140,67 @@
         NavigationManager.NavigateTo("/index");
 
     }
+
+
+    private async void AugmenterZoom()
+    {
+        viewBoxX = viewBoxX + 5;
+        viewBoxY = viewBoxY + 5;
+        viewBoxWidth = viewBoxWidth - 20;
+        viewBoxHeight = viewBoxHeight - 20;
+        zoomIncrement = zoomIncrement + 0.01;
+    }
+
+    private void ResetViewbox()
+    {
+        viewBoxX = 0;
+        viewBoxY = 0;
+        viewBoxHeight = 2000;
+        viewBoxWidth = 2000;
+        zoomIncrement = 1;
+    }
+
+    private async void ReduireZoom()
+    {
+        viewBoxX = viewBoxX - 5;
+        viewBoxY = viewBoxY - 5;
+        viewBoxWidth = viewBoxWidth + 20;
+        viewBoxHeight = viewBoxHeight + 20;
+        zoomIncrement = zoomIncrement - 0.01;
+    }
+    public void Zoom(WheelEventArgs mouse)
+    {
+        if (mouse.ShiftKey)
+        {
+            // Utilisation de mouse.Delta pour vérifier la direction du défilement
+            if (mouse.DeltaY < 0)
+            {
+                // Faire zoom vers le haut
+                viewBoxX = viewBoxX + 5;
+                viewBoxY = viewBoxY + 5;
+                viewBoxWidth = viewBoxWidth - 20;
+                viewBoxHeight = viewBoxHeight - 20;
+                zoomIncrement = zoomIncrement + 0.01;
+            }
+            else if (mouse.DeltaY > 0)
+            {
+                // Faire zoom vers le bas
+                viewBoxX = viewBoxX - 5;
+                viewBoxY = viewBoxY - 5;
+                viewBoxWidth = viewBoxWidth + 20;
+                viewBoxHeight = viewBoxHeight + 20;
+                zoomIncrement = zoomIncrement - 0.01;
+            }
+        }
+    }
+
+}
+
+
+
+
+
+
+
 
 }
