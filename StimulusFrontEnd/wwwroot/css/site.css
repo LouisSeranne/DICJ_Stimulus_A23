@@ -280,12 +280,11 @@ main {
     color: var(--secondaire-couleur);
     border: hidden;
 }
+
 .boutonExerciceGauche {
     background-color: var(--secondaire-couleur);
     color: var(--principale-couleur);
     font-weight: bold;
-    width: auto;
-    min-width: 10%;
     border-color: var(--principale-couleur);
     border-style: solid;
     margin-left: 10px;
@@ -294,8 +293,6 @@ main {
     background-color: var(--secondaire-couleur);
     color: var(--principale-couleur);
     font-weight: bold;
-    width: auto;
-    min-width: 15%;
     border-color: var(--principale-couleur);
     border-style: solid;
     margin-left: 200px;
