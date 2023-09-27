@@ -104,7 +104,6 @@ a, .btn-link {
 .grapheEnteteElement {
     margin: 0px 0px 0px 0px;
     margin-right: 10px;
-
 }
 
 #svgGraphiqueComponent {
@@ -268,12 +267,11 @@ main {
     color: var(--principale-couleur);
     border: hidden;
 }
+
 .boutonExerciceGauche {
     background-color: var(--secondaire-couleur);
     color: var(--principale-couleur);
     font-weight: bold;
-    width: auto;
-    min-width: 10%;
     border-color: var(--principale-couleur);
     border-style: solid;
 }
@@ -281,8 +279,6 @@ main {
     background-color: var(--secondaire-couleur);
     color: var(--principale-couleur);
     font-weight: bold;
-    width: auto;
-    min-width: 15%;
     border-color: var(--principale-couleur);
     border-style: solid;
 }
