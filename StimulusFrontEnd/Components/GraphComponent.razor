@@ -13,11 +13,11 @@
 <div class="row mt-2">
     <div class="col">
         <foreignObject x="5" y="5" width="180" height="50">
-            <div id="divGrapheEntete">                
+            <div id="divGrapheEntete">            
                 <button style="font-size:15px" type="button" @onclick="AugmenterZoom">+</button>
                 <button style="font-size:15px" type="button" @onclick="ReduireZoom">-</button>
                 <button type="button" @onclick="ResetViewbox">Réinitialiser</button>
-                <p class="grapheEnteteElement" style="color:white;">                zoom : @(Math.Round(zoomIncrement * 100))%</p>
+                <p class="grapheEnteteElement" style="color:white;"> zoom : @(Math.Round(zoomIncrement * 100))%</p>
             </div>
         </foreignObject>
         <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg">
@@ -36,7 +36,7 @@
             @onmouseup=@(e => mouseSrv.FireUp(this, e,SaveChange))
             @onmousewheel="Zoom">
                 <Draggable X="0" Y="0">
-                    <rect width="2000" height="2000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgba(0,0,0,1)" />
+                    <rect width="2000" height="2000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgba(0,0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
                         <Cercle Node="@noeud" Nodes="@Nodes"></Cercle>
@@ -141,7 +141,7 @@
 
     }
 
-
+    //Augmente le zoom à partir du bouton
     private async void AugmenterZoom()
     {
         viewBoxX = viewBoxX + 5;
@@ -151,6 +151,7 @@
         zoomIncrement = zoomIncrement + 0.01;
     }
 
+    //Reset du zoom à 100%
     private void ResetViewbox()
     {
         viewBoxX = 0;
@@ -160,6 +161,7 @@
         zoomIncrement = 1;
     }
 
+    //Réduit le zoom
     private async void ReduireZoom()
     {
         viewBoxX = viewBoxX - 5;
@@ -168,11 +170,13 @@
         viewBoxHeight = viewBoxHeight + 20;
         zoomIncrement = zoomIncrement - 0.01;
     }
+
+    //Fonction zoom avec le scroll de la molette
     public void Zoom(WheelEventArgs mouse)
     {
-        if (mouse.ShiftKey)
+        if (mouse.ShiftKey) // get le shift key
         {
-            // Utilisation de mouse.Delta pour vérifier la direction du défilement
+            // Utilisation de mouse.DeltaY pour vérifier la direction du défilement
             if (mouse.DeltaY < 0)
             {
                 // Faire zoom vers le haut

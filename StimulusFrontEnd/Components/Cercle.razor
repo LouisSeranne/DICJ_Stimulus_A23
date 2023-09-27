@@ -1,5 +1,6 @@
 ﻿@using StimulusFrontEnd.Services;
 @using static StimulusFrontEnd.Components.Connector;
+@inject NavigationManager NavigationManager
 @for (int i = 0; i < Nodes.Count; i++)
 {
     @if (Node.Id == Nodes[i].LiaisonPrincipal && Nodes[i].LiaisonPrincipal != null)
@@ -19,11 +20,11 @@
     <foreignObject x="@((Node.Rayon*2- Node.Rayon/2 -10))" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
         <span> Nom :  @Node.Code / ID : @Node.Id</span><br />
         <span>Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
-        <span> Desc : @Node.Description</span>
+        <span> Desc : @Node.Description</span>       
     </foreignObject>
 
 
-    <NavLink href="@link">
+    <NavLink @onclick="DirectionPage">
             <text text-anchor="middle" alignment-baseline="central">@Node.Code</text>
          </NavLink> 
                                                   
@@ -97,6 +98,10 @@
     private void OnMouseLeave()
     {
         displayHover = "hidden";
+    }
+    private void DirectionPage()
+    {
+        NavigationManager.NavigateTo("/theorie/" + Node.Id);
     }
 
 }
