@@ -104,7 +104,6 @@ a, .btn-link {
 .grapheEnteteElement {
     margin: 0px 0px 0px 0px;
     margin-right: 10px;
-
 }
 
 #svgGraphiqueComponent {
@@ -113,7 +112,7 @@ a, .btn-link {
     max-height: 100vh;
 }
 
-/*Modifs générales*/
+/*Modifs gÃ©nÃ©rales*/
 main {
     display: flex;
     flex-direction: column;
@@ -194,15 +193,23 @@ main {
     padding: 0;
     font-weight: bold;
 }
+.ListeHeader {
+    background-color: var(--secondaire-couleur);
+    width: 200px;
+    height: 50px;
+    border-color: white;
+    color:white;
+}
 
 .bouttonNavigation {
     text-align: right;
+    background-color: red;
 }
 /*CSS pour les icons dans le footer*/
 .user-image {
     width: 20px; /* Ajustez la taille de l'image selon vos besoins */
     height: 20px; /* Ajustez la taille de l'image selon vos besoins */
-    margin-right: 10px; /* Marge à droite de l'image pour l'espacement */
+    margin-right: 10px; /* Marge Ã  droite de l'image pour l'espacement */
 }
 
 /*CSS pour le logo CEPI*/
@@ -310,7 +317,7 @@ main {
     padding: 0 30px 0 68px;
 }
 
-/*Css Page Théorie*/
+/*Css Page ThÃ©orie*/
 .containerComponent {
     background-color: var(--secondaire-couleur);
     display: flex;
@@ -320,8 +327,7 @@ main {
     position: relative;
 }
 
-.boutonTheorie
-{
+.boutonTheorie{
     color: white;
     background-color: var(--secondaire-couleur);
     border-color: var(--principale-couleur);
@@ -330,7 +336,7 @@ main {
 /*Modifs pour les boubidibap components*/
 .component {
     margin-bottom: 2%;
-    margin-right: 25%;
+    margin-right :25%;
 }
 
 .componentTexte {

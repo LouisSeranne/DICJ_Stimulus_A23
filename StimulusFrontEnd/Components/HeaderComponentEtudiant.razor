@@ -8,17 +8,18 @@
     <Authorized>
         @if (initDone)
         {         
-            <div class="containerHeader">
+            <header class="containerHeader">
                 <div class="row">
                     <div class="col-sm-4 col-md-4 col-lg-4">
                         <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-3">
-                        <p class="pHeader"> Description: @cours.Description</p>
-                        <p class="pHeader">Code: @cours.CodeCours</p> 
+                        @*En lien avec le Groupe, quand on change de groupe, le code et lA description change aussi*@
+                        <p class="pHeader">Code: @cours.CodeCours</p>
+                        <p class="pHeader"> Description: @cours.Description</p>                        
                     </div>                  
                     <div class ="col-sm-1 col-md-1 col-lg-1">
-                        <select @onchange="ChangeCours" name="cours" value=@listCourGroupeOrdered[0].IdGroupe>
+                        <select @onchange="ChangeCours" name="cours" class="ListeHeader" value=@listCourGroupeOrdered[0].IdGroupe>
                            @for (int i = 0; i < listCourGroupeOrdered.Count; i++)
                            {
                                <option value="@listCourGroupeOrdered[i].IdGroupe">@listCourGroupeOrdered[i].Nom</option>
@@ -31,7 +32,7 @@
                         <img src="/image/Avatar.png" alt="Logo Avatar" class="logoHeader"/>
                     </div>
                 </div>
-            </div>
+            </header>
         }
     </Authorized>
     <NotAuthorized>
