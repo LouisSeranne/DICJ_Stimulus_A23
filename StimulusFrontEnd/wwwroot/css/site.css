@@ -316,18 +316,23 @@ main {
     display: flex;
     flex-direction: column;
     color: var(--principale-couleur);
-    padding: 3%;
+    padding: 1%;
+    position: relative;
 }
-.boutonTheorie {
+
+.boutonTheorie
+{
     color: white;
     background-color: var(--secondaire-couleur);
     border-color: var(--principale-couleur);
 }
 
 /*Modifs pour les boubidibap components*/
-.component{
+.component {
     margin-bottom: 2%;
+    margin-right: 25%;
 }
+
 .componentTexte {
     margin-bottom: 2%;
     font-size: large;
