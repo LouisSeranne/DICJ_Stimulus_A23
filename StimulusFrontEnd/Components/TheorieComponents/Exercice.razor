@@ -20,7 +20,7 @@
     <div>
         @foreach(Fichier fichier in FichierCode)
         {
-            <StandaloneCodeEditor Id="1" ConstructionOptions="EditorConstructionOptions" />
+            <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions"/>
 
             <textarea class="textareaCode col-sm-6 col-md-6 col-lg-6 @fichier.Css" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
         }
@@ -56,12 +56,13 @@
 @code {
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
-	{
-		return new StandaloneEditorConstructionOptions
-			{
-				AutomaticLayout = true,
-				Language = "python",
-				Value = "text = 'Hello World!'\n" +
+    {
+        return new StandaloneEditorConstructionOptions
+            {
+                AutomaticLayout = true,
+                Language = "python",
+                Theme = "vs-dark",
+                Value = "text = 'Hello World!'\n" +
 						"print(text)"
 			};
 

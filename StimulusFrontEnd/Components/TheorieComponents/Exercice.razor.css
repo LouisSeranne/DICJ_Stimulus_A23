@@ -1,6 +1,10 @@
 ﻿body {
 }
 
+.monaco-editor-container { /* for all editor instances */
+    height: 300px;
+}
+
 .focused {
     display: block;
 }
