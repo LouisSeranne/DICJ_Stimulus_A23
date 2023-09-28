@@ -32,12 +32,12 @@
                 <ValidationSummary />
                 <h2 class="h2Login">Page Connexion</h2>
                 <div class="form-group">
-                    <InputText class="form-control" @bind-Value="appUser.UserName" placeholder="CodeDA"><img src="/Image/Avatar.jpg" alt="Logo utilisateur" class="user-image"/></InputText>
+                    <InputText class="form-control" @bind-Value="appUser.UserName" placeholder="CodeDA"><img src="/Image/Avatar.png" alt="Logo utilisateur" class="user-image"/></InputText>
                     <ValidationMessage For="@(()=>appUser.UserName)"/>
                 </div>
                 <br/>
                 <div class="form-group">
-                    <InputText class="form-control inputLogin" type="password" @bind-Value="appUser.PasswordHash" placeholder="Mot De Passe"/>
+                    <InputText class="form-control inputLogin" type="password" @bind-Value="appUser.PasswordHash" placeholder="Mot de passe"/>
                     <ValidationMessage For="@(()=>appUser.PasswordHash)"/>
                 </div>
                 <br/>
