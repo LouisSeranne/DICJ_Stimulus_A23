@@ -18,10 +18,11 @@
     </div>
 
     <div>
+        <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
         @foreach(Fichier fichier in FichierCode)
         {
-            <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor"/>
-            SetCode(@fichier.Contenu);
+            if (fichier.Css != "hidden")
+                SetCode(@fichier.Contenu);
 
             <textarea class="textareaCode col-sm-6 col-md-6 col-lg-6 hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
         }
