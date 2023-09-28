@@ -18,7 +18,7 @@
     </div>
 
     <div>
-        <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
+        <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor"/>
         @foreach(Fichier fichier in FichierCode)
         {
             if (fichier.Css != "hidden")
@@ -268,13 +268,14 @@
         List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
         foreach(Fichier fichier in FichierCode)
         {
+            await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
             {
                 Id = fichier.Id,
                 ProgressionPageId = ExerciceModel.PageId,
                 ExerciceId = ExerciceModel.Id,
                 FichierEtudiantDa = IdEtudiant,
-                Contenu = await GetCode(),
+                Contenu = fichier.Contenu,
                 Nom = fichier.Nom,
                 Version = DateTime.Now
             });
@@ -314,13 +315,19 @@
     /// Change le focus du fichier à éditer
     /// </summary>
     /// <param name="id"> id du fichier qui récupère le focus </param>
-    private void ChangeTab(int id)
+    private async Task ChangeTab(int id)
     {
         foreach (Fichier fichier in FichierCode)
         {
-            fichier.Css = HiddenTab;
+            if (fichier.Css != "hidden")
+            {
+                fichier.Contenu = await GetCode();
+                fichier.Css = HiddenTab;
+            }
         }
         FichierCode.Find(f => f.Id == id).Css = FocusedTab;
+        await SetCode(FichierCode.Find(f => f.Id == id).Contenu);
+        StateHasChanged();
     }
 
 
