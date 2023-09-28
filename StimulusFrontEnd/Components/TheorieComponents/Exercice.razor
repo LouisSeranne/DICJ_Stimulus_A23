@@ -20,9 +20,10 @@
     <div>
         @foreach(Fichier fichier in FichierCode)
         {
-            <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions"/>
+            <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor"/>
+            SetCode(@fichier.Contenu);
 
-            <textarea class="textareaCode col-sm-6 col-md-6 col-lg-6 @fichier.Css" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
+            <textarea class="textareaCode col-sm-6 col-md-6 col-lg-6 hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
         }
     </div>
     <p style="white-space:pre-wrap">@Result</p>
@@ -59,6 +60,23 @@
 </style>
 
 @code {
+    private StandaloneCodeEditor _editor { get; set; }
+
+    private async Task<string> GetCode()
+    {
+        if (_editor != null)
+        {
+            string code = await _editor.GetValue();
+            return code;
+        }
+        return null;
+    }
+
+    private async Task SetCode(string code = "print('Hello World!')")
+    {
+        if (_editor != null)
+            await _editor.SetValue(code);
+    }
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
@@ -70,8 +88,7 @@
                 Value = "text = 'Hello World!'\n" +
 						"print(text)"
 			};
-
-	}
+    }
 
     [Parameter]
     public Models.Exercice ExerciceModel { get; set; }
@@ -158,9 +175,9 @@
                 FichierCode.Add(new Fichier(-(FichierCode.Count+1), fichier.Nom, fichier.Contenu));
             }
         }
-        
+
         //FichierCode[0].Css = FocusedTab;
-        
+
 
         InitDone = true;
         await InvokeAsync(StateHasChanged);
@@ -229,7 +246,7 @@
             fichiers.Add(new
             {
                 Nom = f.Nom,
-                Contenu = f.Contenu.Replace("\"", "\'")
+                Contenu = GetCode().Result.Replace("\"", "\'")
             });
         }
         jsonString = JsonConvert.SerializeObject(fichiers);
@@ -253,7 +270,7 @@
                 ProgressionPageId = ExerciceModel.PageId,
                 ExerciceId = ExerciceModel.Id,
                 FichierEtudiantDa = IdEtudiant,
-                Contenu = fichier.Contenu,
+                Contenu = GetCode().Result,
                 Nom = fichier.Nom,
                 Version = DateTime.Now
             });
