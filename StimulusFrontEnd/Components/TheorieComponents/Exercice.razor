@@ -22,7 +22,9 @@
         @foreach(Fichier fichier in FichierCode)
         {
             if (fichier.Css != "hidden")
+            {
                 SetCode(@fichier.Contenu);
+            }
 
             <textarea class="textareaCode col-sm-6 col-md-6 col-lg-6 hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
         }
@@ -65,12 +67,12 @@
 
     private async Task<string> GetCode()
     {
+        string code = "-1";
         if (_editor != null)
         {
-            string code = await _editor.GetValue();
-            return code;
+            code = await _editor.GetValue();
         }
-        return null;
+        return code;
     }
 
     private async Task SetCode(string code = "print('Hello World!')")
@@ -202,7 +204,6 @@
                 var deletedTab = FichierCode.Find(tab => tab.Id == id);
                 deletedTab.Css = FocusedTab;
                 FichierCode.Remove(deletedTab);
-                
                 await ApiClient.FichierSauvegardesDELETEAsync(id);
             }
             catch (Exception e)
@@ -241,13 +242,15 @@
         Result = "Interprétation du code...";
         Console.WriteLine("Running python code...");
         StateHasChanged();
+        var code = await GetCode();
+        Console.WriteLine("Code to run : " + code);
 
         foreach(Fichier f in FichierCode)
         {
             fichiers.Add(new
             {
                 Nom = f.Nom,
-                Contenu = GetCode().Result.Replace("\"", "\'")
+                Contenu = code.Replace("\"", "\'")
             });
         }
         jsonString = JsonConvert.SerializeObject(fichiers);
@@ -271,7 +274,7 @@
                 ProgressionPageId = ExerciceModel.PageId,
                 ExerciceId = ExerciceModel.Id,
                 FichierEtudiantDa = IdEtudiant,
-                Contenu = GetCode().Result,
+                Contenu = await GetCode(),
                 Nom = fichier.Nom,
                 Version = DateTime.Now
             });
