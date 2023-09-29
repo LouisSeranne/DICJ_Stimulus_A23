@@ -75,7 +75,17 @@
         return code;
     }
 
-    private async Task SetCode(string code = "print('Code par défaut')")
+    private const string texteDefaut = "texte = \"\"\n" +
+                                "onglets = False\n\n" +
+                                "# Si il y a des onglets\n" +
+                                "if (onglets == True):\n" +
+                                "\ttexte = \"Choisissez un onglet pour commencer a coder !\"\n" +
+                                "# Si il n'y a pas d'onglets\n" +
+                                "elif (onglets == False):\n" +
+                                "\ttexte = \"Creez un onglet avec le bouton '+' puis commencez a coder !\"\n" +
+                                "print (texte)";
+
+    private async Task SetCode(string code = texteDefaut)
     {
         if (_editor != null)
             await _editor.SetValue(code);
@@ -88,7 +98,7 @@
                 AutomaticLayout = true,
                 Language = "python",
                 Theme = "vs-dark",
-                Value = FichierCode.FirstOrDefault().Contenu
+                Value = texteDefaut
             };
     }
 
@@ -168,6 +178,7 @@
                 });
         }
 
+        /*
         if (FichierCode.Count == 0)
         {
             var fichiers = await ApiClient.PageExerciceGETAsync(ExerciceModel.Id);
@@ -177,6 +188,7 @@
                 FichierCode.Add(new Fichier(-(FichierCode.Count + 1), fichier.Nom, fichier.Contenu));
             }
         }
+        */
 
         //FichierCode[0].Css = FocusedTab;
 
@@ -242,18 +254,21 @@
         Result = "Interprétation du code...";
         Console.WriteLine("Running python code...");
         StateHasChanged();
-        foreach (Fichier f in FichierCode)
+
+        foreach (var fichier in FichierCode)
         {
-            if (f.Css != "hidden")
+            if (fichier.Css != "hidden")
             {
-                f.Contenu = await GetCode();
-                fichiers.Add(new
-                {
-                    Nom = f.Nom,
-                    Contenu = f.Contenu.Replace("\"", "\'")
-                });
+                await ChangeTab(fichier.Id);
             }
         }
+
+        fichiers.Add(new
+        {
+            Nom = "main.py",
+            Contenu = await GetCode()
+        });        
+
         jsonString = JsonConvert.SerializeObject(fichiers);
 
         //Voir pour le mettre en post
