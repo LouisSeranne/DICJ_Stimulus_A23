@@ -75,7 +75,7 @@
         return code;
     }
 
-    private async Task SetCode(string code = "print('Hello World!')")
+    private async Task SetCode(string code = "print('Code par défaut')")
     {
         if (_editor != null)
             await _editor.SetValue(code);
@@ -88,8 +88,7 @@
                 AutomaticLayout = true,
                 Language = "python",
                 Theme = "vs-dark",
-                Value = "text = 'Hello World!'\n" +
-                            "print(text)"
+                Value = FichierCode.FirstOrDefault().Contenu
             };
     }
 
