@@ -179,14 +179,14 @@
         }
 
         /*
-        if (FichierCode.Count == 0)
-        {
+            if (FichierCode.Count == 0)
+            {
             var fichiers = await ApiClient.PageExerciceGETAsync(ExerciceModel.Id);
             List<FichierSource>? fichiersSource = JsonConvert.DeserializeObject<List<FichierSource>>(fichiers.FichierSource);
             foreach (FichierSource fichier in fichiersSource)
-            {
+                {
                 FichierCode.Add(new Fichier(-(FichierCode.Count + 1), fichier.Nom, fichier.Contenu));
-            }
+        }
         }
         */
 
@@ -263,10 +263,11 @@
             }
         }
 
+        string texte = await GetCode();
         fichiers.Add(new
         {
             Nom = "main.py",
-            Contenu = await GetCode()
+            Contenu = texte.Replace("\"", "\'")
         });        
 
         jsonString = JsonConvert.SerializeObject(fichiers);
@@ -374,9 +375,9 @@
     /// </summary>
     private async void AddPage()
     {
-        var nomFichier = await JS.InvokeAsync<string>("PromptFunction.promptFunc", null);
+        string nomFichier = await JS.InvokeAsync<string>("PromptFunction.promptFunc", null);
 
-        if (nomFichier == "")
+        if (String.IsNullOrWhiteSpace(nomFichier))
         {
             Result = "Nom de fichier invalide";
         }
@@ -389,10 +390,10 @@
 
             FichierCode.Add(new Fichier()
                 {
-                    Contenu = "",
+                    Contenu = "print('Hello World !')",
                     Nom = nomFichier,
                     Id = -(FichierCode.Count + 1),
-                    Css = FocusedTab
+                    Css = FocusedTab                    
                 });
         }
 
