@@ -236,24 +236,23 @@
     /// </summary>
     private async void Post()
     {
-        //Fonction Save() si jamais il y a besoin de save avant
-        //Save();
         List<object> fichiers = new List<object>();
         string jsonString = "";
 
         Result = "Interprétation du code...";
         Console.WriteLine("Running python code...");
         StateHasChanged();
-        var code = await GetCode();
-        Console.WriteLine("Code to run : " + code);
-
         foreach(Fichier f in FichierCode)
         {
-            fichiers.Add(new
+            if (f.Css != "hidden")
             {
-                Nom = f.Nom,
-                Contenu = code.Replace("\"", "\'")
-            });
+                f.Contenu = await GetCode();
+                fichiers.Add(new
+                {
+                    Nom = f.Nom,
+                    Contenu = f.Contenu.Replace("\"", "\'")
+                });                
+            }
         }
         jsonString = JsonConvert.SerializeObject(fichiers);
 
@@ -271,6 +270,8 @@
         int id = -1;
         foreach(Fichier fichier in FichierCode)
         {
+            if (fichier.Css != "hidden")
+                id = fichier.Id;
             await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
             {
@@ -282,8 +283,6 @@
                 Nom = fichier.Nom,
                 Version = DateTime.Now
             });
-            if (fichier.Css != "hidden")
-                id = fichier.Id;
         }
         try
         {
