@@ -1,10 +1,13 @@
 ﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
+@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using BlazorMonaco.Languages
 
 <!--Interpreteur-->
-@if(InitDone)
+@if (InitDone)
 {
-    <div class="fileSelector"> 
-        @foreach(Fichier fichier in FichierCode)
+    <div class="fileSelector">
+        @foreach (Fichier fichier in FichierCode)
         {
             <div>
                 <button @onclick="() => ChangeTab(fichier.Id)">@fichier.Nom</button>
@@ -15,8 +18,8 @@
     </div>
 
     <div>
-        <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor"/>
-        @foreach(Fichier fichier in FichierCode)
+        <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
+        @foreach (Fichier fichier in FichierCode)
         {
             if (fichier.Css != "hidden")
             {
@@ -30,14 +33,14 @@
 }
 
 
-    
+
 
 <!--Section bouton-->
-<div>
-    <div>
+<div class="row">
+    <div class="col-sm-1 col-md-1 col-lg-1">
         <button @onclick=@Post class="boutonExerciceGauche">Executer</button>
     </div>
-    <div>
+    <div class="col-sm-5 col-md-5 col-lg-5">
         <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
     </div>
 </div>
@@ -45,13 +48,13 @@
 
 
 <style>
-     .focused{
-      display: block;
-      }
+    .focused {
+        display: block;
+    }
 
-     .hidden{
-      display: none;
-      }
+    .hidden {
+        display: none;
+    }
 
     .monaco-editor-container { /* for all editor instances */
         height: 600px;
@@ -86,8 +89,8 @@
                 Language = "python",
                 Theme = "vs-dark",
                 Value = "text = 'Hello World!'\n" +
-						"print(text)"
-			};
+                            "print(text)"
+            };
     }
 
     [Parameter]
@@ -99,7 +102,7 @@
     /// Result : résultat du code python de l'étudiant
     /// InitDone : Dit si oui ou non l'initialisation du component est fait
     /// </summary>
-    [Inject] 
+    [Inject]
     private IJSRuntime JS { get; set; }
     private string FocusedTab { get; set; } = "focused";
     private string HiddenTab { get; set; } = "hidden";
@@ -155,24 +158,24 @@
 
         FichierCode = new List<Fichier>();
 
-        foreach(FichierSauvegarderVM fichier in fichierSauvegardes)
+        foreach (FichierSauvegarderVM fichier in fichierSauvegardes)
         {
             FichierCode.Add(new Fichier()
-            {
-                Contenu = fichier.Contenu,
-                Nom = fichier.Nom,
-                Id = fichier.Id,
-                Css = HiddenTab
-            });
+                {
+                    Contenu = fichier.Contenu,
+                    Nom = fichier.Nom,
+                    Id = fichier.Id,
+                    Css = HiddenTab
+                });
         }
 
-        if(FichierCode.Count == 0)
+        if (FichierCode.Count == 0)
         {
             var fichiers = await ApiClient.PageExerciceGETAsync(ExerciceModel.Id);
             List<FichierSource>? fichiersSource = JsonConvert.DeserializeObject<List<FichierSource>>(fichiers.FichierSource);
-            foreach(FichierSource fichier in fichiersSource)
+            foreach (FichierSource fichier in fichiersSource)
             {
-                FichierCode.Add(new Fichier(-(FichierCode.Count+1), fichier.Nom, fichier.Contenu));
+                FichierCode.Add(new Fichier(-(FichierCode.Count + 1), fichier.Nom, fichier.Contenu));
             }
         }
 
@@ -189,7 +192,7 @@
     /// <param name="id"> id du fichier a supprimer </param>
     private async void Delete(int id)
     {
-        if(id <= 0)
+        if (id <= 0)
         {
             Result = "Erreur : Ne peut pas supprimer ce qui n'existe pas. Avez-vous sauvegardé?";
         }
@@ -240,7 +243,7 @@
         Result = "Interprétation du code...";
         Console.WriteLine("Running python code...");
         StateHasChanged();
-        foreach(Fichier f in FichierCode)
+        foreach (Fichier f in FichierCode)
         {
             if (f.Css != "hidden")
             {
@@ -249,7 +252,7 @@
                 {
                     Nom = f.Nom,
                     Contenu = f.Contenu.Replace("\"", "\'")
-                });                
+                });
             }
         }
         jsonString = JsonConvert.SerializeObject(fichiers);
@@ -266,21 +269,21 @@
     {
         List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
         int id = -1;
-        foreach(Fichier fichier in FichierCode)
+        foreach (Fichier fichier in FichierCode)
         {
             if (fichier.Css != "hidden")
                 id = fichier.Id;
             await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
-            {
-                Id = fichier.Id,
-                ProgressionPageId = ExerciceModel.PageId,
-                ExerciceId = ExerciceModel.Id,
-                FichierEtudiantDa = IdEtudiant,
-                Contenu = fichier.Contenu,
-                Nom = fichier.Nom,
-                Version = DateTime.Now
-            });
+                {
+                    Id = fichier.Id,
+                    ProgressionPageId = ExerciceModel.PageId,
+                    ExerciceId = ExerciceModel.Id,
+                    FichierEtudiantDa = IdEtudiant,
+                    Contenu = fichier.Contenu,
+                    Nom = fichier.Nom,
+                    Version = DateTime.Now
+                });
         }
         try
         {
@@ -290,19 +293,19 @@
 
             FichierCode = new List<Fichier>();
 
-            foreach(FichierSauvegarderVM fichier in fichierSauvegardes)
+            foreach (FichierSauvegarderVM fichier in fichierSauvegardes)
             {
                 FichierCode.Add(new Fichier()
-                {
-                    Contenu = fichier.Contenu,
-                    Nom = fichier.Nom,
-                    Id = fichier.Id,
-                    Css = HiddenTab
-                });
+                    {
+                        Contenu = fichier.Contenu,
+                        Nom = fichier.Nom,
+                        Id = fichier.Id,
+                        Css = HiddenTab
+                    });
             }
             //FichierCode[0].Css = FocusedTab;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Result = "Échec de l'enregistrement des fichiers";
         }
@@ -359,7 +362,7 @@
     {
         var nomFichier = await JS.InvokeAsync<string>("PromptFunction.promptFunc", null);
 
-        if(nomFichier == "")
+        if (nomFichier == "")
         {
             Result = "Nom de fichier invalide";
         }
@@ -371,12 +374,12 @@
             }
 
             FichierCode.Add(new Fichier()
-            {
-                Contenu = "",
-                Nom = nomFichier,
-                Id = -(FichierCode.Count + 1),
-                Css = FocusedTab
-            });
+                {
+                    Contenu = "",
+                    Nom = nomFichier,
+                    Id = -(FichierCode.Count + 1),
+                    Css = FocusedTab
+                });
         }
 
         StateHasChanged();
