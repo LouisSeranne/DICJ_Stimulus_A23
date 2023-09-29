@@ -1,0 +1,107 @@
+﻿@using StimulusFrontEnd.Services;
+@using static StimulusFrontEnd.Components.Connector;
+@inject NavigationManager NavigationManager
+@for (int i = 0; i < Nodes.Count; i++)
+{
+    @if (Node.Id == Nodes[i].LiaisonPrincipal && Nodes[i].LiaisonPrincipal != null)
+    {
+        <Connector X1=Node.PosX Y1=Node.PosY X2=Nodes[i].PosX Y2=Nodes[i].PosY />
+    }
+}
+
+    <Draggable @bind-X=Node.PosX @bind-Y=Node.PosY>
+    <circle visibility="@displayHover" r="@(Node.Rayon + 3)" class="cercle" style="fill: rgba(255,255,255,5); opacity:0.5" />
+
+    <circle @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) r="@Node.Rayon" class="cercle" style="fill : @Couleur" />
+
+
+
+    <rect x="@((Node.Rayon*2- Node.Rayon/2 -10))" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />
+    <foreignObject x="@((Node.Rayon*2- Node.Rayon/2 -10))" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
+        <span> Nom :  @Node.Code / ID : @Node.Id</span><br />
+        <span>Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
+        <span> Desc : @Node.Description</span>       
+    </foreignObject>
+
+
+    <NavLink @onclick="DirectionPage">
+            <text text-anchor="middle" alignment-baseline="central">@Node.Code</text>
+         </NavLink> 
+                                                  
+    </Draggable>
+
+<style>
+    a{
+        text-decoration: none;
+    }
+    text {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        fill: white;
+    }
+
+    .cercle-title {
+        fill: #fff;
+        pointer-events: none !important;
+    }
+
+    .cercle {
+        z-index: 1;
+        stroke: #fff;
+        stroke-width: 1;
+    }
+</style>
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public StimulusFrontEnd.Services.Base.Noeud Node { get; set; }
+    [Parameter] public List<StimulusFrontEnd.Services.Base.Noeud> Nodes { get; set; }
+    [Parameter] public string Couleur { get; set; }
+    private string link;
+    private string displayHover = "hidden";
+    private string TestParent()
+    {
+        return (Node.LiaisonPrincipal != null) ? Node.LiaisonPrincipal.ToString() : "Aucun";
+    }
+    private string couleurBloquer = "rgb(140,140,140)";
+    private string couleurNonConsulter = "rgb(228, 231, 245)";
+    private string couleurConsulter = "rgb(199,160,53)";
+    private string couleurCompleter = "rgb(28, 90, 47)";
+
+    protected override void OnInitialized()
+    {
+        link = "index/" + Node.Code + Node.GrapheId + Node.Id;
+
+        if (Node.Status == 1)
+        {
+            Couleur = couleurBloquer;
+        }
+        else if (Node.Status == 2)
+        {
+            Couleur = couleurNonConsulter;
+        }
+        else if (Node.Status == 3)
+        {
+            Couleur = couleurConsulter;
+        }
+        else if (Node.Status == 4)
+        {
+            Couleur = couleurCompleter;
+        }
+    }
+    private void OnMouseHover()
+    {
+        displayHover = "visible";
+    }
+    private void OnMouseLeave()
+    {
+        displayHover = "hidden";
+    }
+    private void DirectionPage()
+    {
+        NavigationManager.NavigateTo("/theorie/" + Node.Id);
+    }
+
+}

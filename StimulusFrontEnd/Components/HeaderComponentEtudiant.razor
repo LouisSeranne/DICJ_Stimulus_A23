@@ -3,7 +3,6 @@
 
 @inject NavigationManager NavigationManager
 @inject IUpdateService updateService
-
 <AuthorizeView>
     <Authorized>
         @if (initDone)
@@ -100,7 +99,7 @@
             listCourGroupe.Add(new CoursGroupeHeader(etu.Groupes.Where(gr => gr.CoursId == cour.Id).FirstOrDefault(),cour));
         }
 
-       
+
         listCourGroupeOrdered.Add(listCourGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());
 
         foreach(CoursGroupeHeader cour in listCourGroupe)
@@ -110,7 +109,6 @@
                 listCourGroupeOrdered.Add(cour);
             }
         }
-        
         initDone = true;
 
         await InvokeAsync(StateHasChanged);

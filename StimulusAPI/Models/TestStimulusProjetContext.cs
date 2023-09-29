@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using StimulusAPI.Models;
-namespace StimulusAPI.Context
+
+namespace StimulusAPI.Models
 {
-    public partial class DevProjetStimulusContext : DbContext
+    public partial class TestStimulusProjetContext : DbContext
     {
-        public DevProjetStimulusContext()
+        public TestStimulusProjetContext()
         {
         }
 
-        public DevProjetStimulusContext(DbContextOptions<DevProjetStimulusContext> options)
+        public TestStimulusProjetContext(DbContextOptions<TestStimulusProjetContext> options)
             : base(options)
         {
         }
