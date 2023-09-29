@@ -20,7 +20,7 @@
                 <p class="grapheEnteteElement" style="color:white;"> zoom : @(Math.Round(zoomIncrement * 100))%</p>
             </div>
         </foreignObject>
-        <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg">
+        <svg class="bg-transparent" width="100%" height="2000" xmlns="http://www.w3.org/2000/svg">
             <rect width="180" height="180" x="0" y="5" fill="#32587a"></rect>
             <foreignObject x="0" y="5" width="180" height="180">
                 <div>
@@ -31,12 +31,12 @@
                 </div>
             </foreignObject>
             
-                <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox="@viewBoxX @viewBoxY @viewBoxWidth @viewBoxHeight"
+                <svg class="bg-transparent" width="100%" height="2000" xmlns="http://www.w3.org/2000/svg" viewBox="@viewBoxX @viewBoxY @viewBoxWidth @viewBoxHeight"
             @onmousemove=@(e => mouseSrv.FireMove(this, e))
             @onmouseup=@(e => mouseSrv.FireUp(this, e,SaveChange))
             @onmousewheel="Zoom">
                 <Draggable X="0" Y="0">
-                    <rect width="2000" height="2000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgba(0,0,0,0)" />
+                    <rect width="2000" height="2000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgba(0,0,0,0)"/>
                     @foreach (var noeud in Nodes)
                     {
                         <Cercle Node="@noeud" Nodes="@Nodes"></Cercle>
@@ -110,6 +110,7 @@
     /// </summary>
     private void AjoutNouveauNoeud()
     {
+
 
     }
     /// <summary>
@@ -197,14 +198,5 @@
             }
         }
     }
-
-}
-
-
-
-
-
-
-
 
 }
