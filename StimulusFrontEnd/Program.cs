@@ -36,9 +36,9 @@ builder.Services
 
 
 //configure le client utiliser par les autres services avec la validation custom
-builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri(builder.Configuration["API:Use"])).ConfigurePrimaryHttpMessageHandler(() =>
 
-builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri("http://localhost:5000")).ConfigurePrimaryHttpMessageHandler(() =>
+
+builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri(builder.Configuration["API:Use"])).ConfigurePrimaryHttpMessageHandler(() =>
 {
     return new HttpClientHandler()
     {

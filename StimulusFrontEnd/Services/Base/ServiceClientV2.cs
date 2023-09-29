@@ -5369,6 +5369,7 @@ namespace StimulusFrontEnd.Services.Base
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<Noeud> NoeudsPOSTAsync(Noeud body, System.Threading.CancellationToken cancellationToken)
         {
+            var t = body;
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/Noeuds");
 
@@ -5405,7 +5406,7 @@ namespace StimulusFrontEnd.Services.Base
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<Noeud>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -9480,7 +9481,7 @@ namespace StimulusFrontEnd.Services.Base
 
        /*[Newtonsoft.Json.JsonProperty("liaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Noeud? LiaisonPrincipalNavigation { get; set; }
-
+        
         [Newtonsoft.Json.JsonProperty("inverseLiaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Noeud>? InverseLiaisonPrincipalNavigation { get; set; }
        */

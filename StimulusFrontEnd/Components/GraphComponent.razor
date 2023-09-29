@@ -3,12 +3,12 @@
 @using StimulusFrontEnd.Services;
 @using static StimulusFrontEnd.Components.Connector
 @using static StimulusFrontEnd.Components.Cercle
+@inject MouseService mouseSrv;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntim
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject IUpdateService updateService
 @inject MouseService mouseSrv;
-
 
 <div class="row mt-2">
     <div class="col">
@@ -29,21 +29,24 @@
                     <p style="color:rgb(199,160,53); margin-left:10px;">  jaune: consulté</p>
                     <p style="color:rgb(88,150,105); margin-left:10px;">  vert : completé</p>
                 </div>
+                
             </foreignObject>
-            
-                <svg class="bg-transparent" width="100%" height="2000" xmlns="http://www.w3.org/2000/svg" viewBox="@viewBoxX @viewBoxY @viewBoxWidth @viewBoxHeight"
+            <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox = "@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth" 
             @onmousemove=@(e => mouseSrv.FireMove(this, e))
             @onmouseup=@(e => mouseSrv.FireUp(this, e,SaveChange))
             @onmousewheel="Zoom">
                 <Draggable X="0" Y="0">
-                    <rect width="2000" height="2000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgba(0,0,0,0)"/>
+                    <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgb(0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
-                        <Cercle Node="@noeud" Nodes="@Nodes"></Cercle>
+                        <Cercle Node="@noeud" Nodes="@Nodes" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></Cercle>
                     }
                 </Draggable>
-                </svg>
+
             </svg>
+        </svg>
+
+
 
     </div>
 </div>
@@ -62,8 +65,13 @@
 
 
 
+    private double xAllDrag { get; set; } = 0;
+    private double yAllDrag { get; set; } = 0;
+    private string displayNouveauNoeud = "hidden";
+    private Noeud nouveauNoeud;
     protected override void OnInitialized()
     {
+        nouveauNoeud = new();
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
         handler.ServerCertificateCustomValidationCallback =
@@ -75,6 +83,7 @@
         httpClient.BaseAddress = new Uri("http://localhost:5000");
         client = new Client(httpClient);
         UpdateGraphe();
+
     }
     /// <summary>
     /// Recupere les noeuds du graph Numero X
@@ -83,21 +92,24 @@
     {
         try
         {
-            if (sessionStorage != null)
+            Nodes = new();
+            if (sessionStorage != null )
             {
-                await sessionStorage.ContainKeyAsync("idGraphe");
-
-                int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
-                NodesTemp = client.NoeudsAllAsync().Result.ToList();
-                foreach (var item in NodesTemp)
+                if (await sessionStorage.ContainKeyAsync("idGraphe") && await sessionStorage.GetItemAsync<int>("idGraphe") != 0)
                 {
-                    if (item.GrapheId == idGraphe)
+                    int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+                    NodesTemp = client.NoeudsAllAsync().Result.ToList();
+                    foreach (var item in NodesTemp)
                     {
-                        Nodes.Add(item);
-                    }                  
+                        if (item.GrapheId == idGraphe)
+                            Nodes.Add(item);
+                    }
                 }
+                else
+                    UpdateGraphe();
+
             }
-            NavigationManager.NavigateTo("/index");
+            NavigationManager.NavigateTo("/index");    
         }
         catch
         {
@@ -105,11 +117,18 @@
         }
 
     }
+    private void ResetPositionGraph()
+    {
+        yAllDrag = 0;
+        xAllDrag = 0;
+    }
     /// <summary>
     /// Permet l'ajout de noveau noeud
     /// </summary>
-    private void AjoutNouveauNoeud()
+    private void AjoutNouveauNoeud(Noeud nouveauNoeud)
     {
+        SaveNouveauNoeud(nouveauNoeud); 
+        UpdateGraphe();
 
 
     }
@@ -119,6 +138,8 @@
     /// <param name="id"></param>
     private void SupprimerNoeud(int id)
     {
+        client.NoeudsDELETEAsync(id);
+        UpdateGraphe();
 
     }
     private void OnMouseHover()
@@ -198,5 +219,9 @@
             }
         }
     }
-
+    public async void SaveNouveauNoeud(Noeud noeud)
+    {
+        if(noeud !=null)
+            await client.NoeudsPOSTAsync(noeud);
+    }
 }
