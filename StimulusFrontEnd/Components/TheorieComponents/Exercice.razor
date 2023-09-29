@@ -236,6 +236,8 @@
     /// </summary>
     private async void Post()
     {
+        //Fonction Save() si jamais il y a besoin de save avant
+        //Save();
         List<object> fichiers = new List<object>();
         string jsonString = "";
 
@@ -266,6 +268,7 @@
     private async void Save()
     {
         List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
+        int id = -1;
         foreach(Fichier fichier in FichierCode)
         {
             await ChangeTab(fichier.Id);
@@ -279,6 +282,8 @@
                 Nom = fichier.Nom,
                 Version = DateTime.Now
             });
+            if (fichier.Css != "hidden")
+                id = fichier.Id;
         }
         try
         {
@@ -307,7 +312,8 @@
         Result = "Fichiers enregistrés";
 
         Console.WriteLine("File saved");
-
+        if (id != -1)
+            await ChangeTab(id);
         StateHasChanged();
     }
 
