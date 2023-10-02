@@ -178,8 +178,8 @@
         formSizeW = 0;
         formSizeH = 0;
         nouveauNoeud.GrapheId = await sessionStorage.GetItemAsync<int>("idGraphe");
-        nouveauNoeud.PosX = 300;
-        nouveauNoeud.PosY = 300;
+        nouveauNoeud.PosX = Node.PosX;
+        nouveauNoeud.PosY = Node.PosY + 100;
         nouveauNoeud.LiaisonPrincipal = Node.Id;
         nouveauNoeud.Pts = 0;
         nouveauNoeud.Obligatoire = true;
