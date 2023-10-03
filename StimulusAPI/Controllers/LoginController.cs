@@ -13,8 +13,6 @@ using StimulusAPI.Authorization;
 using StimulusAPI.Models;
 using StimulusAPI.Context;
 using StimulusAPI.LoginContext;
-using Microsoft.Data.SqlClient;
-using StimulusAPI.Config;
 
 namespace StimulusAPI.Controllers
 {
@@ -82,53 +80,54 @@ namespace StimulusAPI.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] ModelEnregistrement model)
         {
-            var userExists = await userManager.FindByNameAsync(model.Code);
+            var userExists = await userManager.FindByNameAsync(model.UserName);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "L'utilisateur existe!" });
 
             UtilisateurApplication user = new UtilisateurApplication()
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Code
+                UserName = model.UserName
             };
 
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Création d'utilisateur a échoué! Vérifié les détails de l'utilisateur et réessayer." });
+            
             if (!await roleManager.RoleExistsAsync(RolesUtilisateurs.Etudiant))
                 await roleManager.CreateAsync(new IdentityRole(RolesUtilisateurs.Etudiant));
             if (await roleManager.RoleExistsAsync(RolesUtilisateurs.Etudiant))
             {
                 await userManager.AddToRoleAsync(user, RolesUtilisateurs.Etudiant);
             }
-            await AjoutBD(model, RolesUtilisateurs.Etudiant);
             return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
         }
-
         [HttpPost]
         [Route("register-prof")]
         public async Task<IActionResult> RegisterProf([FromBody] ModelEnregistrement model)
-        {            
-            var userExists = await userManager.FindByNameAsync(model.Code);
+        {
+            var userExists = await userManager.FindByNameAsync(model.UserName);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "L'utilisateur existe!" });
 
             UtilisateurApplication user = new UtilisateurApplication()
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Code
+                UserName = model.UserName
             };
 
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Création d'utilisateur a échoué! Vérifié les détails de l'utilisateur et réessayer." });
+
             if (!await roleManager.RoleExistsAsync(RolesUtilisateurs.Professeur))
                 await roleManager.CreateAsync(new IdentityRole(RolesUtilisateurs.Professeur));
+
             if (await roleManager.RoleExistsAsync(RolesUtilisateurs.Professeur))
             {
                 await userManager.AddToRoleAsync(user, RolesUtilisateurs.Professeur);
             }
-            await AjoutBD(model, RolesUtilisateurs.Professeur);
+
             return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
         }
 
@@ -136,14 +135,14 @@ namespace StimulusAPI.Controllers
         [Route("register-admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] ModelEnregistrement model)
         {
-            var userExists = await userManager.FindByNameAsync(model.Code);
+            var userExists = await userManager.FindByNameAsync(model.UserName);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "L'utilisateur existe!" });
 
             UtilisateurApplication user = new UtilisateurApplication()
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Code
+                UserName = model.UserName
             };
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -158,10 +157,9 @@ namespace StimulusAPI.Controllers
             {
                 await userManager.AddToRoleAsync(user, RolesUtilisateurs.Administrateur);
             }
-            await AjoutBD(model, RolesUtilisateurs.Administrateur);
+
             return Ok(new Reponse { Status = "Success", Message = "Utilisateur créé avec succès!" });
         }
-
         private async Task<string> GenerateToken(UtilisateurApplication appUser)
         {
 
@@ -192,88 +190,6 @@ namespace StimulusAPI.Controllers
                 signingCredentials: new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        /// <summary>
-        /// Ajoute l'utilisateur dans les tables de données usuelles (autre que ASP.NET)
-        /// </summary>
-        /// <param name="user"> Informations de l'utilisateur à inscrire </param>
-        /// <param name="role"> Rôle attribué à l'utilisateur </param>
-        /// <returns> Code de status HTTP en fonction de la réussite de l'action </returns>
-        private async Task<IActionResult> AjoutBD(ModelEnregistrement user, string role)
-        {
-            DbConfig dbConfig = new DbConfig();
-            string connectionString = dbConfig.SqlConnStringBuilder.ToString();
-            switch (role)
-            {
-                default:
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Erreur inattendue liée à la base de données, contactez un administrateur" });
-                case "Etudiant":
-                    await using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            connection.Open();
-                            string insertQuery = "INSERT INTO dbo.etudiant (code_da, nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3, @Valeur4)";
-                            using (SqlCommand command = new SqlCommand(insertQuery, connection))
-                            {
-                                command.Parameters.AddWithValue("@Valeur1", user.Code);
-                                command.Parameters.AddWithValue("@Valeur2", user.Nom);
-                                command.Parameters.AddWithValue("@Valeur3", user.Prenom);
-                                command.Parameters.AddWithValue("@Valeur4", user.Password);
-                                command.ExecuteNonQuery();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Erreur inattendue liée à la base de données, contactez un administrateur" });
-                        }
-                    }
-                    break;
-                case "Professeur":
-                    await using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            connection.Open();
-                            string insertQuery = "INSERT INTO dbo.professeur (nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3)";
-                            using (SqlCommand command = new SqlCommand(insertQuery, connection))
-                            {
-                                command.Parameters.AddWithValue("@Valeur1", user.Nom);
-                                command.Parameters.AddWithValue("@Valeur2", user.Prenom);
-                                command.Parameters.AddWithValue("@Valeur3", user.Password);
-                                command.ExecuteNonQuery();
-                            }                            
-                        }
-                        catch (Exception ex)
-                        {
-                            return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Erreur inattendue liée à la base de données, contactez un administrateur" });
-                        }
-                    }
-                    break;
-                case "Administrateur":
-                    await using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            connection.Open();
-                            string insertQuery = "INSERT INTO dbo.administrateur (nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3)";
-                            using (SqlCommand command = new SqlCommand(insertQuery, connection))
-                            {
-                                command.Parameters.AddWithValue("@Valeur1", user.Nom);
-                                command.Parameters.AddWithValue("@Valeur2", user.Prenom);
-                                command.Parameters.AddWithValue("@Valeur3", user.Password);
-                                command.ExecuteNonQuery();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Erreur inattendue liée à la base de données, contactez un administrateur" });
-                        }
-                    }
-                    break;
-            }
-            return Ok(new Reponse { Status = "200 Ok", Message = "200 Ok" });
         }
     }
 }

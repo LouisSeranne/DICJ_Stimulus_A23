@@ -15,7 +15,6 @@ namespace StimulusAPI.Models
         public int Pts { get; set; }
         public int Ordre { get; set; }
         public int? NoeudId { get; set; }
-        public string Nom { get; set; }
 
         public virtual Noeud? Noeud { get; set; }
         public virtual ICollection<PageComposant> PageComposants { get; set; }

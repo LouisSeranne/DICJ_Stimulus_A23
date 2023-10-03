@@ -2,12 +2,10 @@
 @inject IJSRuntime JS
 @page "/index"
 @layout EtudiantLayout
-
+@*@attribute [Authorize(Roles = "Etudiant")]
+*@
 <PageTitle>Index</PageTitle>
 
-<AuthorizeView Roles="Administrateur">
-    <h1>Autorisé, mais redirection car pas de graph lié</h1>
-</AuthorizeView>
 <AuthorizeView Roles="Etudiant">
     <Authorized>
         <StimulusFrontEnd.Components.GrapheComponent></StimulusFrontEnd.Components.GrapheComponent>
@@ -17,5 +15,9 @@
         <RedirectToLogin/>
     </NotAuthorized>
 </AuthorizeView>
-@code {}
+
+
+@code {
+
     
+}

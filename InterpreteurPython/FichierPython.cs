@@ -6,12 +6,6 @@ using System.Threading.Tasks;
 
 namespace InterpreteurPython;
 
-/// <summary>
-/// Modèle pour l'interpréteur Python
-/// 
-/// Nom : Correspond au nom du fichier. Il doit avoir l'extension.py
-/// Contenu : Contenu du fichier
-/// </summary>
 public class FichierPython
 {
     public string Nom { get; set; }
@@ -23,3 +17,9 @@ public class FichierPython
         Contenu = contenu;
     }
 }
+
+/*
+ * Model pour l'interpreteur python. 
+ * Nom : corerspond au nom du fichier. Doit contenir l'extension .py
+ * Contenu : code que conteint le fichier
+ * */

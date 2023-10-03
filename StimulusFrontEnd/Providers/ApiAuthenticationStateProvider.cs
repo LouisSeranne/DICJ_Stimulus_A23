@@ -20,11 +20,7 @@ namespace StimulusFrontEnd.Providers
             this.sessionStorage = sessionStorage;
             jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
         }
-
-        /// <summary>
-        /// Cette fonction vérifie si vous êtes authentifié ou pas
-        /// </summary>
-        /// <returns></returns>
+        //Cette fonction vérifie si vous êtes authentifié ou pas
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             //créé un Claim qui est nécéssaire pour les JWT. Voir la doc ci-dessous pour comprendre les JWT.
@@ -61,7 +57,6 @@ namespace StimulusFrontEnd.Providers
 
             return new AuthenticationState(user);
         }
-
         public async Task LoggedIn()
         {
             
@@ -74,12 +69,9 @@ namespace StimulusFrontEnd.Providers
             
             NotifyAuthenticationStateChanged(authState);
         }
-
-        /// <summary>
-        /// Vide tout ce qui est lié à l'utilisateur
-        /// </summary>
         public async Task LoggedOut()
         {
+            //cette fonction vide tout ce qui est relié à l'utilisateur
             //await sessionStorage.RemoveItemAsync("accessToken");
             await sessionStorage.ClearAsync();
             var nobody = new ClaimsPrincipal(new ClaimsIdentity());

@@ -1,3 +1,0 @@
-- Le code devrait être en français
-- Les anglicismes sont tolérés, mais devraient être évités le plus possible
-- Si quelque chose est mieux connu sous son nom en anglais, utiliser le nom en anglais
