@@ -24,22 +24,22 @@
             <rect width="180" height="180" x="0" y="5" fill="#32587a"></rect>
             <foreignObject x="0" y="5" width="180" height="180">
                 <div>
-                    <p style="color:rgb(140,140,140); margin-left:10px;">  gris : bloqué</p>
-                    <p style="color:rgb(228, 231, 245); margin-left:10px;">  blanc: disponible</p>
-                    <p style="color:rgb(199,160,53); margin-left:10px;">  jaune: consulté</p>
-                    <p style="color:rgb(88,150,105); margin-left:10px;">  vert : completé</p>
+                    <p style="color:rgb(140,140,140); margin-left:10px;"> 1 gris : bloqué</p>
+                    <p style="color:rgb(228, 231, 245); margin-left:10px;"> 2 blanc: disponible</p>
+                    <p style="color:rgb(199,160,53); margin-left:10px;"> 3 jaune: consulté</p>
+                    <p style="color:rgb(88,150,105); margin-left:10px;"> 4 vert : completé</p>
                 </div>
                 
             </foreignObject>
-            <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox = "@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth" 
+            <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox = "@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth"
             @onmousemove=@(e => mouseSrv.FireMove(this, e))
-            @onmouseup=@(e => mouseSrv.FireUp(this, e,SaveChange))
+            @onmouseup=@(e => mouseSrv.FireUp(this, e))
             @onmousewheel="Zoom">
                 <Draggable X="0" Y="0">
                     <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgb(0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
-                        <Cercle Node="@noeud" Nodes="@Nodes" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></Cercle>
+                        <Cercle Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></Cercle>
                     }
                 </Draggable>
 
@@ -62,11 +62,7 @@
     private double viewBoxWidth = 2000;
     private double viewBoxHeight = 2000;
     private double zoomIncrement = 1;
-
-
-
-    private double xAllDrag { get; set; } = 0;
-    private double yAllDrag { get; set; } = 0;
+    private string viewForm = "hidden";
     private string displayNouveauNoeud = "hidden";
     private Noeud nouveauNoeud;
     protected override void OnInitialized()
@@ -83,54 +79,35 @@
         httpClient.BaseAddress = new Uri("http://localhost:5000");
         client = new Client(httpClient);
         UpdateGraphe();
-
     }
+
     /// <summary>
     /// Recupere les noeuds du graph Numero X
     /// </summary>
     private async void UpdateGraphe()
     {
-        try
+        Nodes = new();
+        if (sessionStorage != null )
         {
-            Nodes = new();
-            if (sessionStorage != null )
+            if (await sessionStorage.ContainKeyAsync("idGraphe") && await sessionStorage.GetItemAsync<int>("idGraphe") != 0)
             {
-                if (await sessionStorage.ContainKeyAsync("idGraphe") && await sessionStorage.GetItemAsync<int>("idGraphe") != 0)
+                int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+                NodesTemp = client.NoeudsAllAsync().Result.ToList();
+                foreach (var item in NodesTemp)
                 {
-                    int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
-                    NodesTemp = client.NoeudsAllAsync().Result.ToList();
-                    foreach (var item in NodesTemp)
-                    {
-                        if (item.GrapheId == idGraphe)
-                            Nodes.Add(item);
-                    }
+                    if (item.GrapheId == idGraphe)
+                        Nodes.Add(item);
                 }
-                else
-                    UpdateGraphe();
-
             }
-            NavigationManager.NavigateTo("/index");    
         }
-        catch
-        {
-            //Erreur dans le preload de la session, erreur a fix au niveau de idGraphe et autre variable surement patch avec une main page par default
-        }
-
-    }
-    private void ResetPositionGraph()
-    {
-        yAllDrag = 0;
-        xAllDrag = 0;
     }
     /// <summary>
     /// Permet l'ajout de noveau noeud
     /// </summary>
     private void AjoutNouveauNoeud(Noeud nouveauNoeud)
     {
-        SaveNouveauNoeud(nouveauNoeud); 
-        UpdateGraphe();
-
-
+        SaveNouveauNoeud(nouveauNoeud);
+        Nodes.Add(nouveauNoeud);
     }
     /// <summary>
     /// Supprime le noeud avec l'id selectionner
@@ -142,24 +119,15 @@
         UpdateGraphe();
 
     }
-    private void OnMouseHover()
-    {
-        displayHover = "show";
-    }
-    private void OnMouseLeave()
-    {
-        displayHover = "hidden";
-    }
+    private void OnMouseHover() => displayHover = "show";
+    private void OnMouseLeave() => displayHover = "hidden";
     /// <summary>
     /// Sauvegarde les mises a jour du graph
     /// </summary>
-    public void SaveChange()
+    public void SaveChange(Noeud noeud)
     {
-        foreach (var item in Nodes)
-        {
-            client.NoeudsPUTAsync(item.Id, item);
-        }
-        NavigationManager.NavigateTo("/index");
+        client.NoeudsPUTAsync(noeud.Id, noeud);
+        UpdateGraphe();
 
     }
 
