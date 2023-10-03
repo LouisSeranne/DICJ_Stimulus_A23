@@ -18,11 +18,9 @@ namespace StimulusFrontEnd.Services {
             OnMove?.Invoke(obj, evt);
         }
 
-        public void FireUp(object obj, MouseEventArgs evt, Action SaveChange)
+        public void FireUp(object obj, MouseEventArgs evt)
         {
             OnUp?.Invoke(obj, evt);
-            SaveChange();
-
         }
 
         public void FireLeave(object obj, MouseEventArgs evt)
