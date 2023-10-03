@@ -3,19 +3,18 @@
 namespace InterpreteurPython;
 
 
-/// <summary>
-/// Classe static qui s'occupe de lire le python. Pour faire fonctionner, seulement appeler PythonReader.Run() en fournissant les paramètres appropriés
-/// </summary>
+//Classe static qui s'occupe de lire le python. Pour faire fonctionner, seulement appeler PythonReader.Run() en fournissant les paramètres appropriés
 public static class PythonReader
 {
     internal static TempHandler tempHandler = new TempHandler();
 
-    /// <summary>
-    /// Lit les fichiers Python créés par le tempHandler
-    /// </summary>
-    /// <param name="main">Fichier lu par le lecteur. Doit être main.py</param>
-    /// <param name="pythonPath">Correspond au path de l'exécutable. Ne devrait pas être hardcodé et ne pas modifier la valeur car elle est propre au serveur IIS sur lequel le projet tourne</param>
-    /// <returns></returns>
+
+    /*Fonction qui s'occupe de lire les fichiers pythons créées par le tempHandler.
+    params : 
+    main : c'est le fichier que le lecteur va lire. Doit être le main.py
+    pythonPath : Correspond au path de l'executable python sur le serveur. Ne devrais pas être hardcodé et ne pas modifier la valeur car 
+                 elle est propre au serveur IIS sur lequel le projet tourne
+    */
     static private string Read(string main)
     {
         ProcessStartInfo start = new ProcessStartInfo();
@@ -59,12 +58,11 @@ public static class PythonReader
         }
     }
 
-    /// <summary>
-    /// Commande pour lancer la lecture du code Python
-    /// </summary>
-    /// <param name="code">Liste que l'utilisateur veut faire lire par l'itérateur</param>
-    /// <param name="userId">DA de l'utilisateur</param>
-    /// <returns></returns>
+    /*Commande pour lancer la lecture du code python
+     *Params:
+     *  code : Il s'agit d'une list d'objet de type FichierPython que l'utilisateur veux faire lire par l'itérateur.
+     *  userId : Id de l'utilisateur qui veux faire lire son code. Correspond au DA de l'utilisateur.
+     * */
     static public string Run(List<FichierPython> code, string userId)
     {       
         //Appel la fonction qui setup les fichiers temporaire qui vont contenir le code de l'utilisateur

@@ -2,29 +2,25 @@
 @using StimulusFrontEnd.Services.Authentification
 @using StimulusFrontEnd.Providers
 
+
+
 @page "/admin"
 
-<h1>Admin</h1>
+<h3>Admin</h3>
 
 <div>
+
+
     <AuthorizeView Roles="Administrateur">
         <Authorized>
-            <h2>Page admin autorisée</h2>
-            <div>
-                <h3>Liens Test</h3>
-                <br />
-                <a href="/index">Redirection /index</a>
-                <br />
-                <a href="/prof">Redirection /prof</a>
-                <br />
-                <a href="/groupe">Redirection /groupe</a>
-            </div>
+            <h3>page admin authorized</h3>
         </Authorized>
         <NotAuthorized>
-            <h3>Page admin non autorisée</h3>
-            <RedirectToLogin></RedirectToLogin>
+
+            <h3>page admin not authorized</h3>
         </NotAuthorized>
     </AuthorizeView>
+
 </div>
 
 @code {

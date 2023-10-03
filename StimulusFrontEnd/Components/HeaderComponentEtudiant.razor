@@ -4,35 +4,41 @@
 @inject NavigationManager NavigationManager
 @inject IUpdateService updateService
 
+
+
+
 <AuthorizeView>
     <Authorized>
         @if (initDone)
-        {         
-            <header class="containerHeader">
+        {
+            <div class="containerHeader">
                 <div class="row">
-                    <div class="col-sm-4 col-md-4 col-lg-4">
-                        <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
+                    <div class="col-sm-1 col-md-1 col-lg-1">
+                        <img src="/image/cepi_logo_pas_officiel_2.png" alt="Logo CEPI" class="logoHeader"/>
                     </div>
-                    <div class="col-sm-3 col-md-3 col-lg-3">
-                        @*En lien avec le Groupe, quand on change de groupe, le code et lA description change aussi*@
-                        <p class="pHeader">Code: @cours.CodeCours</p>
-                        <p class="pHeader"> Description: @cours.Description</p>                        
-                    </div>                  
-                    <div class ="col-sm-1 col-md-1 col-lg-1">
-                        <select @onchange="ChangeCours" name="cours" class="ListeHeader" value=@listCourGroupeOrdered[0].IdGroupe>
-                           @for (int i = 0; i < listCourGroupeOrdered.Count; i++)
-                           {
-                               <option value="@listCourGroupeOrdered[i].IdGroupe">@listCourGroupeOrdered[i].Nom</option>
-                           }
+                    <div class="col-sm-2 col-md-3 col-lg-1">
+                        <p class="pHeader">@cours.Description</p>
+                        <p class="pHeader">@cours.CodeCours</p>
+                    </div>
+
+                     <div class="col-sm-2 col-md-2 col-lg-2">
+                        <select @onchange="ChangeCours" name="cours" value=@listCourGroupeOrdered[0].IdGroupe>
+                            @for(int i = 0; i < listCourGroupeOrdered.Count;i++)
+                            {
+                                <option value="@listCourGroupeOrdered[i].IdGroupe">@listCourGroupeOrdered[i].Nom</option>
+                            }
+
                         </select>
                     </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4 divDroiteHeader">
-                        <a href="/index"><img src="/image/Graph.png" alt="Logo Graph" class="logoHeader"/></a>
-                        <a href="/logout"><img src="/image/Logout.png" alt="Logo Graph" class="logoHeader"/></a>
-                        <img src="/image/Avatar.png" alt="Logo Avatar" class="logoHeader"/>
+                    <div class="col-sm-5 col-md-4 col-lg-8 bouttonNavigation" >
+
+                        <a href="/index"><img src="/image/Graph.jpg" alt="Logo Graph" class="logoHeader"/></a>
+                        <a href="/logout"><img src="/image/logout.png" alt="Logo Graph" class="logoHeader" /></a>
+                        <img src="/image/Avatar.jpg" alt="Logo Avatar" class="logoHeader"/>
                     </div>
                 </div>
-            </header>
+            </div>
+
         }
     </Authorized>
     <NotAuthorized>
@@ -40,7 +46,13 @@
     </NotAuthorized>
 </AuthorizeView>
 
+
+
+
 @code {
+
+
+
     Cour cours;
 
     private int idGroupe,idCours;
@@ -57,8 +69,6 @@
     {
         initDone = false;
 
-        var builder = WebApplication.CreateBuilder();
-
         //Handler : Permet de contourner les certifications sinon le projet crash
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
@@ -69,11 +79,12 @@
             };
 
         //Set une nouvelle Uri pour lien le Front-End a la Bd
-        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri(builder.Configuration["API:Use"]) };
-
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/") };
         client = new Client(httpClient);
 
         //Requete utilisée pour aller chercher les données du cours en fonction de l'id du graphe
+
+
 
     }
 
@@ -110,6 +121,7 @@
                 listCourGroupeOrdered.Add(cour);
             }
         }
+
         
         initDone = true;
 
@@ -135,7 +147,9 @@
         updateService.CallRequestRefresh();
         NavigationManager.NavigateTo("/index");
     }
-   
+
+     
+
     private class CoursGroupeHeader
     {
         public CoursGroupeHeader(GroupeVM groupe, Cour cour)

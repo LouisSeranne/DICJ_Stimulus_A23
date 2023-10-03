@@ -38,22 +38,3 @@ h3{
     padding-left:7%;
     justify-content:center;
 }
-/*CSS pour l'emplacement blanc au milieu de la page Groupe */
-.loginCenterGroupe {
-    position: absolute;
-    top: 35%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 720px;
-    background: #164977;
-    border-radius: 10px;
-    overflow: hidden;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 100px;
-}

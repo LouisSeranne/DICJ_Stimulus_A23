@@ -2708,14 +2708,13 @@ namespace StimulusFrontEnd.Services.Base
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 204) // Added code 204 because this function doesn't return any content, so 204 is used instead of 200
+                        if (status_ == 200)
                         {
                             return;
                         }
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            Console.WriteLine("The HTTP status code of the response was not expected in FichierSauvegardeDELETEAsync (" + status_ + ").", status_, responseData_, headers_, null);
                             throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
@@ -2787,7 +2786,6 @@ namespace StimulusFrontEnd.Services.Base
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            Console.WriteLine("The HTTP status code of the response was not expected in FichierSauvegardePOSTAsync (" + status_ + ").", status_, responseData_, headers_, null);
                             throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
@@ -3831,11 +3829,7 @@ namespace StimulusFrontEnd.Services.Base
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 201)
-                        {
-                            return null;
-                        }
-                        else if (status_ == 200)
+                        if (status_ == 200)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<Groupe>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -8974,7 +8968,6 @@ namespace StimulusFrontEnd.Services.Base
                         var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
                         var typedBody = serializer.Deserialize<T>(jsonTextReader);
                         return new ObjectResponseResult<T>(typedBody, string.Empty);
-
                     }
                 }
                 catch (Newtonsoft.Json.JsonException exception)
@@ -9550,9 +9543,6 @@ namespace StimulusFrontEnd.Services.Base
 
         [Newtonsoft.Json.JsonProperty("noeudId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? NoeudId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("nom", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Nom { get; set; }
 
     }
 

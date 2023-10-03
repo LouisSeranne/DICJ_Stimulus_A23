@@ -6,7 +6,7 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JsRunTime
 
-<AuthorizeView Roles="Professeur, Administrateur">
+<AuthorizeView>
     <Authorized>
         <h3 style="color:white" >PageMenuProfesseur</h3>
         <a class="btn btn-outline-light" role="button" aria-pressed="true" onclick=@PageGroupe>Page Création de groupe</a>
@@ -21,7 +21,9 @@
 @code {
     private async void PageGroupe()
     {
-        NavManager.NavigateTo("/groupe");
+        string message = "Page en cours de développement";
+        await JsRunTime.InvokeAsync<object>("alert", message);
+        //NavManager.NavigateTo("/groupe");
     }
 
 
