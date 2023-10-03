@@ -76,7 +76,7 @@
                 return true;
             };
         httpClient = new HttpClient(handler);
-        httpClient.BaseAddress = new Uri("http://localhost:5000");
+        httpClient.BaseAddress = new Uri("https://p22e1api-dev-dicjprojet.cegepjonquiere.ca/");
         client = new Client(httpClient);
         UpdateGraphe();
     }
