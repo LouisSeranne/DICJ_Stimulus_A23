@@ -67,6 +67,7 @@
     private Noeud nouveauNoeud;
     protected override void OnInitialized()
     {
+        var builder = WebApplication.CreateBuilder();
         nouveauNoeud = new();
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
@@ -76,7 +77,7 @@
                 return true;
             };
         httpClient = new HttpClient(handler);
-        httpClient.BaseAddress = new Uri("https://p22e1api-dev-dicjprojet.cegepjonquiere.ca/");
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
         client = new Client(httpClient);
         UpdateGraphe();
     }
