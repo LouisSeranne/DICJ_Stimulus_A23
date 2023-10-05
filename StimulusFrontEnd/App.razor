@@ -8,12 +8,12 @@
                 
                 <NotAuthorized>
                     @if(context.User?.Identity?.IsAuthenticated == false)
-                    {
+                    {                       
                         <RedirectToLogin/>
                     }
                     else
                     {
-                        <div class="alert alert-warning"><p>Vous n'etes pas authorizer</p></div>
+                        <div class="alert alert-warning"><p>Vous n'êtes pas autorisé à accéder à cette page</p></div>
                     }
                 </NotAuthorized>
             </AuthorizeRouteView>
@@ -27,7 +27,7 @@
                         <RedirectToGraph/>
                     </Authorized>
                     <NotAuthorized>
-                        <p style="color:white" role="alert">Sorry, there's nothing at this address.</p>
+                        <p style="color:white" role="alert">Désolé, il n'y a rien à cette adresse.</p>
                         <a class="btn btn-outline-light" role="button" aria-pressed="true" href="/">Page connexion</a>
                     </NotAuthorized>
                 </AuthorizeView>

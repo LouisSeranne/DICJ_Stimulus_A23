@@ -1,11 +1,15 @@
 ﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
- <!--Interpreteur-->
+
+<!--Interpreteur-->
 @if(InitDone)
 {
     <div class="fileSelector">
         @foreach(Fichier fichier in FichierCode)
         {
-            <button @onclick="() => ChangeTab(fichier.Id)">@fichier.Nom</button>
+            <div>
+                <button @onclick="() => ChangeTab(fichier.Id)">@fichier.Nom</button>
+                <button @onclick="() => Delete(fichier.Id)">X</button>
+            </div>
         }
         <button @onclick="AddPage">+</button>
     </div>
@@ -13,7 +17,7 @@
     <div>
         @foreach(Fichier fichier in FichierCode)
         {
-            <textarea class="col-sm-6 col-md-6 col-lg-6 @fichier.Css" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
+            <textarea class="textareaCode col-sm-6 col-md-6 col-lg-6 @fichier.Css" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
         }
     </div>
     <p style="white-space:pre-wrap">@Result</p>
@@ -23,11 +27,11 @@
     
 
 <!--Section bouton-->
-<div class="row">
-    <div class="col-sm-1 col-md-1 col-lg-1">
-        <button @onclick=@Post class="boutonExerciceGauche">Run</button>
+<div>
+    <div>
+        <button @onclick=@Post class="boutonExerciceGauche">Executer</button>
     </div>
-    <div class="col-sm-5 col-md-5 col-lg-5">
+    <div>
         <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
     </div>
 </div>
@@ -48,6 +52,12 @@
     [Parameter]
     public Models.Exercice ExerciceModel { get; set; }
 
+    /// <summary>
+    /// FocusedTab : attribut pour afficher le textarea
+    /// HiddenTab : attribut pour cacher le textarea
+    /// Result : résultat du code python de l'étudiant
+    /// InitDone : Dit si oui ou non l'initialisation du component est fait
+    /// </summary>
     [Inject] 
     private IJSRuntime JS { get; set; }
     private string FocusedTab { get; set; } = "focused";
@@ -57,24 +67,15 @@
     private bool InitDone { get; set; } = false;
     private Client ApiClient = null;
 
-    @*
-        FocusedTab : attribut pour afficher le textarea
-        HiddenTab : attribut pour cacher le textarea
-        Result : résultat du code python de l'étudiant
-        InitDone : Dit si oui ou non l'initialisation du component est fait
 
-    *@
-
-
-    @*
-        Classe interne pour les fichiers
-        Id: id du fichier qui provient de la bd
-        Css : Permet d'afficher ou cacher le textarea du fichier
-        Nom : Nom du ficheir
-        Contenu : Code du fichier
-
-        Le fichier est créé et est caché
-    *@
+    /// <summary>
+    /// Classe interne pour les fichiers
+    /// Le fichier est caché par défaut
+    /// </summary>
+    /// <param name="Id"> id du fichier provenant de la BD </param>
+    /// <param name="Css"> Permet d'afficher ou cacher le textarea </param>
+    /// <param name="Nom"> Nom du fichier </param>
+    /// <param name="Contenu"> Code du fichier </param>
     public class Fichier
     {
         public int Id { get; set; }
@@ -99,7 +100,9 @@
 
     private List<Fichier> FichierCode { get; set; }
 
-    @*Initialise le component en allant chercher les fichiers d'exercice correspondant*@
+    /// <summary>
+    /// Initialise le composant en allant chercher les fichiers d'ecercice correspondants
+    /// </summary>
     protected override async void OnInitialized()
     {
         SetupClient();
@@ -132,28 +135,69 @@
             }
         }
         
-        FichierCode[0].Css = FocusedTab;
+        //FichierCode[0].Css = FocusedTab;
         
 
         InitDone = true;
         await InvokeAsync(StateHasChanged);
     }
 
+    /// <summary>
+    /// Permet de DELETE un ficher_sauvegarde
+    /// </summary>
+    /// <param name="id"> id du fichier a supprimer </param>
+    private async void Delete(int id)
+    {
+        if(id <= 0)
+        {
+            Result = "Erreur : Ne peut pas supprimer ce qui n'existe pas. Avez-vous sauvegardé?";
+        }
+        else
+        {
+            Console.WriteLine("Trying to delete fichier_sauvegarde #" + id);
+            try
+            {
+                var deletedTab = FichierCode.Find(tab => tab.Id == id);
+                deletedTab.Css = FocusedTab;
+                FichierCode.Remove(deletedTab);
+                
+                await ApiClient.FichierSauvegardesDELETEAsync(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed to delete : " + e.Message);
+                Result = "Échec de la supression des fichiers";
+            }
+            Result = "Fichier supprimé";
+        }
+        StateHasChanged();
+    }
 
-    @*Permet de faire des indentatios avec la touche tab a la place de faire 4 espaces manuellement*@
+
+    /// <summary>
+    /// Permet de faire des indentations avec la touche tab à la place de faire 4 espaces manuellement
+    /// </summary>
+    /// <param name="id"> id du fichier qui requiert des tabulations </param>
     private async void Tab(int id)
     {
         //Attention de pas en ajouter plusieurs
         await JS.InvokeVoidAsync("TabulationFunction.tab", id.ToString());
     }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("HighlightFunctions.highlightSnippets");
+    }
 
-    @*Permet de poster le code de l'étudiant pour le faire interpreter et avoir un retour*@
+    /// <summary>
+    /// Envoit le code de l'étudiant à l'interpréteur
+    /// </summary>
     private async void Post()
     {
         List<object> fichiers = new List<object>();
         string jsonString = "";
 
         Result = "Interprétation du code...";
+        Console.WriteLine("Running python code...");
         StateHasChanged();
 
         foreach(Fichier f in FichierCode)
@@ -171,6 +215,9 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Sauvegarde le fichier python de l'étudiant
+    /// </summary>
     private async void Save()
     {
         List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
@@ -205,16 +252,23 @@
                     Css = HiddenTab
                 });
             }
-            FichierCode[0].Css = FocusedTab;
+            //FichierCode[0].Css = FocusedTab;
         }
         catch(Exception e)
         {
-            Result = "Échech de l'enregistrement des fichiers";
+            Result = "Échec de l'enregistrement des fichiers";
         }
         Result = "Fichiers enregistrés";
+
+        Console.WriteLine("File saved");
+
+        StateHasChanged();
     }
 
-    @*Fonction pour changer le focus du fichier a editer*@
+    /// <summary>
+    /// Change le focus du fichier à éditer
+    /// </summary>
+    /// <param name="id"> id du fichier qui récupère le focus </param>
     private void ChangeTab(int id)
     {
         foreach (Fichier fichier in FichierCode)
@@ -225,9 +279,12 @@
     }
 
 
-    @*Fonction pour setup le client pour faire un call a l'api*@
+    /// <summary>
+    /// Setup le client pour faire des appels API
+    /// </summary>
     private void SetupClient()
     {
+        var builder = WebApplication.CreateBuilder();
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
         handler.ServerCertificateCustomValidationCallback =
@@ -235,27 +292,37 @@
         {
             return true;
         };
-        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/") };
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri(builder.Configuration["API:Use"]) };
+
         ApiClient = new Client(httpClient);
     }
 
-    @*Fonction pour ajouter un fichier *@
+    /// <summary>
+    /// Ajoute un fichier
+    /// </summary>
     private async void AddPage()
     {
         var nomFichier = await JS.InvokeAsync<string>("PromptFunction.promptFunc", null);
 
-        foreach(Fichier f in FichierCode)
+        if(nomFichier == "")
         {
-            f.Css = HiddenTab;
+            Result = "Nom de fichier invalide";
         }
-
-        FichierCode.Add(new Fichier()
+        else
         {
+            foreach (Fichier f in FichierCode)
+            {
+                f.Css = HiddenTab;
+            }
+
+            FichierCode.Add(new Fichier()
+            {
                 Contenu = "",
                 Nom = nomFichier,
-                Id = -(FichierCode.Count+1),
+                Id = -(FichierCode.Count + 1),
                 Css = FocusedTab
-        });
+            });
+        }
 
         StateHasChanged();
     }

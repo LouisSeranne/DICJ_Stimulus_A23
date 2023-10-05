@@ -1,4 +1,4 @@
-﻿@using StimulusFrontEnd.Services.Base
+﻿﻿@using StimulusFrontEnd.Services.Base
 @using StimulusFrontEnd.Services.Authentification
 @using StimulusFrontEnd.Providers
 
@@ -13,48 +13,38 @@
 
 @page "/"
 
-<div>
-
-
+<div class="loginCenter">
     <AuthorizeView>
         <Authorized>
-
             <AuthorizeView Roles="Etudiant" Context="routeData">
-                <RedirectToGraph/>
+                <RedirectToGraph />
             </AuthorizeView>
-        <AuthorizeView Roles="Professeur" Context="routeData">
-                <RedirectToProf/>
+            <AuthorizeView Roles="Professeur" Context="routeData">
+                <RedirectToProf />
             </AuthorizeView>
-        <AuthorizeView Roles="Administrateur" Context="routeData">
-            <RedirectToAdmin />
-        </AuthorizeView>
-
+            <AuthorizeView Roles="Administrateur" Context="routeData">
+                <RedirectToAdmin />
+            </AuthorizeView>
         </Authorized>
-
         <NotAuthorized>
-            
-
-                <EditForm Model="appUser" OnValidSubmit="HandleLogin" Context="routeData" OnInvalidSubmit="CheckLogin" class="formLogin">
-
-                <DataAnnotationsValidator/>
-                <ValidationSummary/>
-                    <div class="form-group">
-                    <label for="UserName" class="labelLogin">Utilisateur</label>
-                        <InputText class="form-control" @bind-Value="appUser.UserName"/>
-                        <ValidationMessage For="@(()=>appUser.UserName)"/>
-                    </div>
+            <EditForm Model="appUser" OnValidSubmit="HandleLogin" Context="routeData" OnInvalidSubmit="CheckLogin" class="formLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <h2 class="h2Login">Page Connexion</h2>
+                <div class="form-group">
+                    <InputText class="form-control" @bind-Value="appUser.UserName" placeholder="CodeDA"><img src="/Image/Avatar.png" alt="Logo utilisateur" class="user-image"/></InputText>
+                    <ValidationMessage For="@(()=>appUser.UserName)"/>
+                </div>
                 <br/>
-                    <div class="form-group">
-                    <label for="PasswordHash" class="labelLogin">Mot de passe</label>
-                        <InputText class="form-control inputLogin" type=password @bind-Value="appUser.PasswordHash"/>
-                        <ValidationMessage For="@(()=>appUser.PasswordHash)"/>
-                    </div>
+                <div class="form-group">
+                    <InputText class="form-control inputLogin" type="password" @bind-Value="appUser.PasswordHash" placeholder="Mot de passe"/>
+                    <ValidationMessage For="@(()=>appUser.PasswordHash)"/>
+                </div>
                 <br/>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                <button type="submit" class="btn btn-primary btn-block">Connexion</button>
             </EditForm>
         </NotAuthorized>
     </AuthorizeView>
-
 </div>
 
 @code {
@@ -66,39 +56,35 @@
         apiAuthentificationStateProvider.LoggedOut();
     }
 
-
-
     public async Task HandleLogin()
     {
-
-        try{
+        try
+        {
             var response = await authService.AuthenticateAsync(appUser);
             await sessionStorage.SetItemAsync<UtilisateurApplication>("user", appUser);
 
         }
-        catch(ApiException e)
+        catch (ApiException e)
         {
-            if(e.StatusCode >=200 && e.StatusCode <=299)
+            if (e.StatusCode >= 200 && e.StatusCode <= 299)
             {
 
             }
-            else if(e.StatusCode==401)
+            else if (e.StatusCode == 401)
             {
                 await CheckLogin();
             }
             message = e.Response;
         }
     }
-    
+
     public async Task CheckLogin()
     {
 
-        string message = "Utilisateur ou mot de passe invalid";
+        string message = "Utilisateur ou mot de passe invalide";
         await JsRunTime.InvokeAsync<object>("alert", message);
 
     }
-
-    
 
     public void Navigate()
     {

@@ -13,19 +13,15 @@
 
 <PageTitle>StimulusFrontEndEtudiant</PageTitle>
 
-
 <!---->
 @if(initDone)
 {
     <div class="page">
-        <main>
-            
+        <main>          
             @if(identifier)
             {
-                
                 <HeaderComponentEtudiant/>
-            }
-            
+            }         
             <article class="content px-4">
 
                 @Body
@@ -33,10 +29,8 @@
             @if(identifier)
             {
                 <FooterEtudiantComponent/>
-            }
-            
-        </main>
-   
+            }         
+        </main>  
     </div>
 }
 
@@ -49,7 +43,6 @@
     //Initialisation de l'id du graph a la main pour l'instant en attente de la page de connexion pour avoir directement le graph avec l'étuidant
     protected override async void OnInitialized()
     {
-
         Console.WriteLine("layout initialized");
         ViewOption.OnChanged = () => { 
             StateHasChanged();//Refresh
@@ -59,6 +52,8 @@
 
         identifier = false;
 
+        var builder = WebApplication.CreateBuilder();
+
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
         handler.ServerCertificateCustomValidationCallback =
@@ -67,7 +62,8 @@
                 return true;
             };
         httpClient = new HttpClient(handler);
-        httpClient.BaseAddress = new Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/"); 
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
+
         client = new Client(httpClient);
 
 
@@ -79,7 +75,6 @@
 
     protected async override void OnAfterRender(bool firstRender)
     {
-        
         if(firstRender)
         {
             Console.WriteLine("layout afterrender first");
@@ -91,7 +86,7 @@
 
                 if(await sessionStorage.ContainKeyAsync("idGroupe") == false)
                 {
-                    
+
                     var idEtu = await sessionStorage.GetItemAsync<string>("idEtudiant");
 
                     var etu = client.EtudiantsGETAsync(idEtu).Result;
@@ -109,9 +104,10 @@
 
                 if(await sessionStorage.ContainKeyAsync("idGraphe") == false)
                 {
+                    int idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
                     var graphe = await client.GraphesAllAsync();
-                    //graphe = graphe.Where(g => g.GroupeId)
-                    await sessionStorage.SetItemAsync<int>("idGraphe", 1); 
+                    var grapheFiltered = graphe.Where(g => g.GroupeId == idGroupe);
+                    await sessionStorage.SetItemAsync<int>("idGraphe", grapheFiltered.FirstOrDefault().Id);
                     idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
                     updateService.CallRequestRefresh();
                 }
@@ -126,14 +122,9 @@
         
     }
 
-
-
     public async void Clear()
     {
         //Fonction de test pour supprimer le session storage a la main
         await sessionStorage.ClearAsync();
     }
-
-    
-
 }

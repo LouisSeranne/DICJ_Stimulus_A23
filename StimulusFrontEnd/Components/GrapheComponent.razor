@@ -15,9 +15,9 @@
     couleurTexteConsulter = "#0000FF";
     couleurTexteCompleter = "#0000FF";
 
-        <div id="divGraphiqueComponent">
+    <div id="divGraphiqueComponent">
 
-        <div id="divGrapheEntete">
+        <div id="divGrapheEntete" class="zoom">
             <p class="grapheEnteteElement" style="color:white;">zoom : @(Math.Round(scaleZoom * 100))%</p>
             <button class="grapheEnteteElement" style="font-size:15px" type="button" @onclick="AugmenterZoom">+</button>
             <button class="grapheEnteteElement" style="font-size:15px" type="button" @onclick="ReduireZoom">-</button>
@@ -27,8 +27,8 @@
         </div>
         
         <svg id="svgGraphiqueComponent" style="user-select:none" viewBox=@(0 + " " + 0 + " " + sizeSvgDictionary["width"] + " " + sizeSvgDictionary["height"] + "") @onmousewheel="OnWheelMove" @onwheel="OnWheelMove" @onmousedown="OnMouseDown" @onmousemove="OnMouseMove" @onmouseup="OnMouseUp">
-            <svg viewBox=@(viewboxDictionary["x"] + " " + viewboxDictionary["y"] + " " + viewboxDictionary["width"] + " " + viewboxDictionary["height"] + "") >
-            <!--
+            <svg viewBox=@(viewboxDictionary["x"] + " " + viewboxDictionary["y"] + " " + viewboxDictionary["width"] + " " + viewboxDictionary["height"] + "")>
+                <!--
                 fonction : affiche le tableau 2d qui contients les noeuds.
                     la premiere boucle calcul la hauteur a laquelle les noeuds vont etre afficher pour chaque ligne(donc leur position en y)
                     la deuxieme boucle calcul le positionemment de chaque noeuds sur leur ligne(donc leur position en x)
@@ -60,34 +60,26 @@
                     les balises <use> sont utiliser pour faire afficher les noeuds parent pardessus les lignes car sinon, les lignes etant dessiner apres, elles étaient afficher pardessus
                     la blaise svg affichant les noeuds est a l'interieur d'une autre balise svg, cela permet d'avoir plusieur couche de svg avec differente viewbox. utiliser pour toujours avoir l'entete au meme endroit
                     la formule mathematique qui calcul widthRepartition pourrais etre ameliorer
-            -->
-    
-                @{
-                    
-            
-                hauteurEtage = (int)Math.Round((double)sizeSvgDictionary["height"] / structureGraphe.GetLength(0));
-                paddingTop = (int)Math.Round((double)hauteurEtage / 2);
-                positionY = 0;
-                widthRepartition = 0;
-                paddingLeft = 0;
-                marginLeft = 0;
-                largeurNoeud = 0;
+            -->   
+                @{                              
+                    hauteurEtage = (int)Math.Round((double)sizeSvgDictionary["height"] / structureGraphe.GetLength(0));
+                    paddingTop = (int)Math.Round((double)hauteurEtage / 2);
+                    positionY = 0;
+                    widthRepartition = 0;
+                    paddingLeft = 0;
+                    marginLeft = 0;
+                    largeurNoeud = 0;
 
 
-                positionX = 0;
-                couleurAffichageCercle = "";
-                couleurAffichageTexte = "";
-
-            
+                    positionX = 0;
+                    couleurAffichageCercle = "";
+                    couleurAffichageTexte = "";            
                 }
-
                 <circle visibility="@displayHover" cx="@xBordureHover" cy="@yBordureHover" r="@rayonCercleSvg" fill-opacity="0.0" fill="PatWasHere" stroke="#6e9cc4" stroke-width="10px" ></circle>
 
                 @for(int i = 0; i < structureGraphe.GetLength(0); i++)
                 {
                     positionY = (int)(hauteurEtage * i + paddingTop);
-            
-            
 
                     if(i > 0 && structureGraphe[i].Length >= 1 && structureGraphe[i].Length < 5)
                     {
@@ -112,15 +104,13 @@
                     else
                     {
                         widthRepartition = sizeSvgDictionary["width"];
-                    }
-                    
+                    }                   
 
                     marginLeft = (int)Math.Round((double)(sizeSvgDictionary["width"] - widthRepartition) / 2);
                     paddingLeft = (int)Math.Round((double)(widthRepartition / structureGraphe[i].Length) / 2);
 
                     largeurNoeud = (int)Math.Round((double)widthRepartition / structureGraphe[i].Length);
             
-
                     for(int j = 0; j < structureGraphe[i].Length; j++)
                     {
                         positionX = marginLeft + (largeurNoeud * j) + paddingLeft;
@@ -158,7 +148,7 @@
                         <g id=@("group" + structureGraphe[i][j].Id) >
                             <circle id=@("noeud" + structureGraphe[i][j].Id) cx="@positionX" cy="@positionY" r="@rayonCercleSvg" fill="@couleurAffichageCercle" ></circle>
                             <text id=@("text" + structureGraphe[i][j].Id) x=@positionX y=@positionY text-anchor="middle" dominant-baseline="middle" fill="@couleurAffichageTexte" font-size="@(rayonCercleSvg / 2)" textLength="@(Math.Round(rayonCercleSvg * 1.8))" lengthAdjust="spacingAndGlyphs" >@(structureGraphe[i][j].Code)</text>
-                            <circle id=@("noeudInv" + structureGraphe[i][j].Id) cx="@positionX" cy="@positionY" r="@rayonCercleSvg" fill-opacity="0.0" fill="PatWasHereTo" @onclick="() => OnClick(structureGraphe[iTemporaire][jTemporaire].Id)" @onmouseover="() => OnMouseOverNoeuds(structureGraphe[iTemporaire][jTemporaire].Id)" @onmouseout="() => OnMouseOut()" ></circle>
+                            <circle id=@("noeudInv" + structureGraphe[i][j].Id) cx="@positionX" cy="@positionY" r="@rayonCercleSvg" fill-opacity="0.0" fill="PatWasHereTo" @onclick="() => OnClick(structureGraphe[iTemporaire][jTemporaire].Id)" @onmouseover="() => OnMouseOverNoeuds(structureGraphe[iTemporaire][jTemporaire].Id)" @onmouseout="() => OnMouseOut()"></circle>
                         </g>
 
                         if(!noeudsCoordonneDictionnary.ContainsKey(structureGraphe[i][j].Id))
@@ -171,14 +161,9 @@
                             noeudsCoordonneDictionnary[structureGraphe[i][j].Id].y = positionY;
                         }
                     }
-
                 }
-
-                
-
-
                 <rect visibility="@displayHover" x="@positionXRectHover" y="@positionYRectHover" width="@widthRectHover" height="@heightRectHover" fill="grey"></rect>
-                <polygon visibility="@displayHover" points="@("" + pointAXPolyHover + "," + pointAYPolyHover + " " + pointBXPolyHover + "," + pointBYPolyHover + " " + pointCXPolyHover + "," + pointCYPolyHover)" fill="grey" ></polygon>
+                <polygon visibility="@displayHover" points="@("" + pointAXPolyHover + "," + pointAYPolyHover + " " + pointBXPolyHover + "," + pointBYPolyHover + " " + pointCXPolyHover + "," + pointCYPolyHover)" fill="grey"></polygon>
         
                 <foreignObject visibility="@displayHover" x="@positionXRectHover" y="@positionYRectHover" width="@(Math.Round(widthRectHover / 2.1))" height="@(heightRectHover / 3)"><p style="color:white; font-size:@(viewboxDictionary["width"] / 100)px;">nom: @nomHover</p></foreignObject>
                 <foreignObject visibility="@displayHover" x="@(positionXRectHover + (widthRectHover / 2))" y="@positionYRectHover" width="@(widthRectHover / 2)" height="@(heightRectHover / 3)"><p style="color:white; font-size:@(viewboxDictionary["width"] / 100)px;">pts: @ptsHover</p></foreignObject>
@@ -187,13 +172,8 @@
                 @for(int k =0;k < liaisonSecHover.Length;k++)
                 {
                     <foreignObject visibility="@displayHover" x="@(positionXRectHover + (widthRectHover / 2))" y="@(positionYRectHover + ((heightRectHover / 6) * (k + 3)))" width="@(widthRectHover / 2)" height="@(heightRectHover / 6)"> <p style="color:white; font-size:@(viewboxDictionary["width"] / 100)px;">@liaisonSecHover[k]</p> </foreignObject>            
-                }
-
-                
-
+                }              
             </svg>
-
-
             <!--
                 fonction : affichage de la legende et des statistique
                 variables :
@@ -201,7 +181,7 @@
             -->
             <rect width="@widthRectLegend" height="@heightRectLegend" x="5" y="5" fill="#32587a"></rect>
             <foreignObject x="5" y="5" width="@widthRectLegend" height="@heightRectLegend">
-                <div>
+                <div class="BlockIndex">
                     <p style="color:#442f1c; margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">  zoom : Maj▲ + roulette</p>
                     <p style="color:rgb(140,140,140); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">  gris : bloqué</p>
                     <p style="color:rgb(228, 231, 245); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">  blanc: disponible</p>
@@ -212,7 +192,7 @@
 
             <rect width="@widthRectLegend" height="@heightRectStats" x="@(sizeSvgDictionary["width"] - widthRectLegend - 5)" y="5" fill="#32587a"></rect>
             <foreignObject x="@(sizeSvgDictionary["width"] - widthRectLegend - 5)" y="5" width="@widthRectLegend" height="@heightRectStats">
-                <div> 
+                <div class="BlockIndex">
                     <p style="color:rgb(228, 231, 245); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">@pourcentageCompleter % noeuds completés</p>
                     <p style="color:rgb(228, 231, 245); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">@noeudComplete / @(noeudAffiche.Count() - 1) noeuds completés</p>
                     <p style="color:rgb(228, 231, 245); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">noeuds recommandés :</p>
@@ -225,25 +205,15 @@
                     {
                         <p style="color:rgb(228, 231, 245); margin-left:10px; font-size:@(sizeSvgDictionary["width"] / 100)px;">aucun noeud recommandé</p>
                     }
-
-
                 </div>
-            </foreignObject>
-        
-
-        
-        
+            </foreignObject>       
         </svg>
     </div>
-
 }
-
-
-
 
 @code {
     //methode pour le debugage : JSRuntim.InvokeVoidAsync("console.log",x);
-    
+
     public int idGraphe{ get; set;}
 
     private const double forceZoom = 0.1;
@@ -279,8 +249,6 @@
     private int[] noeudsParEtages = new int[1];
     private int[] noeudsParEtagesTemporaire = new int[1];
 
-
-
     private BoundingClientRect? element = null;
 
     //données des boucle d'affichages
@@ -288,55 +256,47 @@
     private int hauteurEtage, paddingTop, positionY, positionParentY, widthRepartition, widthParentRepartition, paddingLeft, marginLeft, paddingLeftParent, marginLeftParent, largeurNoeud, largeurNoeudParent, positionX, positionParentX, indexNoeudParent;
     private string couleurAffichageCercle,couleurAffichageTexte,couleurBloquer,couleurNonConsulter,couleurConsulter,couleurCompleter,couleurTexteBloquer,couleurTexteNonConsulter,couleurTexteConsulter,couleurTexteCompleter;
 
-
-
     private GrapheView[] noeudsTest;
 
-
-    <!--
-        fonction : initialise les variables du components pour eviter les references nulls et appele les fonction de trie pour organiser les noeuds de la bonne facon.
-        variables :
-            avant boucle : 
-                initFinis : est false tant que la fonction n'est pas finis, est utiliser dans l'affichage pour s'assurer que l'initialisation est terminer
-                debug : definis si le mode debug est activer ou non. creer des données de test si il est active
-                viewboxDictionary : garde en memoire les valeurs de la viewbox utiliser dans la balise svg
-                sizeSvgDictionary : garde en memoire la taille de la balise svg, est ajuster a chaque changement de taille de la balise
-                startPointsDictionary : voir commentaire de OnMouseDown()
-                startPointsAbsoluteDictionary : voir commentaire de OnMouseDown()
-                endPointsDictionary : voir commentaire de OnMouseMove()
-                scaleZoom : voir commentaire OnWheelMove()
-                displayHover : voir commentaire OnMouseOver()
-                liaisonSecHover : list des liaison secondaire des noeuds a afficher dans le rect hover
-                xBordureHover : coordonne en x du cercle qui sert a faire la bordure
-                yBordureHover : coordonne en y du cercle qui sert a faire la bordure
-                shouldReRender : valeur qui precise au visuel si il doit render de nouveau apres une fonction appeler lors d'un evenement blazor VU QU'ON PEUT PAS LES FUCKING DESACTIVER, A CHAQUE CALL Y RERENDER CE QUI REND IMPOSSIBLE L'UTILISATION DE OnMouseMove, A CHAQUE FUCKING PIXEL TU RERENDER TOUT AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-                handler : sert a creer le httpClient
-                httpClient : creer la base necessaire a la creation du client
-                client : entité qui s'occupe de la communication avec l'api en utilisant nswag
-                noeudAffiche : resultat retourner par la requete a la view GrapheView. utlise l'id du graphe pour recuperer tout les informations necessaire a l'affichage des noeuds qu'il lui sont assoscier
-                infoHover : resultat retourner par la requete a la view HoverView. utlise l'id du graphe pour recuperer tout les informations necessaire a l'affichage du hover des noeuds qu'il lui sont assoscier
-                noeudComplete : nb de noeud completer dans le graphe par l'etudiant
-                pourcentageCompleter : pourcentage de noeud completer
-                enumerator : enumerator qui sert a boucler dans une ICollection
-                topNoeudRecommander : liste de 3 noeuds prioritaire sélectionner grace a un algorithme(voir UpdateGraphe). priorise les noeuds qui en bloque d'autre et les noeud les plus proches de la racine
-
-
-            dans la boucle while :  
-                structureGraphe : tableau 2d qui contient tous les noeuds apres le tries. utiliser lors de l'affichage
-                structureGrapheTemporaire : tableau 2d utiliser pour s'adapter a la taille qui change et enregistrer les donnée du tableau principale
-                etage : garde en memoire l'etage sur lequel vas le noeud utliser lors de la boucle foreach
-                noeudsParEtages : tableau qui garde en memoire le nombre de noeuds par etages pour adapter la taille de structureGraphe
-                noeudsParEtagesTemporaire : tableau qui s'ajuste a la taille necessaire et qui enregistre les données du tableau principale
-    -->
+    /// <summary>
+    /// Initialise les variables du composant pour éviter les références nulles et appelle les fonctions de tris pour organiser les noeuds de la bonne façon
+    /// </summary>
+    /// Avant la boucle :
+    ///     <param name="initFinis"> false tant que la fonction n'est pas fini. Utilisé dans l'affichage pour s'assurer que l'initialisation est terminé </param>
+    ///     <param name="debug"> défini si le mode débug est actibé ou non. Créé des données de test s'il est actif </param>
+    ///     <param name="viewboxDictionary"> Garde en mémoire les valeurs de la ViewBox utilisée dans la balise SVG </param>
+    ///     <param name="sizeSvgDictionary"> Garde en mémoire la taille des balises SVG. Change à chaque changement de taille de la balise </param>
+    ///     <param name="startPointsDictionary"> Voir commentaire OnMouseDown() </param>
+    ///     <param name="startPointsAbsoluteDictionary"> Voir commentaire OnMouseDown() </param>
+    ///     <param name="endPointsDictionary"> Voir commentaire OnMouseMove() </param>
+    ///     <param name="scaleZoom"> Voir commentaire OnWheelMove() </param>
+    ///     <param name="displayHover"> Voir commentaire OnMouseOver() </param>
+    ///     <param name="liaisonSecHover"> Liste des liaisons secondaires des noeuds. S'affiche dans le rect over </param>
+    ///     <param name="xBordureHover"> Coordonnée en X du cercle servant de bordure </param>
+    ///     <param name="yBordureHover"> Coordonnée en Y du cercle servant de bordure </param>
+    ///     <param name="shouldReRender"> Valeur précisant au visuel si il doit de nouveau render après un appel de fonction provenant d'un évènement Blazor VU QU'ON PEUT PAS LES FUCKING DESACTIVER, A CHAQUE CALL Y RERENDER CE QUI REND IMPOSSIBLE L'UTILISATION DE OnMouseMove, A CHAQUE FUCKING PIXEL TU RERENDER TOUT AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</param>
+    ///     <param name="handler"> Créé le httpClient </param>
+    ///     <param name="httpClient"> Créé la base du client </param>
+    ///     <param name="client"> Communique avec l'API en utilisant NSwag </param>
+    ///     <param name="noeudAffiche"> Résultat de la requête faite à GrapheView. Utilise l'ID du graphe pour récupérer les informations d'affichage des noeuds associés </param>
+    ///     <param name="infoHover"> Résultat de la requête faite à HoverView. Utilise l'ID du graphe pour récupérer les informations d'affichage des paramètres d'hover des noeuds associés </param>
+    ///     <param name="noeudComplete"> Nombre de noeuds complétés par l'étudiant </param>
+    ///     <param name="pourcentageCompleter"> Pourcentage de noeuds complétés </param>
+    ///     <param name="enumerator"> Sert à boucler dans une ICollection </param>
+    ///     <param name="topNoeudRecommander"> Liste de 3 noeuds recommandés (voir UpdateGraph). Priorise les noeuds en bloque d'autres, ainsi que ceux proche de la racine </param>
+    /// Dans la boucle :
+    ///     <param name="structureGraphe"> Tableau 2D contenant tout les noeuds après le tri. Utilisé pour l'affichage </param>
+    ///     <param name="structureGrapheTemporaire"> Tableau 2D temporaire utlisé pour adapter la taille de structureGraphe </param>
+    ///     <param name="etage"> Garde en mémoire l'étage sur lequel le noeud vas se situer. Utilisé dans la boucle foreach </param>
+    ///     <param name="noeudsParEtages"> Tableau gardant le nombre de noeuds par étages pour adapter la taille de structureGraphe </param>
+    ///     <param name="noeudsParEtagesTemporaire"> Tableau temporaire utilisé pour adapter la taille de noeudsParEtage </param>
     protected async override void OnInitialized()
     {
         Console.WriteLine("graphe initialized");
         initFinis = false;
         debug = false;
-       
 
         updateService.RefreshRequested += this.RefreshState;
-
 
         viewboxDictionary.Add("x", 0);
         viewboxDictionary.Add("y", 0);
@@ -358,14 +318,14 @@
         scaleZoom = 1;
         topNoeudRecommander = new List<GrapheView>();
 
-
-
         displayHover = "hidden";
         liaisonSecHover = new string[0];
         xBordureHover = 0;
         yBordureHover = 0;
 
         shouldReRender = true;
+
+        var builder = WebApplication.CreateBuilder();
 
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
@@ -375,21 +335,17 @@
                 return true;
             };
         httpClient = new HttpClient(handler);
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
 
-
-        httpClient.BaseAddress = new Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/");
         client = new Client(httpClient);
 
-
         UpdateGraphe();
-
     }
 
-    <!--
-        fonction : mettre a jour les noeuds et autres valeur logistiques du graphe avec les données stocker dans le sessionStorage
-        variables : 
-            sessionStorage : service de stockage du projet. fonctionne comme un dictionnaire(key-value)
-    -->
+    /// <summary>
+    /// Met à jour les noeuds et autres valeurs logistique du graph avec les donénes stockées dans sessionStorage
+    /// </summary>
+    /// <param name="sessionStorage"> Service de stockage du projet. Fonctionne comme un dictionnaore (key-value) </param>
     private async void UpdateGraphe()
     {
         try
@@ -400,12 +356,10 @@
                 {
                     idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
 
-
                     noeudAffiche = client.GrapheView2Async(idGraphe).Result;
                     infoHover = client.Hover2Async(idGraphe).Result;
                     noeudComplete = noeudAffiche.Where(n => n.CodeStatus == 4).Count();
                     pourcentageCompleter = (int)Math.Round((double)noeudComplete * 100 / (noeudAffiche.Count() - 1));
-
 
                     enumerator = noeudAffiche.GetEnumerator();
 
@@ -485,15 +439,10 @@
                         noeudsTest[54].LiaisonPrincipal = (int)noeudsTest[41].Id;
                     }
 
-
-
                     structureGraphe = new GrapheView[][] {};
                     structureGrapheTemporaire = new GrapheView[][] {};
                     noeudsParEtages = new int[] {};
                     noeudsParEtagesTemporaire = new int[] {};
-
-
-
 
                     while(enumerator.MoveNext())
                     {
@@ -548,7 +497,7 @@
                                 {
                                     topNoeudRecommander.Add(new GrapheView(){Id = noeudAffiche.Where(n => n.Code == hover.CodeParent).Where(n => n.GrapheId == hover.GrapheId).Select(n => n.Id).FirstOrDefault(), Code = hover.CodeParent});        
                                 }
-                                    
+
                             }
 
                         }
@@ -579,8 +528,6 @@
                         }
                     }
 
-                        
-
                     initFinis = true;
 
                     Console.WriteLine("param finis statehaschanged");
@@ -592,28 +539,25 @@
         {
             //ignore voir https://stackoverflow.com/questions/72488563/blazor-server-side-application-throwing-system-invalidoperationexception-javas
         }
-       
+
     }
 
-    
-
-    /*
-    * fonction : recupere la taille de la balise svg pour adapter les valeurs visuel a la taille de la page
-    * variables : 
-    *   element : objet qui garde en memoire la taille de la balise svg
-    *   viewboxDictionary : voir commentaire OnInitialized()
-    *   sizeSvgDictionary : voir commentaire OnInitialized()
-    *   rayonCercleSvg : correspond a la taille du rayon des cercles utiliser pour afficher les noeuds dans le graphe
-    *   widthRectLegend : largeur du rectangle contenant la légende du graphe
-    *   heightRectLegend : hauteur du rectangle contenant la legende du graphe
-    *   heightRectStats : hauteur du rectangle contenant les statistiques du graphe
-    * 
-    */
+    /// <summary>
+    /// Récupère la taille de la balise SVG pour adapter les valeurs visuelles à la taille de la page
+    /// </summary>
+    /// <param name="firstRender"></param>
+    /// <param name="element"> Objet gardant en mémoire la taille de la balise SVG </param>
+    /// <param name="viewboxDictionary"> Voir commentaire OnInitialized </param>
+    /// <param name="sizeSvgDictionary"> Voir commentaire OnInitialized </param>
+    /// <param name="rayonCercleSvg"> Taille du rayon des cercles utilisés pour afficher le noeud dans le graphe </param>
+    /// <param name="widthRectLegend"> Largeur du rectangle contenant la légende du graphe </param>
+    /// <param name="heightRectLegend"> Hauteur du rectangle contenant la légende du graphe </param>
+    /// <param name="heightRectStats"> Hauteur du rectangle contenant les statistiqurd du graphe </param>
     protected override async void OnAfterRender(bool firstRender)
     {
         if(initFinis)
         {
-             try
+            try
             {
                 element = await JSRuntim.InvokeAsync<BoundingClientRect>("GetSizeElement", "svgGraphiqueComponent");
             }
@@ -621,9 +565,6 @@
             {
                 await InvokeAsync(StateHasChanged);
             }
-
-
-
 
             if(Math.Round(element.Width) > sizeSvgDictionary["width"] + 20 || Math.Round(element.Width) < sizeSvgDictionary["width"] - 20 || Math.Round(element.Height) > sizeSvgDictionary["height"] + 20 || Math.Round(element.Height) < sizeSvgDictionary["height"] - 20)
             {
@@ -652,31 +593,29 @@
 
                 noeudsCoordonneDictionnary.Clear();
 
-
-
                 await InvokeAsync(StateHasChanged);
             }
         }
-       
-    }
 
-    /*
-    * fonction : permet de zoomer dans le graphe
-    * variable :
-    *   widthViewbox : largeur de la viewbox actuel
-    *   heightViewbox : hauteur de la viewbox
-    *   mouseX : position de la souris sur l'axe horizontale par rapport a l'element dans lequel il est
-    *   mouseY : position de la souris sur l'axe verticale par rapport a l'element dans lequel il est
-    *   deplacementWidth : correspond a la modification de la largeur de la viewbox en pixel
-    *   deplacementHeight : correspond a la modification de la hauteur de la viewbox en pixel
-    *   deplacementX : correspond au deplacement en x de la viewbox en pixel(attention le deplacement est inverser) 
-    *   deplacementY : correspond au deplacement en y de la viewbox en pixel(attention le deplacement est inverser) 
-    *   scaleZoom : correspond a l'intensite du zoom actuelle
-    * 
-    * details : 
-    *   le premier if verifie si l'utilisateur pese sur la touche shift(Maj▲) pour éviter les conflicts avec le scroll normal
-    *   le deuxieme if verfie si l'utilisateur ne depasse pas la limite de dezoom qui est 2 fois la taille de l'element
-    */
+    }
+                  
+    /// <summary>
+    /// Zoom dans le graphe
+    /// </summary>
+    /// <details>
+    /// Le 1er if vérifie si l'utilisateur appuie sur la touche Maj▲ pour éviter les conflits avec le scroll normal
+    /// Le 2ème if vérifie si l'utilisateur ne dépasse pas la limite de dézoom qui est 2 fois la taille de l'élément
+    /// </details>
+    /// <param name="mouse"></param>
+    /// <param name="widthViewbox"> Largeur de la viewbox actuelle </param>
+    /// <param name="heightViewbox"> Hauteur de la viewbox actuelle </param>
+    /// <param name="mouseX"> Position de la souris sur l'axe horizontal par rapport à l'élément dans laquelle elle se situe </param>
+    /// <param name="mouseY"> Position de la souris sur l'axe vertical par rapport à l'élément dans laquelle elle se situe </param>
+    /// <param name="deplacementWidth"> Modification de la largeur de la viewbox (pixel) </param>
+    /// <param name="deplacementHeight"> Modification de la hauteur de la viewbox (pixel) </param>
+    /// <param name="deplacementX"> Déplacement en X de la viewbox (pixel) /!\ placement inversé </param>
+    /// <param name="deplacementY"> Déplacement en Y de la viewbox (pixel) /!\ placement inversé </param>
+    /// <param name="scaleZoom"> Intensité du zoom actuel </param>
     public void OnWheelMove(WheelEventArgs mouse)
     {
         if(mouse.ShiftKey)
@@ -712,13 +651,13 @@
 
     }
 
-    /*
-    * fonction : definis les variables des dictionnaires startPointsDictionary et startPointsAbsoluteDictionary avec les valeurs de positions de la souris pour qu'ils soit utiliser dans les calculs lors du deplacement de la souris
-    * variables : 
-    *   leftClicPress : utiliser pour verifier que c'est le clic gauche qui est enfoncer dans la fonction OnMouseUp
-    *   starPointsDictionary : utiliser comme point de depart lors du calcul de deplacement de la souris
-    *   startPointsAbsoluteDictionary : utiliser pour garder en memoire le point de depart initiale puisque que startPoints est modifier. utiliser dans la fonction OnClick
-    */
+    /// <summary>
+    /// Définie les variavles des dictionnaires startPointsDictionary et startPointsAbsoluteDictionary avec les valeures de positions de la souris pour qu'ils soient utilisés dans les calculs lors du placement de la souris
+    /// </summary>
+    /// <param name="mouse"></param>
+    /// <param name="leftClicPress"> Vérifie si le clic gauche est cliqué dans la fonction OnMouseUp </param>
+    /// <param name="startPointsDictionnary"> Point de départ lors du calcul de déplacement de la souris </param>
+    /// <param name="startPointsAbsoluteDictionary"> Garde en mémoire le point de départ inital car startPoints est modifié. Utilisé dans la fonction OnClick </param>
     public void OnMouseDown(MouseEventArgs mouse)
     {
         if(mouse.Buttons == 1)
@@ -733,17 +672,18 @@
         }
     }
 
-    /*
-    * fonction : calcul la distance fait par la souris et modifie la viewbox en conséquence
-    * variable :
-    *   endPointsDictionary : correspond a la position de la souris lors de l'appele de la fonction, donc apres le mouvement
-    *   translationX : correspond au deplacement de la souris en x entre les données de startPointsDictionary et endPointsDictionary modifier selon le zoom
-    *   translationY : correspond au deplacement de la souris en y entre les données de startPointsDictionary et endPointsDictionary modifier selon le zoom
-    * details :
-    *   on additionne a la viewbox plutot que soustraire car on veut effectuer le deplacement dans la direction inverse
-    *   on ajuste les valeurs de startPointsDictionary pour qu'elles corresponde a la position finale
-    *   le deuxieme if verifie si l'on depasse la taille de l'element svg, si oui, on annule les modification
-    */
+    /// <summary>
+    /// Calcule la distance parcouru de la souris et modifie la viewbox en conséquence
+    /// </summary>
+    /// <details>
+    /// On additonne à la viewbox plutôt que soustraire car on veut effectuer le déplacement dans la direction inverse
+    /// On ajuste les valeurs de startPointsDictionary pour qu'elles correspondent à la position finale
+    /// Le 2ème if vérifie si l'on dépasse la taille de l'élément SVG. Si oui, on annule les modifications
+    /// </details>
+    /// <param name="mouse"></param>
+    /// <param name="endPointsDictionary"> Position de la sours lors de l'appel fonction. Après le mouvement </param>
+    /// <param name="translationX"> Déplacement en X entre startPointsDictionary et endPointsDictionary. Modifié selon le zoom </param>
+    /// <param name="translationY"> Déplacement en Y entre startPointsDictionary et endPointsDictionart. Modifié selon le zoom </param>
     public void OnMouseMove(MouseEventArgs mouse)
     {
         if(mouse.Buttons == 1)
@@ -779,10 +719,13 @@
 
     }
 
-    /*
-    * fonction : meme chose que la fonction OnMouseMove et change la valeur de leftClicPress. 
-    * details : voir si c'est possible de l'enlever
-    */
+    /// <summary>
+    /// Même chose que la fonction OnMouseMove. Change la valeur de leftClicPress
+    /// </summary>
+    /// <details>
+    /// Voir la possibilité de suppression de la fonction
+    /// </details>
+    /// <param name="mouse"></param>
     public void OnMouseUp(MouseEventArgs mouse)
     {
         if(leftClicPress)
@@ -799,9 +742,12 @@
         leftClicPress = false;
     }
 
-    /*
-    * fonction : calcul la distance entre l'etage du noeud et l'etage du noeud originelle
-    */
+    /// <summary>
+    /// Calcule la distace entre l'étage du noeud et l'étage d'origine du noeud
+    /// </summary>
+    /// <param name="noeud"></param>
+    /// <param name="etage"></param>
+    /// <returns></returns>
     private int CalculEtage(GrapheView noeud, int etage)
     {
         if(noeud.LiaisonPrincipal == 0)
@@ -814,11 +760,12 @@
         }
     }
 
-    /*
-    * fonction : trie chaque ligne du tableau pour que les enfants soit dans le meme ordre que leur parent
-    * variables : 
-    *   tblTemporaire : tableau contenant les index des parents des noeuds de chaque ligne. le tableau de noeud est trier en meme temps que lui pour les mettres dans l'ordre
-    */
+    /// <summary>
+    /// Trie chaque ligne du tableau pour que les enfants soient dans le même ordre que leurs parents
+    /// </summary>
+    /// <param name="tableau"></param>
+    /// <param name="tblTemporaire"> Contient les index des parents des noeuds de chaque ligne. Trié en même temps que la variable tableau </param>
+    /// <returns></returns>
     private GrapheView[][] TrieTblNoeuds(GrapheView[][] tableau)
     {
         int[] tblTemporaire;
@@ -841,32 +788,31 @@
         return tableau;
     }
 
-    /*
-    * fonction : definit la taille et la position du rectangle hover, le contenu a afficher dans celui-ci et definit la visibilite a 'visible'
-    * variables : 
-    *   x : coordonne en x du noeud sur lequel passe la souris
-    *   y : corrdonne en y du noeud sur lequel passe la souris
-    *   id : id du noeud sur lequel passe la souris
-    *   widthRectHover : largeur qu'auras le rectangle hover. varie selon le zoom et la taille de la page
-    *   heightRectHover : hauteur qu'auras le rectangle hover. varie selon le zoom et la taille de la page
-    *   positionXRectHover : position sur l'axe horizontal du coin superieur gauche du rectangle hover
-    *   pointAXPolyHover : position sur l'axe horizontal du points A constituants le polygones(triangle) entre le noeud et le rectangle hover
-    *   pointBXPolyHover : position sur l'axe horizontal du points B constituants le polygones(triangle) entre le noeud et le rectangle hover
-    *   pointCXPolyHover : position sur l'axe horizontal du points C constituants le polygones(triangle) entre le noeud et le rectangle hover
-    *   positionYRectHover : position sur l'axe verticale du coin superieur gauche du rectangle hover
-    *   pointAYPolyHover : position sur l'axe verticale du points A constituants le polygones(triangle) entre le noeud et le rectangle hover
-    *   pointBYPolyHover : position sur l'axe verticale du points B constituants le polygones(triangle) entre le noeud et le rectangle hover
-    *   pointCYPolyHover : position sur l'axe verticale du points C constituants le polygones(triangle) entre le noeud et le rectangle hover
-    *   noeudHover : ensemble des informations a afficher, trouver en utilisant l'id du noeud sur lequel passe la souris
-    *   nomHover : code du noeud a afficher dans le rectangle hover
-    *   descHover : description du noeud a afficher dans le rectangle hover
-    *   ptsHover : sommes des points de toutes les pages assoscier au noeud a afficher dans le recatngle hover
-    *   liaisonSecHover : tableau constituer de toute les liaison secondaire du noeud, si il n'en n'as pas remplace la premiere entré du tableau a 'aucune'
-    *   displayHover : boolean qui garde en memoire si le rectangle hover doit etre afficher ou non
-    * 
-    * details : 
-    *   les ifs servent a verifier que le rectangle ne depasse pas la balise svg, si oui il inverse les valeurs d'affichage, donc au lieu de l'afficher en haut du noeud, il l'affiche en bas
-    */
+    /// <summary>
+    /// Définit la taille et la position du rectangle hover, le contenu à afficher et définit la visibilité à "visible"
+    /// </summary>
+    /// <details>
+    /// Les if vérifient que le rectangle ne dépassent pas la balise SVG. Si oui, il inverse les valeurs d'affichage
+    /// </details>
+    /// <param name="x"> Coordonnée en X du noeud sous la souris </param>
+    /// <param name="y"> Coordonnée en Y du noeud sous la souris </param>
+    /// <param name="id"> ID du noeud sous la souris </param>
+    /// <param name="widthRectHover"> Largeur du rectancle hover. Varie selon le zoom et la taille de la page </param>
+    /// <param name="heightRectHover"> Hauteur du rectangle hover. Varie salon le zoom et la taille de la page </param>
+    /// <param name="positionXRectHover"> Position sur l'axe X du coin sup. gauche du rectangle hover </param>
+    /// <param name="pointAXPolyHover"> Position sur l'axe X du point A constituant le triangle entre le noeud et le rectangle hover </param>
+    /// <param name="pointBXPolyHover"> Position sur l'axe X du point B constituant le triangle entre le noeud et le rectangle hover </param>
+    /// <param name="pointCXPolyHover"> Position sur l'axe X du point C constituant le triangle entre le noeud et le rectangle hover </param>
+    /// <param name="positionYRectHover"> Position sur l'axe Y du coin sup. gauche du rectangle hover </param>
+    /// <param name="pointAYPolyHover"> Position sur l'axe Y du point A constituant le triangle entre le noeud et le rectangle hover </param>
+    /// <param name="pointBYPolyHover"> Position sur l'axe Y du point B constituant le triangle entre le noeud et le rectangle hover </param>
+    /// <param name="pointCYPolyHover"> Position sur l'axe Y du point C constituant le triangle entre le noeud et le rectangle hover </param>
+    /// <param name="noeudHover"> Ensemble des informations à afficher. Trouvées en utilisant l'ID du noeud sur lequel passe la souris </param>
+    /// <param name="nomHover"> Code du noeud à afficher dans le rectangle hover </param>
+    /// <param name="descHover"> Description du noeud à afficher dans le rectangle hover </param>
+    /// <param name="ptsHover"> Somme des points de toutes les pages associées au noeud à afficher dans le rectangle hover </param>
+    /// <param name="liaisonSecHover"> Tableau constitué de toutes les laisons secondaire du noeud. 1ère entrée à "aucune" si pas de liaison secondaire </param>
+    /// <param name="displayHover"> Bool déterminant si le rectangle hover doit être affiché </param>
     private void OnMouseOverNoeuds(int id)
     {
 
@@ -922,28 +868,25 @@
         yBordureHover = noeudsCoordonneDictionnary[id].y;
 
         displayHover = "visible";
-
-
     }
-   
-    /*
-    * fonction : change la valeur de visibilite a hidden pour l'element avec l'id recu en parametre
-    * variables : 
-    *   displayHover : voir commentaire OnMouseOverNoeud()
-    */
+
+    /// <summary>
+    /// Change la visibilité à hidden
+    /// </summary>
+    /// <param name="displayHover"> Voir commentaire OnMouseOverNoeud </param>
     private void OnMouseOut()
     {
         displayHover = "hidden";
     }
 
-    /*
-    * fonction : verifie si l'utilisateur n'as pas deplacer sa souris, change le status du noeud cliquer si son status egale 2, puis l'envoie vers la page de theorie correspondante a l'id cliquer
-    * variables : 
-    *   startPointsAbsoluteDictionary : voir commentaire OnMouseDown()
-    *   endPointsDictionary : voir commentaire OnMouseMove()
-    *   noeudCliquer : correspond au noeuds cliquer. permet de verifier ses informations pour effectuer les bonnes action. ex. changer son status
-    *   updateNoeud : noeud creer a partir du noeud cliquer. il est utiliser lors de la requete pour modifier la bd. toute les valeurs manquante egale a null et son gerer au niveau du controller 
-    */
+    /// <summary>
+    /// Vérfie si l'utilisateur n'a pas déplacé sa souris. Change le status du noeud cliqué si son status égale 2, puis l'envoit vers la page de théorie correspondant à l'ID cliqué
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="startPointsAbsoluteDictionary"> Voir commentaire OnMouseDown </param>
+    /// <param name="endPointsDictionary"> Voir commentaire OnMouseMove </param>
+    /// <param name="noeudCliquer"> Permet de vérifier les informations du noeud cliqué </param>
+    /// <param name="updateNoeud"> Créé à partie de noeudCliquer. Utilisé lors de la requete pour modifier la BD</param>
     private async void OnClick(int? id)
     {
         if((endPointsDictionary["x"] < startPointsAbsoluteDictionary["x"] + 15) && (endPointsDictionary["x"] > startPointsAbsoluteDictionary["x"] - 15) && (endPointsDictionary["y"] < startPointsAbsoluteDictionary["y"] + 15) && (endPointsDictionary["y"] > startPointsAbsoluteDictionary["y"] - 15))
@@ -969,12 +912,11 @@
         }
     }
 
-    /*
-    * fonction : remet les valeurs de la viewbox a zero
-    * variables : 
-    *   viewboxDictionary : voir commentaire OnInitialized()
-    *   scaleZoom : voir commentaire OnInitialized()
-    */
+    /// <summary>
+    /// Réinitalise les valeurs de la viexbox à zéro
+    /// </summary>
+    /// <param name="viewboxDictionary"> Voir commentaire OnInitialized </param>
+    /// <param name="scaleZoom"> Voir commentaire OnInitialized </param>
     private void ResetViewbox()
     {
         viewboxDictionary["x"] = 0;
@@ -984,9 +926,9 @@
         scaleZoom = 1;
     }
 
-    /*
-    * fonction : augmenter le zoom du graphe sans utiliser la roulette
-    */
+    /// <summary>
+    /// Augmente le zoom du graphe sans utiliser la molette
+    /// </summary>
     private async void AugmenterZoom()
     {
         viewboxDictionary["x"] += (int)Math.Round((viewboxDictionary["width"] * 0.1) * (sizeSvgDictionary["width"] / 2) / sizeSvgDictionary["width"]);
@@ -999,9 +941,9 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    /*
-    * fonction : reduire le zoom du graphe sans utiliser la roulette
-    */
+    /// <summary>
+    /// Réduit le zoom du graphe sans utiliser la molette
+    /// </summary>
     private async void ReduireZoom()
     {
         if(viewboxDictionary["width"] < (sizeSvgDictionary["width"] * 2))
@@ -1023,17 +965,18 @@
 
     }
 
-    <!--
-        fonction : change la page pour celle d'aide
-    -->
+    /// <summary>
+    /// Redirige vers l'aide
+    /// </summary>
     private void MoveToAide()
     {
         NavigationManager.NavigateTo("/graphe/aide");
     }
 
-    <!--
-        fonction appeler lorsqu'un changement d'etat est detecter. definis si l'affichage doit se recharger
-    -->
+    /// <summary>
+    /// Appelée lors d'un changement d'état
+    /// </summary>
+    /// <returns> true si l'affichage doit se recharger </returns>
     protected override bool ShouldRender()
     {
         if(shouldReRender)
@@ -1052,18 +995,18 @@
         UpdateGraphe();
     }
 
-    <!-- 
-        fonction : classe permettant de stocker les coordonnes x et y d'Affichage des noeuds dans un objet
-    -->
+    /// <summary>
+    /// Stocke les coordonnées X et Y d'affichage des noeuds dans un objet
+    /// </summary>
     private class Coordonne
     {
         public int x{ get; set; }
         public int y{ get; set; }
     }
 
-    /*
-     * fonction : permet d'enregistrer les valeurs de tailles d'un element dans un objet
-     */
+    /// <summary>
+    /// Enregistre les valeurs de taille d'un élément dans un objet
+    /// </summary>
     public class BoundingClientRect
     {
         public double X { get; set; }
