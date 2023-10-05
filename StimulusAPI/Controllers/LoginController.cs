@@ -244,26 +244,6 @@ namespace StimulusAPI.Controllers
                     }
                     break;
                 case "Administrateur":
-                    await using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            connection.Open();
-                            string insertQuery = "INSERT INTO dbo.administrateur (code_empl, nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3, @Valeur4)";
-                            using (SqlCommand command = new SqlCommand(insertQuery, connection))
-                            {
-                                command.Parameters.AddWithValue("@Valeur1", user.Code);
-                                command.Parameters.AddWithValue("@Valeur2", user.Nom);
-                                command.Parameters.AddWithValue("@Valeur3", user.Prenom);
-                                command.Parameters.AddWithValue("@Valeur4", user.Password);
-                                command.ExecuteNonQuery();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Erreur inattendue liée à la base de données, contactez un administrateur" });
-                        }
-                    }
                     break;
             }
             return Ok(new Reponse { Status = "200 Ok", Message = "200 Ok" });
