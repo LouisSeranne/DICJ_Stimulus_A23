@@ -33,21 +33,18 @@
             </foreignObject>
             <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox = "@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth" 
             @onmousemove=@(e => mouseSrv.FireMove(this, e))
-            @onmouseup=@(e => mouseSrv.FireUp(this, e,SaveChange))
+            @onmouseup=@(e => mouseSrv.FireUp(this, e))
             @onmousewheel="Zoom">
                 <Draggable X="0" Y="0">
-                    <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgb(0,0,0)" />
+                    <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:0;stroke:rgb(0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
-                        <Cercle Node="@noeud" Nodes="@Nodes" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></Cercle>
+                        <Cercle RelinkBindNode="RelinkBindNode" ReLinkNoeud="ReLinkNoeud" Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></Cercle>
                     }
                 </Draggable>
 
             </svg>
         </svg>
-
-
-
     </div>
 </div>
 
@@ -62,15 +59,29 @@
     private double viewBoxWidth = 2000;
     private double viewBoxHeight = 2000;
     private double zoomIncrement = 1;
-
-
-
-    private double xAllDrag { get; set; } = 0;
-    private double yAllDrag { get; set; } = 0;
     private string displayNouveauNoeud = "hidden";
+    private Noeud enfantRechercheParent = new();
+    private bool enRecherche = false;
+
     private Noeud nouveauNoeud;
-    protected override void OnInitialized()
+    private void RelinkBindNode(Noeud noeud)
     {
+        if (enRecherche)
+        {
+            enfantRechercheParent.LiaisonPrincipal = noeud.Id;
+            enRecherche = false;
+            SaveChange(enfantRechercheParent);
+        }
+    }
+    private void ReLinkNoeud(Noeud noeud)
+    {
+        enfantRechercheParent = noeud;
+        enRecherche = true;
+    }
+    protected async override void OnInitialized()
+    {
+        var builder = WebApplication.CreateBuilder();
+
         nouveauNoeud = new();
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
@@ -80,57 +91,34 @@
                 return true;
             };
         httpClient = new HttpClient(handler);
-        httpClient.BaseAddress = new Uri("http://localhost:5000");
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
         client = new Client(httpClient);
         UpdateGraphe();
-
     }
     /// <summary>
     /// Recupere les noeuds du graph Numero X
     /// </summary>
     private async void UpdateGraphe()
     {
-        try
+        Nodes = new();
+        if (sessionStorage != null )
         {
-            Nodes = new();
-            if (sessionStorage != null )
+            if (await sessionStorage.ContainKeyAsync("idGraphe") && await sessionStorage.GetItemAsync<int>("idGraphe") != 0)
             {
-                if (await sessionStorage.ContainKeyAsync("idGraphe") && await sessionStorage.GetItemAsync<int>("idGraphe") != 0)
-                {
-                    int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
-                    NodesTemp = client.NoeudsAllAsync().Result.ToList();
-                    foreach (var item in NodesTemp)
-                    {
-                        if (item.GrapheId == idGraphe)
-                            Nodes.Add(item);
-                    }
-                }
-                else
-                    UpdateGraphe();
-
+                int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+                Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
             }
-            NavigationManager.NavigateTo("/index");    
         }
-        catch
-        {
-            //Erreur dans le preload de la session, erreur a fix au niveau de idGraphe et autre variable surement patch avec une main page par default
-        }
+        NavigationManager.NavigateTo("/index");    
 
-    }
-    private void ResetPositionGraph()
-    {
-        yAllDrag = 0;
-        xAllDrag = 0;
     }
     /// <summary>
     /// Permet l'ajout de noveau noeud
     /// </summary>
     private void AjoutNouveauNoeud(Noeud nouveauNoeud)
     {
-        SaveNouveauNoeud(nouveauNoeud); 
+        SaveNouveauNoeud(nouveauNoeud);
         UpdateGraphe();
-
-
     }
     /// <summary>
     /// Supprime le noeud avec l'id selectionner
@@ -153,16 +141,10 @@
     /// <summary>
     /// Sauvegarde les mises a jour du graph
     /// </summary>
-    public void SaveChange()
+    public async void SaveChange(Noeud noeud)
     {
-        foreach (var item in Nodes)
-        {
-            client.NoeudsPUTAsync(item.Id, item);
-        }
-        NavigationManager.NavigateTo("/index");
-
+        await client.NoeudsPUTAsync(noeud.Id, noeud);
     }
-
     //Augmente le zoom à partir du bouton
     private async void AugmenterZoom()
     {
