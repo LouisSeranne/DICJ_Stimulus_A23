@@ -18,17 +18,25 @@
                     </div>
 
                     <div class="containerTheorie">
-                        @*Appelle le component en envoyant l'id de la page a aller chercher*@
-                        <TheorieComponent Id="@GetPage()"></TheorieComponent>
-
-                        @if(Page < Pages.Count)
-                        {
-                            <button type="button" class="boutonTheorie" @onclick="PageSuivante" formaction=""> Page Suivante </button>
-                        }
                         @if(Page > 1)
                         {
                             <button type="button" class="boutonTheorie" @onclick="PagePrecedente"> Page Précédente </button>
                         }
+                        else
+                        {
+                            <button type="button" class="boutonTheorie" disabled> Page Précédente </button>
+                        }
+                        @if(Page < Pages.Count)
+                        {
+                            <button type="button" class="boutonTheorie" @onclick="PageSuivante" formaction=""> Page Suivante </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="boutonTheorie" disabled> Page Suivante </button>
+                        }
+                        @*Appelle le component en envoyant l'id de la page a aller chercher*@
+                        <TheorieComponent Id="@GetPage()"></TheorieComponent>
+
                     </div>
                 </div>
             }
@@ -41,17 +49,14 @@
         }
         else
         {
-            <h5 style="color:white">chargement...</h5>
+            <h5 style="color:white">Chargement...</h5>
         }
-
-
     </Authorized>
     <NotAuthorized>
         <h3>Vous n'êtes pas autorisé</h3>
         <RedirectToLogin/>
     </NotAuthorized>
 </AuthorizeView>
-
 
 @code {
     [Parameter]
@@ -100,6 +105,7 @@
 
     private Client SetupClient()
     {
+        var builder = WebApplication.CreateBuilder();
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
         handler.ServerCertificateCustomValidationCallback =
@@ -107,7 +113,8 @@
         {
             return true;
         };
-        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri("https://p22e1api.dicjprojet.cegepjonquiere.ca:443/") };
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri(builder.Configuration["API:Use"]) };
+
         return new Client(httpClient);
     }
 

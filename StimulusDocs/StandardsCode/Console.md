@@ -1,0 +1,1 @@
+- Il est acceptable d'écrire des messages dans la console de l'application, mais garder les messages concis et direct

@@ -6,15 +6,19 @@ using System.Threading.Tasks;
 
 namespace InterpreteurPython;
 
-//Classe qui s'occupe de la gestion des fichiers temporaire pour la lecture du code de l'utilisateur. Elle est internal car son utilisation est limitée a l'interieur du DLL
-
+/// <summary>
+/// S'occupe des fichiers temporaires pour la lecture du code de l'utilisateur. Internal car utilisation limité au DLL
+/// </summary>
 internal class TempHandler
 {
     private string projectDir, tempDirName, pathToTempDir;
 
     public string PathToTempDir { get => pathToTempDir; set => pathToTempDir = value; }
 
-    //Le constructeur s'occupe de créer le dossier qui contient tout les dossier temporaire des etudiants
+
+    /// <summary>
+    /// Créer le dossier contentant tout les dossiers temporaires des étudiants
+    /// </summary>
     public TempHandler()
     {
         projectDir = Directory.GetCurrentDirectory();
@@ -23,9 +27,10 @@ internal class TempHandler
         CreateTempFolder(PathToTempDir);
     }
 
-    //S'occupe de créer le fichier qui contient les fichiers temporaire s'il n'existe pas déja
-    //Params: 
-    //  path : chemin vers le dossier dans lequel le dossier doit être créé
+    /// <summary>
+    /// S'occupe de créer le fichier qui contient les fichiers temporaire s'il n'existe pas déja
+    /// </summary>
+    /// <param name="path">Chemin vers le dossier dans lequel le dossier doit être créé</param>
     private void CreateTempFolder(string path)
     {
         if (!Directory.Exists(path))
@@ -34,11 +39,12 @@ internal class TempHandler
         }
     }
 
-    /*Fonction qui s'occupe de créer le dossier et les fichiers temporaire
-     *params:
-     *  codes : List de FichierPython que l'étudiant envois pour faire interpreter
-     *  userid : Id de l'utilisateur qui envois le code
-     */
+    /// <summary>
+    /// Créer le dossier et les fichiers temporaires
+    /// </summary>
+    /// <param name="codes">Liste envoyé par l'utilisateur pour l'interpréteur</param>
+    /// <param name="userId">Id de l'utilisateur</param>
+    /// <returns></returns>
     private string CreateTempPythonFiles(List<FichierPython> codes, string userId)
     {
         //Création du dossier temporaire dans lequel sera stocké les fichiers .py le temps qu'ils soient interprété
@@ -58,15 +64,24 @@ internal class TempHandler
         return pathToUserDir;
     }
 
-
-    //Fonction qui supprime le dossier temporaire, supprimant en meme temps les fichiers pythons
+    /// <summary>
+    /// Supprime le dossier temporaire, ainsi que les fichiers Python
+    /// </summary>
+    /// <param name="pathToUserTempFiles"></param>
     public void TempCleanUp(string pathToUserTempFiles)
     {
         Directory.Delete(pathToUserTempFiles, true);
     }
 
 
-    //Fonctions publique qui appelle la fonction privée pour la création des fichiers temporaires
+    /// <summary>
+    /// Appelle la fonction CreateTempPythonFiles pour la création des fichiers temporaires
+    /// </summary>
+    /// <param name="codes"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+
+#warning chercher pourquoi la fonction existe
     public string TempSetup(List<FichierPython> codes, string userId)
     {
         return CreateTempPythonFiles(codes, userId);

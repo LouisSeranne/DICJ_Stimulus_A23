@@ -11,6 +11,7 @@
     <None Remove="Pages\Admin.razor.css" />
     <None Remove="Pages\Login.razor.css" />
     <None Remove="Pages\Prof.razor.css" />
+    <None Remove="Shared\LoginLayout - Copier.razor.css" />
     <None Remove="Shared\LoginLayout.razor.css" />
   </ItemGroup>
 
@@ -44,6 +45,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="logs\" />
   </ItemGroup>
 
 </Project>
