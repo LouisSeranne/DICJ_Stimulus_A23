@@ -6,6 +6,8 @@ namespace StimulusAPI.Config
     {
         public DbConfig()
         {
+            // Projet : ProjetStimulus
+            // Test : TestStimulusProjet
             string db = "TestStimulusProjet";
             var builder = WebApplication.CreateBuilder();
 
