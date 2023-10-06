@@ -11,20 +11,21 @@
     }
 }
 
-    <Draggable @bind-X=Node.PosX @bind-Y=Node.PosY>
+    <NonDraggable @bind-X=Node.PosX @bind-Y=Node.PosY>
     <circle visibility="@displayHover" r="@(Node.Rayon + 3)" class="cercle" style="fill: rgba(255,255,255,5); opacity:0.5" />
-    <circle @onmouseup=@(e => SaveChangeNoeud(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
+    <circle @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) r="@Node.Rayon" class="cercle" style="fill:@Couleur"/>
     <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />
     <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
         <span> Nom :  @Node.Code / ID : @Node.Id</span><br />
         <span> Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
         <span> Desc : @Node.Description</span>       
     </foreignObject>
-    <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
+    @* @onmouseup=@(e => SaveChangeNoeud(Node)) *@
+@*     <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
         <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
 
-    </foreignObject>
-    <foreignObject x="@(Node.Rayon/2 )" y="@(Node.Rayon/2 )" width="20" height="20">
+    </foreignObject> *@
+   @*  <foreignObject x="@(Node.Rayon/2 )" y="@(Node.Rayon/2 )" width="20" height="20">
         @if (!isOpen)
         {
             <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-plus" aria-hidden="true" @onclick="@NouveauNoeud"></span>
@@ -34,8 +35,8 @@
             <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-minus" aria-hidden="true" @onclick="@FermeForm"></span>
         }
 
-    </foreignObject>
-    <rect x="@(Node.Rayon/2 +20 )" y="@(Node.Rayon/2 +20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="fill: rgba(255,255,255,255)" />
+    </foreignObject> *@
+   @*  <rect x="@(Node.Rayon/2 +20 )" y="@(Node.Rayon/2 +20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="fill: rgba(255,255,255,255)" />
     <foreignObject x="@(Node.Rayon/2 +20 )" y="@(Node.Rayon/2 +20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="padding: 5px">
         <EditForm Model="nouveauNoeud" OnSubmit="AjoutNoeud" visibility="@displayNouveauNoeud">
             <div class="form-group" visibility="@displayNouveauNoeud">
@@ -66,11 +67,11 @@
             </div>
             <button class="btn btn-primary">Ajouter</button>
         </EditForm>
-    </foreignObject>
+    </foreignObject> *@
         <NavLink @onclick="DirectionPage" id="lien">
             <text text-anchor="middle" alignment-baseline="central">@Node.Code</text>
         </NavLink>                                                
-    </Draggable>
+    </NonDraggable>
 
 <style>
     #lien:hover{
@@ -169,43 +170,43 @@
             Couleur = couleurCompleter;
         }
     }
-    private async void AjoutNoeud()
-    {
-        displayNouveauNoeud = "hidden";
-        formSizeW = 0;
-        formSizeH = 0;
-        nouveauNoeud.GrapheId = await sessionStorage.GetItemAsync<int>("idGraphe");
-        nouveauNoeud.PosX = Node.PosX;
-        nouveauNoeud.PosY = Node.PosY + 100;
-        nouveauNoeud.LiaisonPrincipal = Node.Id;
-        nouveauNoeud.Pts = 0;
-        nouveauNoeud.Obligatoire = true;
-        nouveauNoeud.Image = "default";
-        nouveauNoeud.Disponibilite = DateTime.Now;
+    // private async void AjoutNoeud()
+    // {
+    //     displayNouveauNoeud = "hidden";
+    //     formSizeW = 0;
+    //     formSizeH = 0;
+    //     nouveauNoeud.GrapheId = await sessionStorage.GetItemAsync<int>("idGraphe");
+    //     nouveauNoeud.PosX = Node.PosX;
+    //     nouveauNoeud.PosY = Node.PosY + 100;
+    //     nouveauNoeud.LiaisonPrincipal = Node.Id;
+    //     nouveauNoeud.Pts = 0;
+    //     nouveauNoeud.Obligatoire = true;
+    //     nouveauNoeud.Image = "default";
+    //     nouveauNoeud.Disponibilite = DateTime.Now;
 
-        AjoutNouveauNoeud(nouveauNoeud);
-        nouveauNoeud = new();
-        isOpen = false;
-    }
-    private void SupprimerNoeud()
-    {
-        SupprNoeud(Node.Id);
-    }
-    private void NouveauNoeud()
-    {
-        //Base du nouveau noeud
-        formSizeW = 200;
-        formSizeH = 315;
-        displayNouveauNoeud = "visible";
-        isOpen = true;
-    }
-    private void FermeForm()
-    {
-        formSizeW = 0;
-        formSizeH = 0;
-        displayNouveauNoeud = "hidden";
-        isOpen = false;
-    }
+    //     AjoutNouveauNoeud(nouveauNoeud);
+    //     nouveauNoeud = new();
+    //     isOpen = false;
+    // }
+    // private void SupprimerNoeud()
+    // {
+    //     SupprNoeud(Node.Id);
+    // }
+    // private void NouveauNoeud()
+    // {
+    //     //Base du nouveau noeud
+    //     formSizeW = 200;
+    //     formSizeH = 315;
+    //     displayNouveauNoeud = "visible";
+    //     isOpen = true;
+    // }
+    // private void FermeForm()
+    // {
+    //     formSizeW = 0;
+    //     formSizeH = 0;
+    //     displayNouveauNoeud = "hidden";
+    //     isOpen = false;
+    // }
     private string TestParent() => (Node.LiaisonPrincipal != null) ? Node.LiaisonPrincipal.ToString() : "Aucun";
     private void OnMouseHover() => displayHover = "visible";
     private void OnMouseLeave()

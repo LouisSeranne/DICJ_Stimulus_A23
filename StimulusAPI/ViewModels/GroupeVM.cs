@@ -11,10 +11,16 @@ namespace StimulusAPI.ViewModels
             CoursId = groupe.CoursId;
             ProfesseurId = groupe.ProfesseurId;
             Etudiants = new List<EtudiantVM>();
+            Professeurs = new List<ProfVM>();
 
-            foreach(Etudiant etudiant in groupe.EtudiantDa)
+            foreach (Etudiant etudiant in groupe.EtudiantDa)
             {
                 Etudiants.Add(new EtudiantVM(etudiant, 1));
+            }
+
+            foreach (Professeur professeur in groupe.ProfId)
+            {
+                Professeurs.Add(new ProfVM(professeur, 1));
             }
         }
 
@@ -32,5 +38,6 @@ namespace StimulusAPI.ViewModels
         public int? ProfesseurId { get; set; }
 
         public virtual List<EtudiantVM> Etudiants { get; set; }
+        public virtual List<ProfVM> Professeurs { get; set; }
     }
 }
