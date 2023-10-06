@@ -17,28 +17,30 @@
         <button @onclick="AddPage">+</button>
     </div>
 
+<div class="d-flex justify-content-around">
     <div class="d-flex justify-content-between">
-        <div class="col-md-5">
+        <div>
             <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
         </div>
-        <div id="background-result" class="col-md-5">
-            @foreach (Fichier fichier in FichierCode)
+        @foreach (Fichier fichier in FichierCode)
+        {
+            if (fichier.Css != "hidden")
             {
-                if (fichier.Css != "hidden")
-                {
-                    SetCode(@fichier.Contenu);
-                }
-                <textarea class="textareaCode @fichier.Css" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
-                <p style="white-space:pre-wrap">@Result</p>
+                SetCode(@fichier.Contenu);
             }
-        </div>
+            <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
+        }
     </div>
+    <div id="background-result">
+        <p style="white-space:pre-wrap">@Result</p>
+    </div>
+</div>
 }
 
 <!-- Section bouton -->
 <div class="row">
     <div class="col-sm-1 col-md-1 col-lg-1 d-flex justify-content-between">
-        <button @onclick=@Post class="boutonExerciceGauche">Executer</button>
+        <button @onclick=@Post class="boutonExerciceGauche">Éxecuter</button>
         <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
     </div>
 </div>
@@ -71,7 +73,17 @@
         return code;
     }
 
-    private async Task SetCode(string code = "print('Hello World!')")
+    private const string texteDefaut = "texte = \"\"\n" +
+                                "onglets = False\n\n" +
+                                "# Si il y a des onglets\n" +
+                                "if (onglets == True):\n" +
+                                "\ttexte = \"Choisissez un onglet pour commencer a coder !\"\n" +
+                                "# Si il n'y a pas d'onglets\n" +
+                                "elif (onglets == False):\n" +
+                                "\ttexte = \"Creez un onglet avec le bouton '+' puis commencez a coder !\"\n" +
+                                "print (texte)";
+
+    private async Task SetCode(string code = texteDefaut)
     {
         if (_editor != null)
             await _editor.SetValue(code);
@@ -84,7 +96,7 @@
                 AutomaticLayout = true,
                 Language = "python",
                 Theme = "vs-dark",
-                Value = FichierCode.FirstOrDefault().Contenu
+                Value = texteDefaut
             };
     }
 
@@ -164,15 +176,17 @@
                 });
         }
 
-        if (FichierCode.Count == 0)
-        {
+        /*
+            if (FichierCode.Count == 0)
+            {
             var fichiers = await ApiClient.PageExerciceGETAsync(ExerciceModel.Id);
             List<FichierSource>? fichiersSource = JsonConvert.DeserializeObject<List<FichierSource>>(fichiers.FichierSource);
             foreach (FichierSource fichier in fichiersSource)
-            {
+                {
                 FichierCode.Add(new Fichier(-(FichierCode.Count + 1), fichier.Nom, fichier.Contenu));
-            }
         }
+        }
+        */
 
         //FichierCode[0].Css = FocusedTab;
 
@@ -238,18 +252,22 @@
         Result = "Interprétation du code...";
         Console.WriteLine("Running python code...");
         StateHasChanged();
-        foreach (Fichier f in FichierCode)
+
+        foreach (var fichier in FichierCode)
         {
-            if (f.Css != "hidden")
+            if (fichier.Css != "hidden")
             {
-                f.Contenu = await GetCode();
-                fichiers.Add(new
-                {
-                    Nom = f.Nom,
-                    Contenu = f.Contenu.Replace("\"", "\'")
-                });
+                await ChangeTab(fichier.Id);
             }
         }
+
+        string texte = await GetCode();
+        fichiers.Add(new
+        {
+            Nom = "main.py",
+            Contenu = texte.Replace("\"", "\'")
+        });        
+
         jsonString = JsonConvert.SerializeObject(fichiers);
 
         //Voir pour le mettre en post
@@ -355,9 +373,9 @@
     /// </summary>
     private async void AddPage()
     {
-        var nomFichier = await JS.InvokeAsync<string>("PromptFunction.promptFunc", null);
+        string nomFichier = await JS.InvokeAsync<string>("PromptFunction.promptFunc", null);
 
-        if (nomFichier == "")
+        if (String.IsNullOrWhiteSpace(nomFichier))
         {
             Result = "Nom de fichier invalide";
         }
@@ -370,10 +388,10 @@
 
             FichierCode.Add(new Fichier()
                 {
-                    Contenu = "",
+                    Contenu = "print('Hello World !')",
                     Nom = nomFichier,
                     Id = -(FichierCode.Count + 1),
-                    Css = FocusedTab
+                    Css = FocusedTab                    
                 });
         }
 
