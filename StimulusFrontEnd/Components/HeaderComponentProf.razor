@@ -1,0 +1,141 @@
+﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IJSRuntime JSRuntim
+
+@inject NavigationManager NavigationManager
+@inject IUpdateService updateService
+<AuthorizeView>
+    <Authorized>
+        @if (initDone)
+        {         
+            <header class="containerHeader">
+                <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
+                    </div>                  
+                    <div class ="col-sm-1 col-md-1 col-lg-1">
+                        <select @onchange="ChangeCours" name="cours" class="ListeHeader" value=@listCourGroupeOrdered[0].IdGroupe>
+                           @for (int i = 0; i < listCourGroupeOrdered.Count; i++)
+                           {
+                               <option value="@listCourGroupeOrdered[i].IdGroupe">@listCourGroupeOrdered[i].Nom</option>
+                           }
+                        </select>
+                    </div>
+                    <div class="col-sm-4 col-md-4 col-lg-4 divDroiteHeader">
+                        <a href="/index"><img src="/image/Graph.png" alt="Logo Graph" class="logoHeader"/></a>
+                        <a href="/logout"><img src="/image/Logout.png" alt="Logo Graph" class="logoHeader"/></a>
+                        <img src="/image/Avatar.png" alt="Logo Avatar" class="logoHeader"/>
+                    </div>
+                </div>
+            </header>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    Cour cours;
+
+    private int idGroupe,idCours, idProf;
+    private bool initDone;
+
+    private List<Cour> listCours;
+    private ProfVM prof;
+    private List<CoursGroupeHeader> listCourGroupe,listCourGroupeOrdered;
+
+    private Client client;
+
+    protected async override void OnInitialized()
+    {
+        initDone = false;
+
+        var builder = WebApplication.CreateBuilder();
+
+        //Handler : Permet de contourner les certifications sinon le projet crash
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+
+        //Set une nouvelle Uri pour lien le Front-End a la Bd
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri(builder.Configuration["API:Use"]) };
+
+        client = new Client(httpClient);
+
+        //Requete utilisée pour aller chercher les données du cours en fonction de l'id du graphe
+
+    }
+
+    protected async override void OnParametersSet()
+    {
+        idCours = await sessionStorage.GetItemAsync<int>("idCours");
+        idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
+        idProf = await sessionStorage.GetItemAsync<int>("idProf");
+
+        cours = client.CoursGETAsync(idCours).Result;
+
+        prof = client.ProfesseursGETAsync(idProf).Result;
+
+        listCours = client.CoursAllAsync().Result.Where(c => prof.Groupes.Any(gr => gr.CoursId == c.Id)).ToList();
+
+
+        listCourGroupe = new List<CoursGroupeHeader>();
+        listCourGroupeOrdered = new List<CoursGroupeHeader>();
+
+        foreach (Cour cour in listCours)
+        {
+            listCourGroupe.Add(new CoursGroupeHeader(prof.Groupes.Where(gr => gr.CoursId == cour.Id).FirstOrDefault(), cour));
+        }
+
+
+        listCourGroupeOrdered.Add(listCourGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());
+
+        foreach (CoursGroupeHeader cour in listCourGroupe)
+        {
+            if (cour.IdGroupe != idGroupe)
+            {
+                listCourGroupeOrdered.Add(cour);
+            }
+        }
+        initDone = true;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void ChangeCours(ChangeEventArgs e)
+    {
+        JSRuntim.InvokeVoidAsync("console.log", "appele changeCour");
+
+        await sessionStorage.SetItemAsync<int>("idGroupe", Int32.Parse((string)e.Value));
+
+        int idCours = (int)client.GroupesGETAsync(Int32.Parse((string)e.Value)).Result.CoursId;
+
+        await sessionStorage.SetItemAsync<int>("idCours", idCours);
+
+        int idGraphe = client.GraphesAllAsync().Result.Where(gra => gra.GroupeId == Int32.Parse((string)e.Value)).Select(gra => gra.Id).FirstOrDefault();
+
+        await sessionStorage.SetItemAsync<int>("idGraphe", idGraphe);
+
+        OnParametersSet();
+
+        updateService.CallRequestRefresh();
+        NavigationManager.NavigateTo("/index");
+    }
+
+    private class CoursGroupeHeader
+    {
+        public CoursGroupeHeader(GroupeVM groupe, Cour cour)
+        {
+            Nom = cour.CodeCours + " - " + groupe.Nom;
+            IdGroupe = groupe.Id;
+        }
+
+        public string Nom { get; set; }
+        public int IdGroupe { get; set; }
+
+    }
+}

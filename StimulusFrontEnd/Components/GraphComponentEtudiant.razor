@@ -2,7 +2,7 @@
 @using System.Text;
 @using StimulusFrontEnd.Services;
 @using static StimulusFrontEnd.Components.Connector
-@using static StimulusFrontEnd.Components.Cercle
+@using static StimulusFrontEnd.Components.NoeudsEtudiant
 @inject MouseService mouseSrv;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntim
@@ -31,15 +31,13 @@
                 </div>
                 
             </foreignObject>
-            <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox = "@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth"
-            @onmousemove=@(e => mouseSrv.FireMove(this, e))
-            @onmouseup=@(e => mouseSrv.FireUp(this, e))
-            @onmousewheel="Zoom">
+            <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox="@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth" @onmousewheel="Zoom" @onmousemove=@(e => mouseSrv.FireMove(this, e))
+            @onmouseup=@(e => mouseSrv.FireUp(this, e))>
                 <Draggable X="0" Y="0">
                     <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgb(0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
-                        <Cercle Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></Cercle>
+                        <NoeudsEtudiant Node="@noeud" Nodes="@Nodes"></NoeudsEtudiant>
                     }
                 </Draggable>
 
@@ -104,32 +102,32 @@
     /// <summary>
     /// Permet l'ajout de noveau noeud
     /// </summary>
-    private void AjoutNouveauNoeud(Noeud nouveauNoeud)
-    {
-        SaveNouveauNoeud(nouveauNoeud);
-        Nodes.Add(nouveauNoeud);
-    }
-    /// <summary>
-    /// Supprime le noeud avec l'id selectionner
-    /// </summary>
-    /// <param name="id"></param>
-    private void SupprimerNoeud(int id)
-    {
-        client.NoeudsDELETEAsync(id);
-        UpdateGraphe();
+    // private void AjoutNouveauNoeud(Noeud nouveauNoeud)
+    // {
+    //     SaveNouveauNoeud(nouveauNoeud);
+    //     Nodes.Add(nouveauNoeud);
+    // }
+    // / <summary>
+    // / Supprime le noeud avec l'id selectionner
+    // / </summary>
+    // / <param name="id"></param>
+    // private void SupprimerNoeud(int id)
+    // {
+    //     client.NoeudsDELETEAsync(id);
+    //     UpdateGraphe();
 
-    }
+    // }
     private void OnMouseHover() => displayHover = "show";
     private void OnMouseLeave() => displayHover = "hidden";
     /// <summary>
     /// Sauvegarde les mises a jour du graph
     /// </summary>
-    public void SaveChange(Noeud noeud)
-    {
-        client.NoeudsPUTAsync(noeud.Id, noeud);
-        UpdateGraphe();
+    // public void SaveChange(Noeud noeud)
+    // {
+    //     client.NoeudsPUTAsync(noeud.Id, noeud);
+    //     UpdateGraphe();
 
-    }
+    // }
 
     //Augmente le zoom à partir du bouton
     private async void AugmenterZoom()
@@ -187,9 +185,9 @@
             }
         }
     }
-    public async void SaveNouveauNoeud(Noeud noeud)
-    {
-        if(noeud !=null)
-            await client.NoeudsPOSTAsync(noeud);
-    }
+    // public async void SaveNouveauNoeud(Noeud noeud)
+    // {
+    //     if(noeud !=null)
+    //         await client.NoeudsPOSTAsync(noeud);
+    // }
 }

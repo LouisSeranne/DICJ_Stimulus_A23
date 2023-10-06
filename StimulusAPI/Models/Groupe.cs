@@ -9,6 +9,7 @@ namespace StimulusAPI.Models
         {
             Graphes = new HashSet<Graphe>();
             EtudiantDa = new HashSet<Etudiant>();
+            ProfId = new HashSet<Professeur>();
         }
 
         public int Id { get; set; }
@@ -21,5 +22,6 @@ namespace StimulusAPI.Models
         public virtual ICollection<Graphe> Graphes { get; set; }
 
         public virtual ICollection<Etudiant> EtudiantDa { get; set; }
+        public virtual ICollection<Professeur> ProfId { get; set; }
     }
 }
