@@ -285,6 +285,7 @@ main {
     background-color: rgb(30, 30, 30);
     margin-left: 10px;
     padding-left: 10px;
+    width: 500px
 }
 
 .boutonExerciceGauche {
