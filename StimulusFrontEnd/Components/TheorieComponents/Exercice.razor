@@ -28,9 +28,9 @@
                 {
                     SetCode(@fichier.Contenu);
                 }
-                <textarea class="textareaCode @fichier.Css" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
-                <p style="white-space:pre-wrap">@Result</p>
+                <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
             }
+            <p style="white-space:pre-wrap">@Result</p>
         </div>
     </div>
 }
