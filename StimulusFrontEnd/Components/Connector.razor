@@ -1,16 +1,14 @@
 ﻿<path d="M @X1 @Y1 C @c1x @c1y, @c2x @c2y, @X2 @Y2" stroke="rgb(108, 117, 125)" stroke-width="1.5" fill="transparent" style="pointer-events:none !important; position: absolute; z-index: -1;" />
-<circle @onclick="CouperLeLien" title="Break The Link" id="cutting" cx="@midX.ToString(System.Globalization.CultureInfo.InvariantCulture)" cy="@midY.ToString(System.Globalization.CultureInfo.InvariantCulture)" r="8" fill="red" />
+@if (GetModeDeVue() == 2)
+{
+    <circle @onclick="CouperLeLien" title="Break The Link" id="cutting" cx="@midX.ToString(System.Globalization.CultureInfo.InvariantCulture)" cy="@midY.ToString(System.Globalization.CultureInfo.InvariantCulture)" r="8" fill="red" />
+}
 
-<style>
-    #cutting:hover {
-        fill:green;
-        cursor:pointer;
-    }
-</style>
+
 @code {
     [Parameter] public Noeud Noeud { get; set; }
     [Parameter] public Action<Noeud> SaveChangeNoeud { get; set; }
-
+    [Parameter] public Func<int> GetModeDeVue { get; set; }
 
     [Parameter] public Direction Dir1 { get; set; } = Direction.Right;
     [Parameter] public double? X1 { get; set; }

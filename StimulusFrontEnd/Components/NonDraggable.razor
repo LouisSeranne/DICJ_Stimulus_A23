@@ -8,7 +8,6 @@
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
-    [Parameter] public Func<int> GetModeDeVue { get; set; }
 
 
     double? x;
@@ -28,12 +27,12 @@
     [Parameter] public EventCallback<double?> YChanged { get; set; }
 
 
-    protected override void OnInitialized() {
-        mouseSrv.OnMove += OnMove;
-        mouseSrv.OnUp += OnUpLeave;
-        mouseSrv.OnLeave += OnUpLeave;
-        base.OnInitialized();
-    }
+    // protected override void OnInitialized() {
+    //     mouseSrv.OnMove += OnMove;
+    //     mouseSrv.OnUp += OnUpLeave;
+    //     mouseSrv.OnLeave += OnUpLeave;
+    //     base.OnInitialized();
+    // }
 
 
     string cursor = "grab";
@@ -58,33 +57,21 @@
         => isDown = false;
 
     void OnMove(object? _, MouseEventArgs e) {
-        //try catch obligatoire ! GetModeDeVue met du temps a load (Methode du ghetto)
-        try
-        {
-            if (GetModeDeVue() == 2)
-            {
-                if (!isDown)
-                    return;
+        if (!isDown)
+            return;
 
-                x = x - (cursorX - e.ClientX);
-                y = y - (cursorY - e.ClientY);
+        x = x - (cursorX - e.ClientX);
+        y = y - (cursorY - e.ClientY);
 
-                cursorX = e.ClientX;
-                cursorY = e.ClientY;
-                XChanged.InvokeAsync(x.Value);
-                YChanged.InvokeAsync(y.Value);
-            }
-
-        }
-        catch{}
+        cursorX = e.ClientX;
+        cursorY = e.ClientY;
+        XChanged.InvokeAsync(x.Value);
+        YChanged.InvokeAsync(y.Value);
     }
 
     public void Dispose() {
-        if (GetModeDeVue() == 2)
-        {
-            mouseSrv.OnMove -= OnMove;
-            mouseSrv.OnUp -= OnUpLeave;
-            mouseSrv.OnLeave -= OnUpLeave;
-        }
+        mouseSrv.OnMove -= OnMove;
+        mouseSrv.OnUp -= OnUpLeave;
+        mouseSrv.OnLeave -= OnUpLeave;
     }
 }
