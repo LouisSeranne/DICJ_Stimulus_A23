@@ -16,6 +16,7 @@
 namespace StimulusFrontEnd.Services.Base
 {
     using Newtonsoft.Json;
+    using System.ComponentModel.DataAnnotations;
     using System.Text;
     using System = global::System;
 
@@ -9451,9 +9452,12 @@ namespace StimulusFrontEnd.Services.Base
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int Id { get; set; }
 
+        [MinLength(2)]
+        [MaxLength(10)]
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Code { get; set; }
-
+        [MinLength(3)]
+        [MaxLength(100)]
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Description { get; set; }
 

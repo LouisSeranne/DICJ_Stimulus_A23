@@ -9,7 +9,6 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject IUpdateService updateService
 @inject MouseService mouseSrv;
-
 <div class="row mt-2">
     <div class="col">
         <foreignObject x="5" y="5" width="180" height="50">
@@ -28,12 +27,11 @@
             <rect width="180" height="180" x="0" y="5" fill="#32587a"></rect>
             <foreignObject x="0" y="5" width="180" height="180">
                 <div>
-                    <p style="color:rgb(140,140,140); margin-left:10px;">  gris : bloqué</p>
-                    <p style="color:rgb(228, 231, 245); margin-left:10px;">  blanc: disponible</p>
-                    <p style="color:rgb(199,160,53); margin-left:10px;">  jaune: consulté</p>
-                    <p style="color:rgb(88,150,105); margin-left:10px;">  vert : completé</p>
-                </div>
-                
+                    <p style="color:rgb(140,140,140); margin-left:10px;">1 - gris : bloqué</p>
+                    <p style="color:rgb(228, 231, 245); margin-left:10px;">2 - blanc: disponible</p>
+                    <p style="color:rgb(199,160,53); margin-left:10px;">3 - jaune: consulté</p>
+                    <p style="color:rgb(88,150,105); margin-left:10px;">4  vert : completé</p>
+                </div>                
             </foreignObject>
             <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox = "@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth" 
             @onmousemove=@(e => mouseSrv.FireMove(this, e))
@@ -46,18 +44,14 @@
                         <Cercle GetModeDeVue="GetModeDeVue" RelinkBindNode="RelinkBindNode" ReLinkNoeud="ReLinkNoeud" Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></Cercle>
                     }
                 </Draggable>
-
             </svg>
         </svg>
     </div>
 </div>
-
 @code {
     private HttpClient httpClient;
     private Client client;
     private string displayHover;
-    public List<Noeud> Nodes { get; set; } = new();
-    private List<Noeud> NodesTemp { get; set; } = new();
     private double viewBoxX = 0;
     private double viewBoxY = 0;
     private double viewBoxWidth = 2000;
@@ -68,6 +62,7 @@
     private bool enRecherche = false;
     private int modeDeVue = 2;
     private Noeud nouveauNoeud;
+    public List<Noeud> Nodes { get; set; } = new();
     protected async override void OnInitialized()
     {
         var builder = WebApplication.CreateBuilder();
@@ -85,6 +80,29 @@
         client = new Client(httpClient);
         UpdateGraphe();
     }
+    /// <summary>
+    /// Permet de set le mode de vu. 1 => Page, 2 => Edit, 3 => Etudiant
+    /// </summary>
+    /// <param name="v">valeur de la vue</param>
+    private void ModeDeVue(int v) => modeDeVue = v;
+    /// <summary>
+    /// Permet a tout les noeuds d'adapter leur mode (fonction delegate au noeud et connecteur)
+    /// </summary>
+    /// <returns></returns>
+    private int GetModeDeVue() => modeDeVue;
+    /// <summary>
+    /// Pour conserver le fond dragable quand en mode "vue etudiant"
+    /// </summary>
+    /// <returns></returns>
+    private int GetModeFond() => 2; //Hardcode
+    //Quand la souris survole
+    private void OnMouseHover() => displayHover = "show";
+    //Quand la souris ne survole plus
+    private void OnMouseLeave() => displayHover = "hidden";
+    /// <summary>
+    /// Permet de rattacher un noeud enfant a un parent clique
+    /// </summary>
+    /// <param name="noeud"></param>
     private void RelinkBindNode(Noeud noeud)
     {
         if (enRecherche)
@@ -94,37 +112,30 @@
             SaveChange(enfantRechercheParent);
         }
     }
+    /// <summary>
+    /// Detache un noeud enfant de son parent
+    /// </summary>
+    /// <param name="noeud"></param>
     private void ReLinkNoeud(Noeud noeud)
     {
         enfantRechercheParent = noeud;
         enRecherche = true;
     }
-    private void ModeDeVue(int v)
-    {
-        modeDeVue = v;
-    }
-    private int GetModeDeVue()
-    {
-        return modeDeVue;
-    }
-    private int GetModeFond() //Hard
-    {
-        return 2;
-    }
     /// <summary>
-    /// Recupere les noeuds du graph Numero X
+    /// Recupere les noeuds du graph Numero X et permet la MAJ du graph
     /// </summary>
     private async void UpdateGraphe()
     {
         Nodes = new();
         if (sessionStorage != null )
         {
+            //Methode du ghetto, mais fonctionne
             while(await sessionStorage.GetItemAsync<int>("idGraphe") == 0);
 
             int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
-                Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
+            Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
         }
-        NavigationManager.NavigateTo("/index");    
+        NavigationManager.NavigateTo("/index");
 
     }
     /// <summary>
@@ -143,34 +154,23 @@
     {
         client.NoeudsDELETEAsync(id);
         UpdateGraphe();
-
-    }
-    private void OnMouseHover()
-    {
-        displayHover = "show";
-    }
-    private void OnMouseLeave()
-    {
-        displayHover = "hidden";
     }
     /// <summary>
     /// Sauvegarde les mises a jour du graph
     /// </summary>
-    public async void SaveChange(Noeud noeud)
+    public async void SaveChange(Noeud noeud) => await client.NoeudsPUTAsync(noeud.Id, noeud);
+    /// <summary>
+    /// Ajoute un noeud dans la BD
+    /// </summary>
+    /// <param name="noeud"></param>
+    public async void SaveNouveauNoeud(Noeud noeud)
     {
-        await client.NoeudsPUTAsync(noeud.Id, noeud);
+        if(noeud !=null)
+            await client.NoeudsPOSTAsync(noeud);
     }
-    //Augmente le zoom à partir du bouton
-    private async void AugmenterZoom()
-    {
-        viewBoxX = viewBoxX + 5;
-        viewBoxY = viewBoxY + 5;
-        viewBoxWidth = viewBoxWidth - 20;
-        viewBoxHeight = viewBoxHeight - 20;
-        zoomIncrement = zoomIncrement + 0.01;
-    }
-
-    //Reset du zoom à 100%
+    /// <summary>
+    /// Reset le zoom a 100%
+    /// </summary>
     private void ResetViewbox()
     {
         viewBoxX = 0;
@@ -179,9 +179,21 @@
         viewBoxWidth = 2000;
         zoomIncrement = 1;
     }
-
-    //Réduit le zoom
-    private async void ReduireZoom()
+    /// <summary>
+    /// Augmenter le zoom
+    /// </summary>
+    private void AugmenterZoom()
+    {
+        viewBoxX = viewBoxX + 5;
+        viewBoxY = viewBoxY + 5;
+        viewBoxWidth = viewBoxWidth - 20;
+        viewBoxHeight = viewBoxHeight - 20;
+        zoomIncrement = zoomIncrement + 0.01;
+    }
+    /// <summary>
+    /// Reduit le zoom
+    /// </summary>
+    private void ReduireZoom()
     {
         viewBoxX = viewBoxX - 5;
         viewBoxY = viewBoxY - 5;
@@ -189,8 +201,10 @@
         viewBoxHeight = viewBoxHeight + 20;
         zoomIncrement = zoomIncrement - 0.01;
     }
-
-    //Fonction zoom avec le scroll de la molette
+    /// <summary>
+    /// Zoom scroll molette
+    /// </summary>
+    /// <param name="mouse"></param>
     public void Zoom(WheelEventArgs mouse)
     {
         if (mouse.ShiftKey) // get le shift key
@@ -215,10 +229,5 @@
                 zoomIncrement = zoomIncrement - 0.01;
             }
         }
-    }
-    public async void SaveNouveauNoeud(Noeud noeud)
-    {
-        if(noeud !=null)
-            await client.NoeudsPOSTAsync(noeud);
     }
 }

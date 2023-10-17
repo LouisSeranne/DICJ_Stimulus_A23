@@ -259,12 +259,16 @@ main {
     border-radius: 10px;
 }
 /*Css connector component*/
-
-#cutting:hover {
+.cutting:hover {
     fill: green;
     cursor: pointer;
 }
-
+/*Css text link noeud*/
+.textLink:hover{
+    fill: black;
+    font-weight: bold;
+    cursor: pointer;
+}
 /*Css cercle component*/
 #reLink:hover {
     cursor: pointer;

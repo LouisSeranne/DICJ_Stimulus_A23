@@ -1,7 +1,7 @@
 ﻿<path d="M @X1 @Y1 C @c1x @c1y, @c2x @c2y, @X2 @Y2" stroke="rgb(108, 117, 125)" stroke-width="1.5" fill="transparent" style="pointer-events:none !important; position: absolute; z-index: -1;" />
 @if (GetModeDeVue() == 2)
 {
-    <circle @onclick="CouperLeLien" title="Break The Link" id="cutting" cx="@midX.ToString(System.Globalization.CultureInfo.InvariantCulture)" cy="@midY.ToString(System.Globalization.CultureInfo.InvariantCulture)" r="8" fill="red" />
+    <circle @onclick="CouperLeLien" title="Break The Link" class="cutting" cx="@midX.ToString(System.Globalization.CultureInfo.InvariantCulture)" cy="@midY.ToString(System.Globalization.CultureInfo.InvariantCulture)" r="8" fill="red" />
 }
 
 
