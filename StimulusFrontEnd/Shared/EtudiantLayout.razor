@@ -80,14 +80,14 @@
             Console.WriteLine("layout afterrender first");
             //JSRuntim.InvokeVoidAsync("console.log","debut onAfterender");
 
-            if(await sessionStorage.ContainKeyAsync("idEtudiant") && await sessionStorage.GetItemAsync<string>("idEtudiant") != null)
+            if (await sessionStorage.ContainKeyAsync("idConnexion") && await sessionStorage.GetItemAsync<string>("idConnexion") != null)
             {
                 //JSRuntim.InvokeVoidAsync("console.log","rentrer premiere if");
 
                 if(await sessionStorage.ContainKeyAsync("idGroupe") == false)
                 {
 
-                    var idEtu = await sessionStorage.GetItemAsync<string>("idEtudiant");
+                    var idEtu = await sessionStorage.GetItemAsync<string>("idConnexion");
 
                     var etu = client.EtudiantsGETAsync(idEtu).Result;
 

@@ -14,10 +14,10 @@
                     </div>                  
                     <div class ="col-sm-1 col-md-1 col-lg-1">
                         <select @onchange="ChangeGroupe" name="cours" class="ListeHeader" value=@listGroupe[0].Nom>
-                           @for (int i = 0; i < listGroupe.Count; i++)
-                           {
-                               <option value="@listGroupe[i].Nom"></option>
-                           }
+                            @foreach (var groupe in listGroupe)
+                            {
+                                <option value="@groupe.IdGroupe">@groupe.Nom</option>
+                            }
                         </select>
                     </div>
                     <div class="col-sm-4 col-md-4 col-lg-4 divDroiteHeader">
@@ -41,8 +41,8 @@
     private string numProf;
     private bool initDone;
 
-    private List<GroupeHeader> listGroupe, listGroupeAff;
-    private ProfVM prof;
+    private List<GroupeHeader> listGroupe;
+    private Professeur prof;
 
     private Client client;
 
@@ -76,17 +76,17 @@
         idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
         numProf = await sessionStorage.GetItemAsync<string>("idConnexion");
 
-        var idProf = client.ProfesseursAllAsync().Result.FirstOrDefault(p => p.NumEmploye == numProf).Id;
-        //int idProf = 1;
-        var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).ToList();
-        prof = client.ProfesseursGETAsync(idProf).Result;
+        //var idProf = client.ProfesseursAllAsync().Result.FirstOrDefault(p => p.NumEmploye == numProf).Id;
+        var idProf = 1;//Temporaire, sera changer par var idProf =  await sessionStorage.GetItemAsync<string>("idConnexion")
+
+        var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).ToList();// cherche tous les groupes des prof
 
         listGroupe = new List<GroupeHeader>();
 
 
-        foreach (GroupeVM groupe in profGroupe)
+        foreach (GroupeVM groupe in profGroupe)//mets les groupes dans une liste pour l'affichage
         {
-            listGroupe.Add(new GroupeHeader(prof.Groupes.Where(gr => gr.ProfesseurId== idProf).FirstOrDefault()));
+            listGroupe.Add(new GroupeHeader(groupe));
         }
         
         initDone = true;
@@ -95,7 +95,7 @@
      
     }
 
-    private async void ChangeGroupe(ChangeEventArgs e)
+    private async void ChangeGroupe(ChangeEventArgs e) //Semi fonctionnelle, A CHANGER
     {
         JSRuntim.InvokeVoidAsync("console.log", "appele changeCour");
 

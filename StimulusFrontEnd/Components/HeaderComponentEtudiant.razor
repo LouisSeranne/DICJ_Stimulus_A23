@@ -80,7 +80,7 @@
     {
         idCours = await sessionStorage.GetItemAsync<int>("idCours");
         idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
-        daEtudiant = await sessionStorage.GetItemAsync<string>("idEtudiant");
+        daEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
 
         cours = client.CoursGETAsync(idCours).Result;
 

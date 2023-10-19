@@ -15,6 +15,7 @@
 
 namespace StimulusFrontEnd.Services.Base
 {
+    using StimulusAPI.Models;
     using StimulusAPI.ViewModels;
     using System = global::System;
 
@@ -716,12 +717,12 @@ namespace StimulusFrontEnd.Services.Base
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ProfVM> ProfesseursGETAsync(int id);
+        System.Threading.Tasks.Task<Professeur> ProfesseursGETAsync(int id);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ProfVM> ProfesseursGETAsync(int id, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<Professeur> ProfesseursGETAsync(int id, System.Threading.CancellationToken cancellationToken);
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -6826,7 +6827,7 @@ namespace StimulusFrontEnd.Services.Base
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ProfVM> ProfesseursGETAsync(int id)
+        public virtual System.Threading.Tasks.Task<Professeur> ProfesseursGETAsync(int id)
         {
             return ProfesseursGETAsync(id, System.Threading.CancellationToken.None);
         }
@@ -6834,7 +6835,7 @@ namespace StimulusFrontEnd.Services.Base
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ProfVM> ProfesseursGETAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<Professeur> ProfesseursGETAsync(int id, System.Threading.CancellationToken cancellationToken)
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -6875,7 +6876,7 @@ namespace StimulusFrontEnd.Services.Base
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProfVM>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<Professeur>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
