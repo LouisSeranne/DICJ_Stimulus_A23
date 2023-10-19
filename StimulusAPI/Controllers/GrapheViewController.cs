@@ -15,9 +15,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class GrapheViewController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public GrapheViewController(DevProjetStimulusContext context)
+        public GrapheViewController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

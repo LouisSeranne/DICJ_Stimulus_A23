@@ -18,9 +18,9 @@ namespace StimulusAPI.Controllers;
 [ApiController]
 public class PageExerciceController : ControllerBase
 {
-    private readonly DevProjetStimulusContext _context;
+    private readonly TestStimulusProjet_Evolution _context;
 
-    public PageExerciceController(DevProjetStimulusContext context)
+    public PageExerciceController(TestStimulusProjet_Evolution context)
     {
         _context = context;
     }

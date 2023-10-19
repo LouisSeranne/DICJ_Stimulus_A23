@@ -10,9 +10,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class HoverController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public HoverController(DevProjetStimulusContext context)
+        public HoverController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

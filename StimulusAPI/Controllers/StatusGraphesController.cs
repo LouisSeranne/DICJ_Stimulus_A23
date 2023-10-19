@@ -14,9 +14,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class StatusGraphesController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public StatusGraphesController(DevProjetStimulusContext context)
+        public StatusGraphesController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

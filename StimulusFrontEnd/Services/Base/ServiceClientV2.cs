@@ -9610,6 +9610,9 @@ namespace StimulusFrontEnd.Services.Base
         [Newtonsoft.Json.JsonProperty("motDePasse", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string MotDePasse { get; set; }
 
+        [Newtonsoft.Json.JsonProperty("numEmploye", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string NumEmploye { get; set; }
+
         [Newtonsoft.Json.JsonProperty("groupes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Groupe> Groupes { get; set; }
 

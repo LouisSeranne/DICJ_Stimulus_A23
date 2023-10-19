@@ -16,9 +16,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class NoeudsController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public NoeudsController(DevProjetStimulusContext context)
+        public NoeudsController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

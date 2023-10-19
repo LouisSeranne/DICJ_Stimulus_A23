@@ -14,9 +14,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class ProgressionsController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public ProgressionsController(DevProjetStimulusContext context)
+        public ProgressionsController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

@@ -25,10 +25,10 @@ namespace StimulusAPI.Controllers
         private readonly UserManager<UtilisateurApplication> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
         private readonly _2022_Projet_StimulusLoginContext _loginContext;
 
-        public LoginController(UserManager<UtilisateurApplication> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, DevProjetStimulusContext context, _2022_Projet_StimulusLoginContext loginContext)
+        public LoginController(UserManager<UtilisateurApplication> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, TestStimulusProjet_Evolution context, _2022_Projet_StimulusLoginContext loginContext)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;

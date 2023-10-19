@@ -15,9 +15,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class LienUtilesController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public LienUtilesController(DevProjetStimulusContext context)
+        public LienUtilesController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

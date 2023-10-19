@@ -19,10 +19,9 @@
         <main>          
             @if(identifier)
             {
-                <HeaderComponentProfesseur/>
+                <HeaderComponentProf/>
             }         
             <article class="content px-4">
-
                 @Body
             </article>
             @if(identifier)
@@ -35,7 +34,7 @@
 
     
 @code {
-    public int idGraphe,idCours;
+    public int idGraphe;
     private bool initDone,identifier;
     private Client client;
     private HttpClient httpClient;
@@ -76,25 +75,28 @@
     {
         if(firstRender)
         {
-            Console.WriteLine("layout afterrender first");
             //JSRuntim.InvokeVoidAsync("console.log","debut onAfterender");
+            Console.WriteLine("layout afterrender first");
 
-            if(await sessionStorage.ContainKeyAsync("idProf") && await sessionStorage.GetItemAsync<string>("idProf") != null)
+            if (await sessionStorage.ContainKeyAsync("idConnexion") && await sessionStorage.GetItemAsync<string>("idConnexion") != null)
             {
                 //JSRuntim.InvokeVoidAsync("console.log","rentrer premiere if");
 
-                if(await sessionStorage.ContainKeyAsync("idGroupe") == false)
+
+                if (await sessionStorage.ContainKeyAsync("idGroupe") == false)
                 {
+                    var numProf = await sessionStorage.GetItemAsync<string>("idConnexion");
+                    var idProf = client.ProfesseursAllAsync().Result.FirstOrDefault(p => p.NumEmploye == numProf)?.Id;
 
-                    var idProf = await sessionStorage.GetItemAsync<int>("idProf");
+                    //int idProf = 1;
 
-                    var prof = client.ProfesseursGETAsync(idProf).Result;
+                    var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).FirstOrDefault().Id;
 
-                    await sessionStorage.SetItemAsync<int>("idGroupe",prof.Groupes.Select(g => g.Id).FirstOrDefault());    
+                    await sessionStorage.SetItemAsync<int>("idGroupe", (int)profGroupe);
 
                 }
 
-                if(await sessionStorage.ContainKeyAsync("idGraphe") == false)
+                if (await sessionStorage.ContainKeyAsync("idGraphe") == false)
                 {
                     int idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
                     var graphe = await client.GraphesAllAsync();
@@ -103,6 +105,7 @@
                     idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
                     updateService.CallRequestRefresh();
                 }
+
 
                 Console.WriteLine("layout afterRender identifier = true");
                 identifier = true;

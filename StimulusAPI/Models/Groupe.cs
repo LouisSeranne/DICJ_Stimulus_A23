@@ -9,7 +9,6 @@ namespace StimulusAPI.Models
         {
             Graphes = new HashSet<Graphe>();
             EtudiantDa = new HashSet<Etudiant>();
-            ProfId = new HashSet<Professeur>();
         }
 
         public int Id { get; set; }

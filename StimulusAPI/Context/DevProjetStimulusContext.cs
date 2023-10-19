@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using StimulusAPI.Models;
 namespace StimulusAPI.Context
 {
-    public partial class DevProjetStimulusContext : DbContext
+    public partial class TestStimulusProjet_Evolution : DbContext
     {
-        public DevProjetStimulusContext()
+        public TestStimulusProjet_Evolution()
         {
         }
 
-        public DevProjetStimulusContext(DbContextOptions<DevProjetStimulusContext> options)
+        public TestStimulusProjet_Evolution(DbContextOptions<TestStimulusProjet_Evolution> options)
             : base(options)
         {
         }

@@ -13,10 +13,10 @@
                         <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
                     </div>                  
                     <div class ="col-sm-1 col-md-1 col-lg-1">
-                        <select @onchange="ChangeCours" name="cours" class="ListeHeader" value=@listCourGroupeOrdered[0].IdGroupe>
-                           @for (int i = 0; i < listCourGroupeOrdered.Count; i++)
+                        <select @onchange="ChangeGroupe" name="cours" class="ListeHeader" value=@listGroupe[0].Nom>
+                           @for (int i = 0; i < listGroupe.Count; i++)
                            {
-                               <option value="@listCourGroupeOrdered[i].IdGroupe">@listCourGroupeOrdered[i].Nom</option>
+                               <option value="@listGroupe[i].Nom"></option>
                            }
                         </select>
                     </div>
@@ -37,17 +37,18 @@
 @code {
     Cour cours;
 
-    private int idGroupe,idCours, idProf;
+    private int idGroupe,idCours;
+    private string numProf;
     private bool initDone;
 
-    private List<Cour> listCours;
+    private List<GroupeHeader> listGroupe, listGroupeAff;
     private ProfVM prof;
-    private List<CoursGroupeHeader> listCourGroupe,listCourGroupeOrdered;
 
     private Client client;
 
     protected async override void OnInitialized()
     {
+
         initDone = false;
 
         var builder = WebApplication.CreateBuilder();
@@ -72,49 +73,33 @@
 
     protected async override void OnParametersSet()
     {
-        idCours = await sessionStorage.GetItemAsync<int>("idCours");
         idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
-        idProf = await sessionStorage.GetItemAsync<int>("idProf");
+        numProf = await sessionStorage.GetItemAsync<string>("idConnexion");
 
-        cours = client.CoursGETAsync(idCours).Result;
-
+        var idProf = client.ProfesseursAllAsync().Result.FirstOrDefault(p => p.NumEmploye == numProf).Id;
+        //int idProf = 1;
+        var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).ToList();
         prof = client.ProfesseursGETAsync(idProf).Result;
 
-        listCours = client.CoursAllAsync().Result.Where(c => prof.Groupes.Any(gr => gr.CoursId == c.Id)).ToList();
+        listGroupe = new List<GroupeHeader>();
 
 
-        listCourGroupe = new List<CoursGroupeHeader>();
-        listCourGroupeOrdered = new List<CoursGroupeHeader>();
-
-        foreach (Cour cour in listCours)
+        foreach (GroupeVM groupe in profGroupe)
         {
-            listCourGroupe.Add(new CoursGroupeHeader(prof.Groupes.Where(gr => gr.CoursId == cour.Id).FirstOrDefault(), cour));
+            listGroupe.Add(new GroupeHeader(prof.Groupes.Where(gr => gr.ProfesseurId== idProf).FirstOrDefault()));
         }
-
-
-        listCourGroupeOrdered.Add(listCourGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());
-
-        foreach (CoursGroupeHeader cour in listCourGroupe)
-        {
-            if (cour.IdGroupe != idGroupe)
-            {
-                listCourGroupeOrdered.Add(cour);
-            }
-        }
+        
         initDone = true;
 
         await InvokeAsync(StateHasChanged);
+     
     }
 
-    private async void ChangeCours(ChangeEventArgs e)
+    private async void ChangeGroupe(ChangeEventArgs e)
     {
         JSRuntim.InvokeVoidAsync("console.log", "appele changeCour");
 
         await sessionStorage.SetItemAsync<int>("idGroupe", Int32.Parse((string)e.Value));
-
-        int idCours = (int)client.GroupesGETAsync(Int32.Parse((string)e.Value)).Result.CoursId;
-
-        await sessionStorage.SetItemAsync<int>("idCours", idCours);
 
         int idGraphe = client.GraphesAllAsync().Result.Where(gra => gra.GroupeId == Int32.Parse((string)e.Value)).Select(gra => gra.Id).FirstOrDefault();
 
@@ -123,14 +108,13 @@
         OnParametersSet();
 
         updateService.CallRequestRefresh();
-        NavigationManager.NavigateTo("/index");
+        NavigationManager.NavigateTo("/prof");
     }
-
-    private class CoursGroupeHeader
+    private class GroupeHeader
     {
-        public CoursGroupeHeader(GroupeVM groupe, Cour cour)
+        public GroupeHeader(GroupeVM groupe)
         {
-            Nom = cour.CodeCours + " - " + groupe.Nom;
+            Nom = groupe.Nom;
             IdGroupe = groupe.Id;
         }
 
@@ -138,4 +122,6 @@
         public int IdGroupe { get; set; }
 
     }
+
+
 }
