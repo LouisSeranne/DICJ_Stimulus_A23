@@ -17,7 +17,7 @@
     <AuthorizeView>
         <Authorized>
             <AuthorizeView Roles="Etudiant" Context="routeData">
-                <RedirectToGraph />
+                <RedirectToEtudiant />
             </AuthorizeView>
             <AuthorizeView Roles="Professeur" Context="routeData">
                 <RedirectToProf />

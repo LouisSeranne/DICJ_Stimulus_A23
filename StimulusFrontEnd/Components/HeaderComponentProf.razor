@@ -13,15 +13,15 @@
                         <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
                     </div>                  
                     <div class ="col-sm-1 col-md-1 col-lg-1">
-                        <select @onchange="ChangeGroupe" name="cours" class="ListeHeader" value=@listGroupe[0].IdGroupe>
-                            @foreach (var groupe in listGroupe)
+                        <select @onchange="ChangeGroupe" name="cours" class="ListeHeader" value=@listGroupeOrdered[0].IdGroupe>
+                            @foreach (var groupeordered in listGroupeOrdered)
                             {
-                                <option value="@groupe.IdGroupe">@groupe.Nom</option>
+                                <option value="@groupeordered.IdGroupe">@groupeordered.Nom</option>
                             }
                         </select>
                     </div>
                     <div class="col-sm-4 col-md-4 col-lg-4 divDroiteHeader">
-                        <a href="/index"><img src="/image/Graph.png" alt="Logo Graph" class="logoHeader"/></a>
+                        <a href="/prof"><img src="/image/Graph.png" alt="Logo Graph" class="logoHeader"/></a>
                         <a href="/logout"><img src="/image/Logout.png" alt="Logo Graph" class="logoHeader"/></a>
                         <img src="/image/Avatar.png" alt="Logo Avatar" class="logoHeader"/>
                     </div>
@@ -41,7 +41,7 @@
     private string numProf;
     private bool initDone;
 
-    private List<GroupeHeader> listGroupe;
+    private List<GroupeHeader> listGroupe, listGroupeOrdered;
     private Professeur prof;
 
     private Client client;
@@ -82,6 +82,7 @@
         var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).ToList();// cherche tous les groupes des prof
 
         listGroupe = new List<GroupeHeader>();
+        listGroupeOrdered = new List<GroupeHeader>();
 
 
         foreach (GroupeVM groupe in profGroupe)//mets les groupes dans une liste pour l'affichage
@@ -89,6 +90,16 @@
             listGroupe.Add(new GroupeHeader(groupe));
         }
         
+        listGroupeOrdered.Add(listGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());
+
+        foreach (GroupeHeader groupeordered in listGroupe)
+        {
+            if (groupeordered.IdGroupe != idGroupe)
+            {
+                listGroupeOrdered.Add(groupeordered);
+            }
+        }
+
         initDone = true;
 
         await InvokeAsync(StateHasChanged);
@@ -108,6 +119,7 @@
         OnParametersSet();
 
         updateService.CallRequestRefresh();
+        NavigationManager.NavigateTo("/pro");
         NavigationManager.NavigateTo("/prof");
     }
     private class GroupeHeader
