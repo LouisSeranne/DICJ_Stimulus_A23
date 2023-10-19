@@ -21,6 +21,7 @@
                 <button @onclick="@(e => ModeDeVue(1))" class="ModeButton" title="Mode Page">1</button>
                 <button @onclick="@(e => ModeDeVue(2))" class="ModeButton" title="Mode Edition">2</button>
                 <button @onclick="@(e => ModeDeVue(3))" class="ModeButton" title="Mode Etudiant">3</button>
+                <span style="color:white">Mode : @modeDeVuInfo</span>
             </div>
         </foreignObject>
         <svg class="bg-transparent" width="100%" height="2000" xmlns="http://www.w3.org/2000/svg">
@@ -51,17 +52,17 @@
 @code {
     private HttpClient httpClient;
     private Client client;
-    private string displayHover;
+    private string displayHover = "hidden";
     private double viewBoxX = 0;
     private double viewBoxY = 0;
     private double viewBoxWidth = 2000;
     private double viewBoxHeight = 2000;
     private double zoomIncrement = 1;
-    private string displayNouveauNoeud = "hidden";
     private Noeud enfantRechercheParent = new();
     private bool enRecherche = false;
     private int modeDeVue = 2;
-    private Noeud nouveauNoeud;
+    private string modeDeVuInfo = "edition";
+    private Noeud nouveauNoeud = new();
     public List<Noeud> Nodes { get; set; } = new();
     protected async override void OnInitialized()
     {
@@ -84,7 +85,16 @@
     /// Permet de set le mode de vu. 1 => Page, 2 => Edit, 3 => Etudiant
     /// </summary>
     /// <param name="v">valeur de la vue</param>
-    private void ModeDeVue(int v) => modeDeVue = v;
+    private void ModeDeVue(int v) 
+    {
+        if(v == 1)
+            modeDeVuInfo = "page";
+        else if(v == 2)
+            modeDeVuInfo = "edition";
+        else
+            modeDeVuInfo = "etudiant";
+        modeDeVue = v;
+    }
     /// <summary>
     /// Permet a tout les noeuds d'adapter leur mode (fonction delegate au noeud et connecteur)
     /// </summary>

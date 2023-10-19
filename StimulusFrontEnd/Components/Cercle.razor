@@ -15,13 +15,20 @@
 <Draggable GetModeDeVue="GetModeDeVue" @bind-X=Node.PosX @bind-Y=Node.PosY>
 
     <circle visibility="@displayHover" r="@(Node.Rayon + 3)" class="cercle" style="fill: rgba(255,255,255,5); opacity:0.5" />
-    <circle @onmouseup=@(e => SaveChangeNoeud(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) @onclick="(e => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
-    <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />
-    <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
-        <span> Nom :  @Node.Code / ID : @Node.Id</span><br />
-        <span>Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
-        <span> Desc : @Node.Description</span>
-    </foreignObject>
+    @if (GetModeDeVue() == 2)
+    {
+        <circle @onmouseup=@(e => SaveChangeNoeud(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) @onclick="(e => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
+    }
+    @if (GetModeDeVue() == 2 || GetModeDeVue() == 3)
+    {
+        <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />
+    
+        <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
+            <span> Nom :  @Node.Code / ID : @Node.Id</span><br />
+            <span>Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
+            <span> Desc : @Node.Description</span>
+        </foreignObject>
+    }
     @if (GetModeDeVue() == 2)
     {
         <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
@@ -76,9 +83,41 @@
             </EditForm>
         </foreignObject>
     }
-    <NavLink @onclick="DirectionPage">
-        <text class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
-    </NavLink>
+    @if (GetModeDeVue() == 1)
+    {
+        <NavLink @onclick="ViewPageTemplate">
+            <circle @onmouseup=@(e => SaveChangeNoeud(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) @onclick="(e => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
+            <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
+        </NavLink>
+        if (viewPage)
+        {
+            <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" width="80" height="105" style="fill: rgba(255,255,255,255)" />
+            <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" width="80" height="105" style="padding:5px">
+                <span>Template1</span>
+            </foreignObject>
+            <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-50 + Node.Rayon/2)" width="80" height="105" style="fill: rgba(255,255,255,255)" />
+            <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-50 + Node.Rayon/2)" width="80" height="105" style="padding:5px">
+                <span>Template2</span>
+            </foreignObject>
+            <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(80 + Node.Rayon/2)" width="80" height="105" style="fill: rgba(255,255,255,255)" />
+            <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(80 + Node.Rayon/2)" width="80" height="105" style="padding:5px">
+                <span>Template3</span>
+            </foreignObject>
+        }
+    }
+    else if (GetModeDeVue() == 2)
+    {
+        <NavLink @onclick="DirectionPage">
+            <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
+        </NavLink>    
+    }
+    else if (GetModeDeVue() == 3)
+    {
+        <NavLink @onclick="DirectionPage">
+            <circle @onmouseup=@(e => SaveChangeNoeud(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) @onclick="(e => RelinkBindNode(Node))" r="@Node.Rayon" class="cercle" style="fill:@Couleur" />
+            <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
+        </NavLink>
+    }
 </Draggable>
 @code {
     //ChildContent = Noeudception
@@ -94,6 +133,7 @@
     [Parameter] public Func<int> GetModeDeVue { get; set; }
 
     private string displayHover = "hidden";
+    private bool viewPage = false;
     //Type de noeud
     private string modelNoeud = "Noeud_Contenu";
     private Noeud nouveauNoeud = new();  
@@ -119,6 +159,17 @@
             Couleur = COULEUR_CONSULTER;
         else if (Node.Status == 4)
             Couleur = COULEUR_COMPLETER;
+    }
+    private void ViewPageTemplate()
+    {
+        if (!viewPage)
+        {
+            viewPage = true;
+        }
+        else
+        {
+            viewPage = false;
+        }
     }
     /// <summary>
     /// (Visuel) permet de check si le noeud a un parent, et l'affiche dans le bulle d'info du noeud
