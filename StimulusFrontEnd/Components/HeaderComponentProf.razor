@@ -13,7 +13,7 @@
                         <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
                     </div>                  
                     <div class ="col-sm-1 col-md-1 col-lg-1">
-                        <select @onchange="ChangeGroupe" name="cours" class="ListeHeader" value=@listGroupe[0].Nom>
+                        <select @onchange="ChangeGroupe" name="cours" class="ListeHeader" value=@listGroupe[0].IdGroupe>
                             @foreach (var groupe in listGroupe)
                             {
                                 <option value="@groupe.IdGroupe">@groupe.Nom</option>
@@ -95,7 +95,7 @@
      
     }
 
-    private async void ChangeGroupe(ChangeEventArgs e) //Semi fonctionnelle, A CHANGER
+    private async void ChangeGroupe(ChangeEventArgs e) 
     {
         JSRuntim.InvokeVoidAsync("console.log", "appele changeCour");
 
