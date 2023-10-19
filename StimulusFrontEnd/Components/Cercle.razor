@@ -94,12 +94,14 @@
     [Parameter] public Func<int> GetModeDeVue { get; set; }
 
     private string displayHover = "hidden";
+    //Type de noeud
     private string modelNoeud = "Noeud_Contenu";
     private Noeud nouveauNoeud = new();  
     private string displayNouveauNoeud = "hidden";
     private int formSizeH = 0;
     private int formSizeW = 0;
     private bool isOpen = false;
+    //Variable couleurs
     private readonly string COULEUR_BLOQUER = "rgb(140,140,140)";
     private readonly string COULEUR_NON_CONSULTER = "rgb(228, 231, 245)";
     private readonly string COULEUR_CONSULTER = "rgb(199,160,53)";
@@ -142,8 +144,9 @@
         nouveauNoeud.Disponibilite = DateTime.Now;
         if (nouveauNoeud.Code != null && nouveauNoeud.Code.Length >= 3 && nouveauNoeud.Code.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100)
             AjoutNouveauNoeud(nouveauNoeud);
-       else
-            await JsRunTime.InvokeAsync<object>("alert", "Les saisies ne sont pas valides");
+        else
+            await JsRunTime.InvokeAsync<object>("alert", "Les saisies ne sont pas valides"); 
+            // Dans le cadre de champs vide ou invalide, une alert box apparait
 
         nouveauNoeud = new();
         isOpen = false;
@@ -173,7 +176,13 @@
         displayNouveauNoeud = "hidden";
         isOpen = false;
     }
+    /// <summary>
+    /// Quand on survole un noeud, ses elements lies apparaissent
+    /// </summary>
     private void OnMouseHover() => displayHover = "visible";
+    /// <summary>
+    /// Quand on survole plus un noeud, ses elements lies apparaissent disparait
+    /// </summary>
     private void OnMouseLeave() => displayHover = "hidden";
 
     /// <summary>

@@ -3,8 +3,6 @@
 {
     <circle @onclick="CouperLeLien" title="Break The Link" class="cutting" cx="@midX.ToString(System.Globalization.CultureInfo.InvariantCulture)" cy="@midY.ToString(System.Globalization.CultureInfo.InvariantCulture)" r="8" fill="red" />
 }
-
-
 @code {
     [Parameter] public Noeud Noeud { get; set; }
     [Parameter] public Action<Noeud> SaveChangeNoeud { get; set; }
@@ -29,7 +27,7 @@
 
     private void CouperLeLien()
     {
-        //Methode du bled, impossible de null le champs en put
+        //Methode du bled, impossible de null le champs en put. fonctionne sans soucis pour le nouveau graph, boucle infinie sur l'ancien
         Noeud.LiaisonPrincipal = Noeud.Id;
         SaveChangeNoeud(Noeud);
     }
@@ -47,7 +45,6 @@
 
         base.OnParametersSet();
     }
-
     const int coef = 0;
 
     static double cx(Direction dir, double? x)
