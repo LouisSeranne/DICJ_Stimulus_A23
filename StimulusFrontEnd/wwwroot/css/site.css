@@ -202,6 +202,34 @@ main {
     text-align: right;
     background-color: red;
 }
+
+.hidden {
+    display: none;
+}
+
+#menuButton {
+    margin: 0 10px;
+    padding: 0;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    display: inline-block;
+    transition: var(--secondaire2-couleur) 0.3s, border 0.3s;
+    text-align: center;
+    line-height: 50px;
+}
+
+    #menuButton:hover {
+        background-color: var(--secondaire2-couleur);
+        border: 1px solid var(--secondaire2-couleur);
+        padding: 5px 10px;
+    }
+
+#menuItems .LinkHeaderProf {
+    display: block;
+    text-align: center;
+    line-height: 50px;
+}
 /*CSS pour les icons dans le footer*/
 .user-image {
     width: 20px; /* Ajustez la taille de l'image selon vos besoins */
