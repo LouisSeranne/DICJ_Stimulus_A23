@@ -85,12 +85,12 @@
         listGroupeOrdered = new List<GroupeHeader>();
 
 
-        foreach (GroupeVM groupe in profGroupe)//mets les groupes dans une liste pour l'affichage
+        foreach (GroupeVM groupe in profGroupe)//mets les groupes dans une liste
         {
             listGroupe.Add(new GroupeHeader(groupe));
         }
         
-        listGroupeOrdered.Add(listGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());
+        listGroupeOrdered.Add(listGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());//permet de mettre le groupe sélectionné au dessus de une deuxième liste
 
         foreach (GroupeHeader groupeordered in listGroupe)
         {
@@ -108,21 +108,21 @@
 
     private async void ChangeGroupe(ChangeEventArgs e) 
     {
-        JSRuntim.InvokeVoidAsync("console.log", "appele changeCour");
+        JSRuntim.InvokeVoidAsync("console.log", "appele ChangeGroupe");
 
-        await sessionStorage.SetItemAsync<int>("idGroupe", Int32.Parse((string)e.Value));
+        await sessionStorage.SetItemAsync<int>("idGroupe", Int32.Parse((string)e.Value));//change le groupe lorsque sélectionné
 
         int idGraphe = client.GraphesAllAsync().Result.Where(gra => gra.GroupeId == Int32.Parse((string)e.Value)).Select(gra => gra.Id).FirstOrDefault();
 
-        await sessionStorage.SetItemAsync<int>("idGraphe", idGraphe);
+        await sessionStorage.SetItemAsync<int>("idGraphe", idGraphe);//change le graph losque le groupe change
 
         OnParametersSet();
 
         updateService.CallRequestRefresh();
-        NavigationManager.NavigateTo("/pro");
+        NavigationManager.NavigateTo("/pro"); //BIDON
         NavigationManager.NavigateTo("/prof");
     }
-    private class GroupeHeader
+    private class GroupeHeader //C'est un espèce de groupe custom pour l'affichage
     {
         public GroupeHeader(GroupeVM groupe)
         {

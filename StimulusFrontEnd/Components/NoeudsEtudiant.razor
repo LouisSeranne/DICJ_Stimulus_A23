@@ -12,17 +12,17 @@
 }
 
     <NonDraggable @bind-X=Node.PosX @bind-Y=Node.PosY>
-    <circle visibility="@displayHover" r="@(Node.Rayon + 3)" class="cercle" style="fill: rgba(255,255,255,5); opacity:0.5" />
+    <circle visibility="@displayHover" r="@(Node.Rayon + 3)" class="cercle" style="fill: rgba(255,255,255,5); opacity:0.5" />   
+    <NavLink @onclick="DirectionPage" id="lien">
     <circle @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) r="@Node.Rayon" class="cercle" style="fill:@Couleur"/>
+    </NavLink>
     <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />
     <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
         <span> Nom :  @Node.Code / ID : @Node.Id</span><br />
         <span> Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
         <span> Desc : @Node.Description</span>       
     </foreignObject>
-        <NavLink @onclick="DirectionPage" id="lien">
-            <text text-anchor="middle" alignment-baseline="central">@Node.Code</text>
-        </NavLink>                                                
+        <text text-anchor="middle" alignment-baseline="central">@Node.Code</text>
     </NonDraggable>
 
 <style>
