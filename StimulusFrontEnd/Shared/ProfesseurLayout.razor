@@ -26,7 +26,7 @@
             </article>
             @if(identifier)
             {
-                <FooterComponentEtudiant/>
+                <FooterEtudiantComponent/>
             }         
         </main>  
     </div>
@@ -99,11 +99,11 @@
 
                 if (await sessionStorage.ContainKeyAsync("idGraphe") == false)
                 {
-                    int idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
+                    int idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe"); //ça met le groupe dans la session
                     var graphe = await client.GraphesAllAsync();
                     var grapheFiltered = graphe.Where(g => g.GroupeId == idGroupe); // va chercher le premier graph du prof
                     await sessionStorage.SetItemAsync<int>("idGraphe", grapheFiltered.FirstOrDefault().Id); // met le graph en session
-                    idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+                    idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");//ça met le graphe dans la session
                     updateService.CallRequestRefresh();
                 }
 
