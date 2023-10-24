@@ -18,7 +18,7 @@
                 <button type="button" @onclick="ResetViewbox">Réinitialiser</button>
                 <p class="grapheEnteteElement" style="color:white;"> zoom : @(Math.Round(zoomIncrement * 100))%</p>
                 <span></span>
-                <button @onclick="@(e => ModeDeVue(1))" class="ModeButton" title="Mode Page">Menu Page</button>
+                <button @onclick="@(e => ModeDeVue(1))" class="ModeButton" title="Mode Page">Menu page</button>
                 <button @onclick="@(e => ModeDeVue(2))" class="ModeButton" title="Mode Edition">Édition</button>
                 <button @onclick="@(e => ModeDeVue(3))" class="ModeButton" title="Mode Etudiant">Vue étudiante</button>
                 <span style="color:white">Mode : @modeDeVuInfo</span>
