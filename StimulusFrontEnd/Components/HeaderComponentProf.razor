@@ -1,0 +1,173 @@
+﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IJSRuntime JSRuntim
+
+@inject NavigationManager NavigationManager
+@inject IUpdateService updateService
+<AuthorizeView>
+    <Authorized>
+        @if (initDone)
+        {         
+            <header class="containerHeader">
+                <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                       @* <button @onclick="ToggleMenu" class="LinkHeaderProf">
+                            <p class="LinkHeaderProf">
+                                Menu
+                            </p>
+                        </button>
+                        @if (isMenuOpen)
+                        {
+                            <div id="menuItems">
+                                <a class="LinkHeaderProf" href="/accueil">
+                                    <p class="LinkHeaderProf">
+                                        Création de cours
+                                    </p>
+                                </a>
+                                <a class="LinkHeaderProf" href="/accueil">
+                                    <p class="LinkHeaderProf">
+                                        Gestion Étudiants
+                                    </p>
+                                </a>
+                                <a class="LinkHeaderProf" href="/accueil">
+                                    <p class="LinkHeaderProf">
+                                        Gestion de graphe
+                                    </p>
+                                </a>
+                            </div>
+                        }*@
+                    </div>
+                    <div class ="col-sm-2 col-md-2 col-lg-2">
+                        <select @onchange="ChangeGroupe" name="cours" class="ListeHeader" value=@listGroupeOrdered[0].IdGroupe>
+                            @foreach (var groupeordered in listGroupeOrdered)
+                            {
+                                <option value="@groupeordered.IdGroupe">@groupeordered.Nom</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3 divDroiteHeader">
+                        <a href="/prof"><img src="/image/Graph.png" alt="Logo Graph" class="logoHeader"/></a>
+                        <a href="/logout"><img src="/image/Logout.png" alt="Logo Graph" class="logoHeader"/></a>
+                        <img src="/image/Avatar.png" alt="Logo Avatar" class="logoHeader"/>
+                    </div>
+                </div>
+            </header>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    Cour cours;
+
+    private int idGroupe,idCours;
+    private string numProf;
+    private bool initDone;
+
+    private List<GroupeHeader> listGroupe, listGroupeOrdered;
+    private Professeur prof;
+
+    private Client client;
+
+    protected async override void OnInitialized()
+    {
+
+        initDone = false;
+
+        var builder = WebApplication.CreateBuilder();
+
+        //Handler : Permet de contourner les certifications sinon le projet crash
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+
+        //Set une nouvelle Uri pour lien le Front-End a la Bd
+        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri(builder.Configuration["API:Use"]) };
+
+        client = new Client(httpClient);
+
+        //Requete utilisée pour aller chercher les données du cours en fonction de l'id du graphe
+
+    }
+
+    protected async override void OnParametersSet()
+    {
+        idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
+        numProf = await sessionStorage.GetItemAsync<string>("idConnexion");
+
+        //var idProf = client.ProfesseursAllAsync().Result.FirstOrDefault(p => p.NumEmploye == numProf).Id;
+        var idProf = 1;//Temporaire, sera changer par var idProf =  await sessionStorage.GetItemAsync<string>("idConnexion")
+
+        var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).ToList();// cherche tous les groupes des prof
+
+        listGroupe = new List<GroupeHeader>();
+        listGroupeOrdered = new List<GroupeHeader>();
+
+
+        foreach (GroupeVM groupe in profGroupe)//mets les groupes dans une liste
+        {
+            listGroupe.Add(new GroupeHeader(groupe));
+        }
+        
+        listGroupeOrdered.Add(listGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());//permet de mettre le groupe sélectionné au dessus de une deuxième liste
+
+        foreach (GroupeHeader groupeordered in listGroupe)
+        {
+            if (groupeordered.IdGroupe != idGroupe)
+            {
+                listGroupeOrdered.Add(groupeordered);
+            }
+        }
+
+        initDone = true;
+
+        await InvokeAsync(StateHasChanged);
+     
+    }
+
+    private async void ChangeGroupe(ChangeEventArgs e) 
+    {
+        JSRuntim.InvokeVoidAsync("console.log", "appele ChangeGroupe");
+
+        await sessionStorage.SetItemAsync<int>("idGroupe", Int32.Parse((string)e.Value));//change le groupe lorsque sélectionné
+
+        int idGraphe = client.GraphesAllAsync().Result.Where(gra => gra.GroupeId == Int32.Parse((string)e.Value)).Select(gra => gra.Id).FirstOrDefault();
+
+        await sessionStorage.SetItemAsync<int>("idGraphe", idGraphe);//change le graph losque le groupe change
+
+        OnParametersSet();
+
+        updateService.CallRequestRefresh();
+        NavigationManager.NavigateTo("/pro"); //BIDON
+        NavigationManager.NavigateTo("/prof");
+    }
+    private class GroupeHeader //C'est un espèce de groupe custom pour l'affichage
+    {
+        public GroupeHeader(GroupeVM groupe)
+        {
+            Nom = groupe.Nom;
+            IdGroupe = groupe.Id;
+        }
+
+        public string Nom { get; set; }
+        public int IdGroupe { get; set; }
+
+    }
+
+    private bool isMenuOpen = false;
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
+    }
+
+
+}

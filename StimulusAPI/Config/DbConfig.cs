@@ -6,7 +6,9 @@ namespace StimulusAPI.Config
     {
         public DbConfig()
         {
-            string db = "TestStimulusProjet";
+            // Projet : ProjetStimulus
+            // Test : TestStimulusProjet
+            string db = "TestStimulusProjetEvolution";
             var builder = WebApplication.CreateBuilder();
 
             SqlConnStringBuilder = new SqlConnectionStringBuilder()

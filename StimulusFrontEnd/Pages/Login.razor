@@ -17,7 +17,7 @@
     <AuthorizeView>
         <Authorized>
             <AuthorizeView Roles="Etudiant" Context="routeData">
-                <RedirectToGraph />
+                <RedirectToEtudiant />
             </AuthorizeView>
             <AuthorizeView Roles="Professeur" Context="routeData">
                 <RedirectToProf />
@@ -32,7 +32,7 @@
                 <ValidationSummary />
                 <h2 class="h2Login">Page Connexion</h2>
                 <div class="form-group">
-                    <InputText class="form-control" @bind-Value="appUser.UserName" placeholder="CodeDA"><img src="/Image/Avatar.png" alt="Logo utilisateur" class="user-image"/></InputText>
+                    <InputText class="form-control" @bind-Value="appUser.UserName" placeholder="Identifiant"><img src="/Image/Avatar.png" alt="Logo utilisateur" class="user-image"/></InputText>
                     <ValidationMessage For="@(()=>appUser.UserName)"/>
                 </div>
                 <br/>

@@ -17,35 +17,33 @@
         <button @onclick="AddPage">+</button>
     </div>
 
-    <div>
-        <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
+<div class="d-flex justify-content-around">
+    <div class="d-flex justify-content-between">
+        <div>
+            <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
+        </div>
         @foreach (Fichier fichier in FichierCode)
         {
             if (fichier.Css != "hidden")
             {
                 SetCode(@fichier.Contenu);
             }
-
-            <textarea class="textareaCode col-sm-6 col-md-6 col-lg-6 hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
+            <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
         }
     </div>
-    <p style="white-space:pre-wrap">@Result</p>
+    <div id="background-result">
+        <p style="white-space:pre-wrap">@Result</p>
+    </div>
+</div>
 }
 
-
-
-
-<!--Section bouton-->
+<!-- Section bouton -->
 <div class="row">
-    <div class="col-sm-1 col-md-1 col-lg-1">
-        <button @onclick=@Post class="boutonExerciceGauche">Executer</button>
-    </div>
-    <div class="col-sm-5 col-md-5 col-lg-5">
+    <div class="col-sm-1 col-md-1 col-lg-1 d-flex justify-content-between">
+        <button @onclick=@Post class="boutonExerciceGauche">Éxecuter</button>
         <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
     </div>
 </div>
-
-
 
 <style>
     .focused {
@@ -58,7 +56,7 @@
 
     .monaco-editor-container { /* for all editor instances */
         height: 600px;
-        width: 1000px;
+        width: 800px;
     }
 </style>
 
@@ -160,7 +158,7 @@
     {
         SetupClient();
 
-        IdEtudiant = await sessionStorage.GetItemAsync<string>("idEtudiant");
+        IdEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
 
         var fichiersSauvegardesCall = await ApiClient.FichierSauvegardesAllAsync(ExerciceModel.PageId, ExerciceModel.Id, IdEtudiant);
         List<Services.Base.FichierSauvegarderVM> fichierSauvegardes = fichiersSauvegardesCall.ToList();

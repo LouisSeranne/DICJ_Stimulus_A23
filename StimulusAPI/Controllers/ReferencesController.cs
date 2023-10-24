@@ -14,9 +14,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class ReferencesController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public ReferencesController(DevProjetStimulusContext context)
+        public ReferencesController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

@@ -14,9 +14,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class ImagesController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public ImagesController(DevProjetStimulusContext context)
+        public ImagesController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

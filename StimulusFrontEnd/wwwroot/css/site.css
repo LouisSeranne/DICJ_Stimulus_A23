@@ -16,9 +16,6 @@ html, body {
     /*background-color: var(--principale-couleur);*/
     background-image: url('/RessourceVisuel/Fond.png');
 }
-html {
-    overflow-y:scroll;
-}
 
 h1:focus {
     outline: none;
@@ -81,10 +78,6 @@ a, .btn-link {
    content: "An error has occurred."
 }
 
-.page {
-    height:auto;
-    min-height:100%;
-}
 
 /*Modifis pour le graph*/
 #divGraphiqueComponent{
@@ -96,7 +89,11 @@ a, .btn-link {
     flex-direction:column;
 }
 
-#divGrapheEntete {
+.ModeButton:hover{
+    background-color:black;
+    color: lime;
+}
+.divGrapheEntete {
     display: flex;
     flex-direction: row;
 }
@@ -107,7 +104,7 @@ a, .btn-link {
 }
 
 #svgGraphiqueComponent {
-    height: 100vh;
+    height: 75vh;
     width: 100%;
     max-height: 100vh;
 }
@@ -116,7 +113,7 @@ a, .btn-link {
 main {
     display: flex;
     flex-direction: column;
-    min-height:100vh;
+    min-height: 100vh;
 }
 .row{
     width:100%;
@@ -154,7 +151,7 @@ main {
     padding:0;
 }
 .col-sm-5.col-md-5.col-lg-5 {
-    text-align:right;
+    text-align:left;
     padding:0;
 }
 
@@ -205,6 +202,34 @@ main {
     text-align: right;
     background-color: red;
 }
+
+.hidden {
+    display: none;
+}
+
+#menuButton {
+    margin: 0 10px;
+    padding: 0;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    display: inline-block;
+    transition: var(--secondaire2-couleur) 0.3s, border 0.3s;
+    text-align: center;
+    line-height: 50px;
+}
+
+    #menuButton:hover {
+        background-color: var(--secondaire2-couleur);
+        border: 1px solid var(--secondaire2-couleur);
+        padding: 5px 10px;
+    }
+
+#menuItems .LinkHeaderProf {
+    display: block;
+    text-align: center;
+    line-height: 50px;
+}
 /*CSS pour les icons dans le footer*/
 .user-image {
     width: 20px; /* Ajustez la taille de l'image selon vos besoins */
@@ -254,7 +279,68 @@ main {
     margin-right: 5px;
     border-radius: 10px;
 }
+/*Css connector component*/
+.cutting:hover {
+    fill: green;
+    cursor: pointer;
+}
+/*Css text link noeud*/
+.textLink:hover{
+    fill: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+/*Css cercle component*/
+#reLink:hover {
+    cursor: pointer;
+    color: yellowgreen;
+}
 
+Connecteur:hover {
+    cursor: pointer;
+}
+
+#deleteNoeud {
+    color: darkred;
+}
+
+    #deleteNoeud:hover {
+        color: red;
+        cursor: pointer;
+    }
+
+#addNoeud {
+    color: black;
+}
+
+    #addNoeud:hover {
+        color: yellow;
+        cursor: pointer;
+    }
+
+a {
+    text-decoration: none;
+}
+
+text {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    fill: white;
+}
+
+.cercle-title {
+    fill: #fff;
+    pointer-events: none !important;
+}
+
+.cercle {
+    z-index: 1;
+    stroke: #fff;
+    stroke-width: 1;
+}
 /*Css Page exercice*/
 .boutonRetourTheorie {
     background-color: var(--secondaire-couleur);
@@ -280,6 +366,14 @@ main {
     color: var(--secondaire-couleur);
     border: hidden;
 }
+
+#background-result {
+    background-color: rgb(30, 30, 30);
+    margin-left: 10px;
+    padding-left: 10px;
+    width: 500px
+}
+
 .boutonExerciceGauche {
     background-color: var(--secondaire-couleur);
     color: var(--principale-couleur);

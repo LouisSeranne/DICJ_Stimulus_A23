@@ -3,7 +3,6 @@
 
 @inject NavigationManager NavigationManager
 @inject IUpdateService updateService
-
 <AuthorizeView>
     <Authorized>
         @if (initDone)
@@ -18,15 +17,15 @@
                         <p class="pHeader">Code: @cours.CodeCours</p>
                         <p class="pHeader"> Description: @cours.Description</p>                        
                     </div>                  
-                    <div class ="col-sm-1 col-md-1 col-lg-1">
-                        <select @onchange="ChangeCours" name="cours" class="ListeHeader" value=@listCourGroupeOrdered[0].IdGroupe>
+                    <div class ="col-sm-2 col-md-2 col-lg-2" >
+                        <select @onchange="ChangeCours" name="cours" class="ListeHeader" value=@listCourGroupeOrdered[0].IdGroupe >
                            @for (int i = 0; i < listCourGroupeOrdered.Count; i++)
                            {
                                <option value="@listCourGroupeOrdered[i].IdGroupe">@listCourGroupeOrdered[i].Nom</option>
                            }
                         </select>
                     </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4 divDroiteHeader">
+                    <div class="col-sm-3 col-md-3 col-lg-3 divDroiteHeader">
                         <a href="/index"><img src="/image/Graph.png" alt="Logo Graph" class="logoHeader"/></a>
                         <a href="/logout"><img src="/image/Logout.png" alt="Logo Graph" class="logoHeader"/></a>
                         <img src="/image/Avatar.png" alt="Logo Avatar" class="logoHeader"/>
@@ -81,7 +80,7 @@
     {
         idCours = await sessionStorage.GetItemAsync<int>("idCours");
         idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
-        daEtudiant = await sessionStorage.GetItemAsync<string>("idEtudiant");
+        daEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
 
         cours = client.CoursGETAsync(idCours).Result;
 
@@ -100,7 +99,7 @@
             listCourGroupe.Add(new CoursGroupeHeader(etu.Groupes.Where(gr => gr.CoursId == cour.Id).FirstOrDefault(),cour));
         }
 
-       
+
         listCourGroupeOrdered.Add(listCourGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());
 
         foreach(CoursGroupeHeader cour in listCourGroupe)
@@ -110,7 +109,6 @@
                 listCourGroupeOrdered.Add(cour);
             }
         }
-        
         initDone = true;
 
         await InvokeAsync(StateHasChanged);
@@ -133,7 +131,11 @@
         OnParametersSet();
 
         updateService.CallRequestRefresh();
+
+        //C'est shlag mais ca fonctionne
+        NavigationManager.NavigateTo("/inde"); //TU TOUCHE PAS ! /!\ DANGER (DE MORT)
         NavigationManager.NavigateTo("/index");
+
     }
    
     private class CoursGroupeHeader

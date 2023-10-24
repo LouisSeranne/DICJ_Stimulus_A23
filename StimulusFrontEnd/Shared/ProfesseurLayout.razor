@@ -11,7 +11,6 @@
 @using StimulusFrontEnd.Models
 @using Newtonsoft.Json
 
-<PageTitle>StimulusFrontEndEtudiant</PageTitle>
 
 <!---->
 @if(initDone)
@@ -20,7 +19,7 @@
         <main>          
             @if(identifier)
             {
-                <HeaderComponentEtudiant/>
+                <HeaderComponentProf/>
             }         
             <article class="content px-4">
                 @Body
@@ -35,7 +34,7 @@
 
     
 @code {
-    public int idGraphe,idCours;
+    public int idGraphe;
     private bool initDone,identifier;
     private Client client;
     private HttpClient httpClient;
@@ -76,40 +75,38 @@
     {
         if(firstRender)
         {
-            Console.WriteLine("layout afterrender first");
             //JSRuntim.InvokeVoidAsync("console.log","debut onAfterender");
+            Console.WriteLine("layout afterrender first");
 
-            if (await sessionStorage.ContainKeyAsync("idConnexion") && await sessionStorage.GetItemAsync<string>("idConnexion") != null)
+            if (await sessionStorage.ContainKeyAsync("idConnexion") && await sessionStorage.GetItemAsync<string>("idConnexion") != null) //Garde le num employe en session
             {
                 //JSRuntim.InvokeVoidAsync("console.log","rentrer premiere if");
 
-                if(await sessionStorage.ContainKeyAsync("idGroupe") == false)
+
+                if (await sessionStorage.ContainKeyAsync("idGroupe") == false)
                 {
+                    var numProf = await sessionStorage.GetItemAsync<string>("idConnexion"); //va chercher le num prof
 
-                    var idEtu = await sessionStorage.GetItemAsync<string>("idConnexion");
+                    //var idProf = client.ProfesseursAllAsync().Result.FirstOrDefault(p => p.NumEmploye == numProf)?.Id; NE FONCTIONE PAS
 
-                    var etu = client.EtudiantsGETAsync(idEtu).Result;
+                    int idProf = 1; //Temporaire, sera changer par var idProf =  await sessionStorage.GetItemAsync<string>("idConnexion")
 
-                    await sessionStorage.SetItemAsync<int>("idGroupe",etu.Groupes.Select(g => g.Id).FirstOrDefault());    
+                    var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).FirstOrDefault().Id; //Va chercher le premier groupe du prof
+
+                    await sessionStorage.SetItemAsync<int>("idGroupe", (int)profGroupe);//mets le groupe en session
 
                 }
 
-                if(await sessionStorage.ContainKeyAsync("idCours") == false)
+                if (await sessionStorage.ContainKeyAsync("idGraphe") == false)
                 {
-                    var groupe = await client.GroupesGETAsync(await sessionStorage.GetItemAsync<int>("idGroupe"));
-
-                    await sessionStorage.SetItemAsync<int>("idCours", (int)groupe.CoursId);
-                }
-
-                if(await sessionStorage.ContainKeyAsync("idGraphe") == false)
-                {
-                    int idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
+                    int idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe"); //ça met le groupe dans la session
                     var graphe = await client.GraphesAllAsync();
-                    var grapheFiltered = graphe.Where(g => g.GroupeId == idGroupe);
-                    await sessionStorage.SetItemAsync<int>("idGraphe", grapheFiltered.FirstOrDefault().Id);
-                    idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+                    var grapheFiltered = graphe.Where(g => g.GroupeId == idGroupe); // va chercher le premier graph du prof
+                    await sessionStorage.SetItemAsync<int>("idGraphe", grapheFiltered.FirstOrDefault().Id); // met le graph en session
+                    idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");//ça met le graphe dans la session
                     updateService.CallRequestRefresh();
                 }
+
 
                 Console.WriteLine("layout afterRender identifier = true");
                 identifier = true;

@@ -1,15 +1,15 @@
-﻿@using StimulusFrontEnd.Services.Base
+﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@using StimulusFrontEnd.Services.Base
 @using StimulusFrontEnd.Services.Authentification
 @using StimulusFrontEnd.Providers
-@layout LoginLayout
+@layout ProfesseurLayout
 @page "/prof"
 @inject NavigationManager NavManager
 @inject IJSRuntime JsRunTime
 
 <AuthorizeView Roles="Professeur, Administrateur">
-    <Authorized>
-        <h3 style="color:white" >PageMenuProfesseur</h3>
-        <a class="btn btn-outline-light" role="button" aria-pressed="true" onclick=@PageGroupe>Page Création de groupe</a>
+    <Authorized>     
+        <StimulusFrontEnd.Components.GraphComponentProf></StimulusFrontEnd.Components.GraphComponentProf>
     </Authorized>
     <NotAuthorized>
         <h3>Vous n'êtes pas autorisé</h3>
@@ -19,10 +19,6 @@
 
 
 @code {
-    private async void PageGroupe()
-    {
-        NavManager.NavigateTo("/groupe");
-    }
 
 
 }

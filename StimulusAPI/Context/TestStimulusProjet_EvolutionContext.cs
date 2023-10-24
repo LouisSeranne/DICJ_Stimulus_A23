@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using StimulusAPI.Models;
-namespace StimulusAPI.Context
+
+namespace StimulusAPI.Models
 {
-    public partial class TestStimulusProjet_Evolution : DbContext
+    public partial class TestStimulusProjet_EvolutionContext : DbContext
     {
-        public TestStimulusProjet_Evolution()
+        public TestStimulusProjet_EvolutionContext()
         {
         }
 
-        public TestStimulusProjet_Evolution(DbContextOptions<TestStimulusProjet_Evolution> options)
+        public TestStimulusProjet_EvolutionContext(DbContextOptions<TestStimulusProjet_EvolutionContext> options)
             : base(options)
         {
         }
 
-        public virtual DbSet<Administrateur> Administrateurs { get; set; } = null!;
         public virtual DbSet<AspNetRole> AspNetRoles { get; set; } = null!;
         public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; } = null!;
         public virtual DbSet<AspNetUser> AspNetUsers { get; set; } = null!;
@@ -50,34 +49,12 @@ namespace StimulusAPI.Context
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=dicjwin01; Initial Catalog=TestStimulusProjet; Integrated Security=True; TrustServerCertificate=True; Encrypt=False;");
+                optionsBuilder.UseSqlServer("Data Source=dicjwin01; Initial Catalog=TestStimulusProjet_Evolution; Integrated Security=True; TrustServerCertificate=True; Encrypt=False;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Administrateur>(entity =>
-            {
-                entity.ToTable("administrateur", "dbo");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.MotDePasse)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("mot_de_passe");
-
-                entity.Property(e => e.Nom)
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
-                    .HasColumnName("nom");
-
-                entity.Property(e => e.Prenom)
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
-                    .HasColumnName("prenom");
-            });
-
             modelBuilder.Entity<AspNetRole>(entity =>
             {
                 entity.ToTable("AspNetRoles", "dbo");
@@ -626,6 +603,11 @@ namespace StimulusAPI.Context
                 entity.Property(e => e.Nom)
                     .HasMaxLength(20)
                     .HasColumnName("nom");
+
+                entity.Property(e => e.NumEmploye)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("num_employe");
 
                 entity.Property(e => e.Prenom)
                     .HasMaxLength(20)

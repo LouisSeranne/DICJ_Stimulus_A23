@@ -20,9 +20,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class PageTheorieController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public PageTheorieController(DevProjetStimulusContext context)
+        public PageTheorieController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

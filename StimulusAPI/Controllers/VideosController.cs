@@ -14,9 +14,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class VideosController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public VideosController(DevProjetStimulusContext context)
+        public VideosController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }
