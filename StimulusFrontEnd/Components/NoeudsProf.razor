@@ -31,7 +31,7 @@
     }
     @if (GetModeDeVue() == 2)
     {
-        <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
+        <foreignObject x="@(-Node.Rayon)" y="@(-Node.Rayon)" width="20" height="20">
             <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
         </foreignObject>
     @if (Node.LiaisonPrincipal == null || Node.Id == Node.LiaisonPrincipal)
