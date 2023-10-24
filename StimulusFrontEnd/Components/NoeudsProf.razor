@@ -1,4 +1,4 @@
-﻿@using StimulusFrontEnd.Services;
+@using StimulusFrontEnd.Services;
 @using StimulusFrontEnd.Components.TheorieComponents;
 @using static StimulusFrontEnd.Components.Connector;
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
@@ -68,7 +68,7 @@
                 <div visibility="@displayNouveauNoeud" class="form-group">
                     <label visibility="@displayNouveauNoeud">Status :</label>
                     <select visibility="@displayNouveauNoeud" @bind="nouveauNoeud.Status">
-                        <option value="1" selected="@(nouveauNoeud.Status == 1)">Bloquer</option>
+                        <option value="1" selected="@(nouveauNoeud.Status == 1)">Bloqué</option>
                         <option value="2" selected="@(nouveauNoeud.Status == 2)">Non consulté</option>
                         <option value="3" selected="@(nouveauNoeud.Status == 3)">Consulter</option>
                         <option value="4" selected="@(nouveauNoeud.Status == 4)">Compléter</option>
