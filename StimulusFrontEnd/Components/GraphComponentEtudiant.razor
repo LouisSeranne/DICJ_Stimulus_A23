@@ -87,19 +87,16 @@
     private async void UpdateGraphe()
     {
         Nodes = new();
-        if (sessionStorage != null )
+        if (sessionStorage != null)
         {
-            if (await sessionStorage.ContainKeyAsync("idGraphe") && await sessionStorage.GetItemAsync<int>("idGraphe") != 0)
-            {
-                int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
-                NodesTemp = client.NoeudsAllAsync().Result.ToList();
-                foreach (var item in NodesTemp)
-                {
-                    if (item.GrapheId == idGraphe)
-                        Nodes.Add(item);
-                }
-            }
+            //Methode du ghetto, mais fonctionne
+            while (await sessionStorage.GetItemAsync<int>("idGraphe") == 0) ;
+
+            int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+            Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
         }
+        NavigationManager.NavigateTo("/index");
+
     }
     private int GetModeFond() => 2; //Hardcode
 
