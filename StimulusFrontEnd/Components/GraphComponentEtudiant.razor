@@ -12,12 +12,12 @@
 
 <div class="row mt-2">
     <div class="col">
-        <foreignObject x="5" y="5" width="1300" height="40">
-            <div class="divGrapheEntete" style="width: 1300px; height: 40px;">
+            <foreignObject x="5" y="5" width="180" height="50">
+            <div class="divGrapheEntete" width="180" height="50">
                 <button class="spaceButton btn btn-primary" type="button" @onclick="AugmenterZoom">+</button>
                 <button class="spaceButton btn btn-primary" type="button" @onclick="ReduireZoom">-</button>
                 <button class="spaceButton btn btn-secondary" type="button" @onclick="ResetViewbox">Réinitialiser</button>
-                <h5 style="color: white;"> zoom : @(Math.Round(zoomIncrement * 100))%</h5>
+                <h5 style="color: white;"> Zoom : @AfficheZoom()</h5>
             </div>
         </foreignObject>
             <svg class="bg-transparent" width="100%" height="2000" xmlns="http://www.w3.org/2000/svg">
@@ -30,7 +30,7 @@
                     <p style="color:rgb(88,150,105); margin-left:10px;"> 4 vert : completé</p>
                 </div>               
             </foreignObject>
-                <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox="@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth" onmousewheel="Zoom" @onmousemove=@(e => mouseSrv.FireMove(this, e))
+                <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox="@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth" @onmousewheel="Zoom" @onmousemove=@(e => mouseSrv.FireMove(this, e))
                 @onmouseup=@(e => mouseSrv.FireUp(this, e))>
                 <Draggable GetModeDeVue="GetModeFond" X="@((viewBoxWidth - 1800) / 2)" Y="@((viewBoxWidth - 1500) / 2)">
                     <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgb(0,0,0)" />
@@ -54,7 +54,7 @@
     private double viewBoxY = 0;
     private double viewBoxWidth = 2000;
     private double viewBoxHeight = 2000;
-    private double zoomIncrement = 1;
+    private double zoomIncrement = 100;
     private string viewForm = "hidden";
     private string displayNouveauNoeud = "hidden";
     private Noeud nouveauNoeud;
@@ -105,36 +105,61 @@
     private void OnMouseHover() => displayHover = "show";
     private void OnMouseLeave() => displayHover = "hidden";
 
-    private async void AugmenterZoom()
-    {
-        viewBoxX = viewBoxX + 5;
-        viewBoxY = viewBoxY + 5;
-        viewBoxWidth = viewBoxWidth - 20;
-        viewBoxHeight = viewBoxHeight - 20;
-        zoomIncrement = zoomIncrement + 0.01;
-    }
-
-    //Reset du zoom à 100%
     private void ResetViewbox()
     {
         viewBoxX = 0;
         viewBoxY = 0;
         viewBoxHeight = 2000;
         viewBoxWidth = 2000;
-        zoomIncrement = 1;
+        zoomIncrement = 100;
+        AfficheZoom();
     }
-
-    //Réduit le zoom
-    private async void ReduireZoom()
+    /// <summary>
+    /// Augmenter le zoom
+    /// </summary>
+    private void AugmenterZoom()
     {
-        viewBoxX = viewBoxX - 5;
-        viewBoxY = viewBoxY - 5;
-        viewBoxWidth = viewBoxWidth + 20;
-        viewBoxHeight = viewBoxHeight + 20;
-        zoomIncrement = zoomIncrement - 0.01;
+        if (zoomIncrement != 150)
+        {
+            viewBoxX = viewBoxX + 10;
+            viewBoxY = viewBoxY + 10;
+            viewBoxWidth = viewBoxWidth - 20;
+            viewBoxHeight = viewBoxHeight - 20;
+            zoomIncrement = zoomIncrement + 1;
+            AfficheZoom();
+        }
+        else
+        {
+            viewBoxX = viewBoxY;
+            viewBoxHeight = viewBoxWidth;
+            AfficheZoom();
+        }
     }
-
-    //Fonction zoom avec le scroll de la molette
+    /// <summary>
+    /// Reduit le zoom
+    /// </summary>
+    private void ReduireZoom()
+    {
+        if (zoomIncrement != 0)
+        {
+            viewBoxX = viewBoxX - 10;
+            viewBoxY = viewBoxY - 10;
+            viewBoxWidth = viewBoxWidth + 20;
+            viewBoxHeight = viewBoxHeight + 20;
+            zoomIncrement = zoomIncrement - 1;
+            AfficheZoom();
+        }
+        else
+        {
+            viewBoxX = viewBoxY;
+            viewBoxHeight = viewBoxWidth;
+            AfficheZoom();
+        }
+    }
+    /// <summary>
+    /// Zoom scroll molette
+    /// </summary>
+    /// <param name="mouse"></param>
     public void Zoom(WheelEventArgs mouse)
     {
         if (mouse.ShiftKey) // get le shift key
@@ -143,21 +168,59 @@
             if (mouse.DeltaY < 0)
             {
                 // Faire zoom vers le haut
-                viewBoxX = viewBoxX + 5;
-                viewBoxY = viewBoxY + 5;
-                viewBoxWidth = viewBoxWidth - 20;
-                viewBoxHeight = viewBoxHeight - 20;
-                zoomIncrement = zoomIncrement + 0.01;
+
+                if (zoomIncrement != 150)
+                {
+                    viewBoxX = viewBoxX + 10;
+                    viewBoxY = viewBoxY + 10;
+                    viewBoxWidth = viewBoxWidth - 20;
+                    viewBoxHeight = viewBoxHeight - 20;
+                    zoomIncrement = zoomIncrement + 1;
+                    AfficheZoom();
+                }
+                else
+                {
+                    viewBoxX = viewBoxY;
+                    viewBoxHeight = viewBoxWidth;
+                    AfficheZoom();
+                }
             }
             else if (mouse.DeltaY > 0)
             {
                 // Faire zoom vers le bas
-                viewBoxX = viewBoxX - 5;
-                viewBoxY = viewBoxY - 5;
-                viewBoxWidth = viewBoxWidth + 20;
-                viewBoxHeight = viewBoxHeight + 20;
-                zoomIncrement = zoomIncrement - 0.01;
+
+                if (zoomIncrement != 0)
+                {
+                    viewBoxX = viewBoxX - 10;
+                    viewBoxY = viewBoxY - 10;
+                    viewBoxWidth = viewBoxWidth + 20;
+                    viewBoxHeight = viewBoxHeight + 20;
+                    zoomIncrement = zoomIncrement - 1;
+                    AfficheZoom();
+                }
+                else
+                {
+                    viewBoxX = viewBoxY;
+                    viewBoxHeight = viewBoxWidth;
+                    AfficheZoom();
+                }
             }
+        }
+    }
+    public string AfficheZoom()
+    {
+        if (zoomIncrement <= 0)
+        {
+            // Vous pouvez ajuster la valeur selon vos besoins
+            return ("0%");
+        }
+        if (zoomIncrement >= 150)
+        {
+            return ("150%");
+        }
+        else
+        {
+            return (zoomIncrement + "%");
         }
     }
 }

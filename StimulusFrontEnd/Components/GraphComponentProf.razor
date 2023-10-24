@@ -18,7 +18,7 @@
                 <button class="spaceButton btn btn-primary" type="button" @onclick="AugmenterZoom">+</button>
                 <button class="spaceButton btn btn-primary" type="button" @onclick="ReduireZoom">-</button>
                 <button class="spaceButton btn btn-secondary" type="button" @onclick="ResetViewbox">Réinitialiser</button>
-                <h5 style="color: white;"> zoom : @(Math.Round(zoomIncrement * 100))%</h5>
+                <h5 style="color: white;"> Zoom : @AfficheZoom()</h5>
                 <button style="color: white;" @onclick="@(e => ModeDeVue(1))" class="spaceButton btn btn-info" title="Mode Page">Gestion de Pages</button>
                 <button style="color: white;" @onclick="@(e => ModeDeVue(2))" class="spaceButton btn btn-info" title="Mode Edition">Édition</button>
                 <button style="color: white;" @onclick="@(e => ModeDeVue(3))" class="spaceButton btn btn-info" title="Mode Etudiant">Vue étudiante</button>
@@ -58,7 +58,7 @@
     private double viewBoxY = 0;
     private double viewBoxWidth = 2000;
     private double viewBoxHeight = 2000;
-    private double zoomIncrement = 1;
+    private double zoomIncrement = 100;
     private Noeud enfantRechercheParent = new();
     private bool enRecherche = false;
     private int modeDeVue = 2;
@@ -106,7 +106,7 @@
     /// </summary>
     /// <returns></returns>
     private int GetModeFond() => 2; //Hardcode
-    //Quand la souris survole
+                                    //Quand la souris survole
     private void OnMouseHover() => displayHover = "show";
     //Quand la souris ne survole plus
     private void OnMouseLeave() => displayHover = "hidden";
@@ -193,29 +193,50 @@
         viewBoxY = 0;
         viewBoxHeight = 2000;
         viewBoxWidth = 2000;
-        zoomIncrement = 1;
+        zoomIncrement = 100;
+        AfficheZoom();
     }
     /// <summary>
     /// Augmenter le zoom
     /// </summary>
     private void AugmenterZoom()
     {
-        viewBoxX = viewBoxX + 5;
-        viewBoxY = viewBoxY + 5;
-        viewBoxWidth = viewBoxWidth - 20;
-        viewBoxHeight = viewBoxHeight - 20;
-        zoomIncrement = zoomIncrement + 0.01;
+        if (zoomIncrement != 150)
+        {
+            viewBoxX = viewBoxX + 10;
+            viewBoxY = viewBoxY + 10;
+            viewBoxWidth = viewBoxWidth - 20;
+            viewBoxHeight = viewBoxHeight - 20;
+            zoomIncrement = zoomIncrement + 1;
+            AfficheZoom();
+        }
+        else
+        {
+            viewBoxX = viewBoxY;
+            viewBoxHeight = viewBoxWidth;
+            AfficheZoom();
+        }
     }
     /// <summary>
     /// Reduit le zoom
     /// </summary>
     private void ReduireZoom()
     {
-        viewBoxX = viewBoxX - 5;
-        viewBoxY = viewBoxY - 5;
-        viewBoxWidth = viewBoxWidth + 20;
-        viewBoxHeight = viewBoxHeight + 20;
-        zoomIncrement = zoomIncrement - 0.01;
+        if (zoomIncrement != 0)
+        {
+            viewBoxX = viewBoxX - 10;
+            viewBoxY = viewBoxY - 10;
+            viewBoxWidth = viewBoxWidth + 20;
+            viewBoxHeight = viewBoxHeight + 20;
+            zoomIncrement = zoomIncrement - 1;
+            AfficheZoom();
+        }
+        else
+        {
+            viewBoxX = viewBoxY;
+            viewBoxHeight = viewBoxWidth;
+            AfficheZoom();
+        }
     }
     /// <summary>
     /// Zoom scroll molette
@@ -229,21 +250,59 @@
             if (mouse.DeltaY < 0)
             {
                 // Faire zoom vers le haut
-                viewBoxX = viewBoxX + 5;
-                viewBoxY = viewBoxY + 5;
-                viewBoxWidth = viewBoxWidth - 20;
-                viewBoxHeight = viewBoxHeight - 20;
-                zoomIncrement = zoomIncrement + 0.01;
+
+                if (zoomIncrement != 150)
+                {
+                    viewBoxX = viewBoxX + 10;
+                    viewBoxY = viewBoxY + 10;
+                    viewBoxWidth = viewBoxWidth - 20;
+                    viewBoxHeight = viewBoxHeight - 20;
+                    zoomIncrement = zoomIncrement + 1;
+                    AfficheZoom();
+                }
+                else
+                {
+                    viewBoxX = viewBoxY;
+                    viewBoxHeight = viewBoxWidth;
+                    AfficheZoom();
+                }
             }
             else if (mouse.DeltaY > 0)
             {
                 // Faire zoom vers le bas
-                viewBoxX = viewBoxX - 5;
-                viewBoxY = viewBoxY - 5;
-                viewBoxWidth = viewBoxWidth + 20;
-                viewBoxHeight = viewBoxHeight + 20;
-                zoomIncrement = zoomIncrement - 0.01;
+
+                if (zoomIncrement != 0)
+                {
+                    viewBoxX = viewBoxX - 10;
+                    viewBoxY = viewBoxY - 10;
+                    viewBoxWidth = viewBoxWidth + 20;
+                    viewBoxHeight = viewBoxHeight + 20;
+                    zoomIncrement = zoomIncrement - 1;
+                    AfficheZoom();
+                }
+                else
+                {
+                    viewBoxX = viewBoxY;
+                    viewBoxHeight = viewBoxWidth;
+                    AfficheZoom();
+                }
             }
+        }
+    }
+    public string AfficheZoom()
+    {
+        if (zoomIncrement <= 0)
+        {
+            // Vous pouvez ajuster la valeur selon vos besoins
+            return ("0%");
+        }
+        if (zoomIncrement >= 150)
+        {
+            return ("150%");
+        }
+        else
+        {
+            return (zoomIncrement + "%");
         }
     }
 }
