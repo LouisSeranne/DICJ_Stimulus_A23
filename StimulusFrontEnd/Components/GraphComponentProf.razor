@@ -18,9 +18,9 @@
                 <button type="button" @onclick="ResetViewbox">Réinitialiser</button>
                 <p class="grapheEnteteElement" style="color:white;"> zoom : @(Math.Round(zoomIncrement * 100))%</p>
                 <span></span>
-                <button @onclick="@(e => ModeDeVue(1))" class="ModeButton" title="Mode Page">1</button>
-                <button @onclick="@(e => ModeDeVue(2))" class="ModeButton" title="Mode Edition">2</button>
-                <button @onclick="@(e => ModeDeVue(3))" class="ModeButton" title="Mode Etudiant">3</button>
+                <button @onclick="@(e => ModeDeVue(1))" class="ModeButton" title="Mode Page">Menu Page</button>
+                <button @onclick="@(e => ModeDeVue(2))" class="ModeButton" title="Mode Edition">Édition</button>
+                <button @onclick="@(e => ModeDeVue(3))" class="ModeButton" title="Mode Etudiant">Vue étudiante</button>
                 <span style="color:white">Mode : @modeDeVuInfo</span>
             </div>
         </foreignObject>
@@ -61,7 +61,7 @@
     private Noeud enfantRechercheParent = new();
     private bool enRecherche = false;
     private int modeDeVue = 2;
-    private string modeDeVuInfo = "edition";
+    private string modeDeVuInfo = "Édition";
     private Noeud nouveauNoeud = new();
     public List<Noeud> Nodes { get; set; } = new();
     protected async override void OnInitialized()
@@ -88,11 +88,11 @@
     private void ModeDeVue(int v) 
     {
         if(v == 1)
-            modeDeVuInfo = "page";
+            modeDeVuInfo = "Gestion de Pages";
         else if(v == 2)
-            modeDeVuInfo = "edition";
+            modeDeVuInfo = "Édition";
         else
-            modeDeVuInfo = "etudiant";
+            modeDeVuInfo = "Vue étudiante";
         modeDeVue = v;
     }
     /// <summary>

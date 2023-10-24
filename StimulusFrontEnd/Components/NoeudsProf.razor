@@ -34,7 +34,7 @@
         <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
             <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
         </foreignObject>
-        @if (Node.LiaisonPrincipal == null || Node.Id == Node.LiaisonPrincipal)
+    @if (Node.LiaisonPrincipal == null || Node.Id == Node.LiaisonPrincipal)
         {
             <foreignObject x="@((-Node.Rayon) )" y="@((Node.Rayon)/2 )" width="20" height="20">
                 <span class="oi oi-link-broken" id="reLink" @onclick="(e => ReLinkNoeud(Node))"></span>
@@ -63,21 +63,22 @@
                 </div>
                 <div visibility="@displayNouveauNoeud" class="form-group">
                     <label visibility="@displayNouveauNoeud">Rayon :</label>
-                    <InputNumber visibility="@displayNouveauNoeud" min="40" max="80" @bind-Value="nouveauNoeud.Rayon"></InputNumber>
+                    <InputNumber visibility="@displayNouveauNoeud" min="40" max="80" @bind-Value="nouveauNoeud.Rayon" ></InputNumber>
                 </div>
                 <div visibility="@displayNouveauNoeud" class="form-group">
                     <label visibility="@displayNouveauNoeud">Status :</label>
-                    <InputNumber visibility="@displayNouveauNoeud" min="1" max="4" @bind-Value="nouveauNoeud.Status"></InputNumber>
+                    <select visibility="@displayNouveauNoeud" @bind="nouveauNoeud.Status">
+                        <option value="1" selected="@(nouveauNoeud.Status == 1)">Bloquer</option>
+                        <option value="2" selected="@(nouveauNoeud.Status == 2)">Non consulté</option>
+                        <option value="3" selected="@(nouveauNoeud.Status == 3)">Consulter</option>
+                        <option value="4" selected="@(nouveauNoeud.Status == 4)">Compléter</option>
+                    </select>
                 </div>
                 <div visibility="@displayNouveauNoeud" class="form-group">
-                    <InputRadioGroup @bind-Value="@modelNoeud">
-                        <label>
-                            <InputRadio Value="@("Noeud_Structure")" /> Noeud Structure
-                        </label>
-                        <label>
-                            <InputRadio Value="@("Noeud_Contenu")" /> Noeud Contenu
-                        </label>
-                    </InputRadioGroup>
+                    <select @bind="modelNoeud">
+                        <option value="Noeud_Contenu" selected="@(modelNoeud == "Noeud_Contenu")">Noeud Contenu</option>
+                        <option value="Noeud_Structure" selected="@(modelNoeud == "Noeud_Structure")">Noeud Structure</option>
+                    </select>
                 </div>
                 <button class="btn btn-primary">Ajouter</button>
             </EditForm>
@@ -136,6 +137,7 @@
     private bool viewPage = false;
     //Type de noeud
     private string modelNoeud = "Noeud_Contenu";
+    private string statusNom = "";
     private Noeud nouveauNoeud = new();  
     private string displayNouveauNoeud = "hidden";
     private int formSizeH = 0;
@@ -150,15 +152,25 @@
 
     protected override void OnInitialized()
     {
+        nouveauNoeud.Rayon = 40;
+
         Couleur = COULEUR_BLOQUER;
         if(Node.Status == 1)
+        {
             Couleur = COULEUR_BLOQUER;
+        }
         else if (Node.Status == 2)
+        {
             Couleur = COULEUR_NON_CONSULTER;
+        }
         else if (Node.Status == 3)
+        {
             Couleur = COULEUR_CONSULTER;
+        }
         else if (Node.Status == 4)
+        {
             Couleur = COULEUR_COMPLETER;
+        }
     }
     private void ViewPageTemplate()
     {
@@ -181,7 +193,6 @@
     /// </summary>
     private async void AjoutNoeud()
     {
-        var t = modelNoeud;
         displayNouveauNoeud = "hidden";
         formSizeW = 0;
         formSizeH = 0;
@@ -193,15 +204,20 @@
         nouveauNoeud.Obligatoire = true;
         nouveauNoeud.Image = "default";
         nouveauNoeud.Disponibilite = DateTime.Now;
-        if (nouveauNoeud.Code != null && nouveauNoeud.Description != null && nouveauNoeud.Code.Length >= 3 && nouveauNoeud.Code.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100)
+
+        if (nouveauNoeud.Code != null && nouveauNoeud.Description != null && nouveauNoeud.Code.Length >= 3 && nouveauNoeud.Code.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100 && nouveauNoeud.Rayon != null)
+        {            
             AjoutNouveauNoeud(nouveauNoeud);
+        }
         else
             await JsRunTime.InvokeAsync<object>("alert", "Les saisies ne sont pas valides"); 
-            // Dans le cadre de champs vide ou invalide, une alert box apparait
+        // Dans le cadre de champs vide ou invalide, une alert box apparait
 
         nouveauNoeud = new();
+
         isOpen = false;
     }
+
     /// <summary>
     /// Appel la fonction en delegate de suppression de noeud
     /// </summary>
@@ -213,7 +229,7 @@
     {
         //Base du nouveau noeud
         formSizeW = 200;
-        formSizeH = 320;
+        formSizeH = 255;
         displayNouveauNoeud = "visible";
         isOpen = true;
     }
