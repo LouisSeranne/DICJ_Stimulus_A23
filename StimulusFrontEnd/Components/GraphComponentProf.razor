@@ -9,20 +9,21 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject IUpdateService updateService
 @inject MouseService mouseSrv;
+@inject NavigationManager Navigation
+
 <div class="row mt-2">
     <div class="col">
-        <foreignObject x="5" y="5" width="180" height="50">
-            <div class="divGrapheEntete" width="180" height="50">
-                <button style="font-size:15px" type="button" @onclick="AugmenterZoom">+</button>
-                <button style="font-size:15px" type="button" @onclick="ReduireZoom">-</button>
-                <button type="button" @onclick="ResetViewbox">Réinitialiser</button>
-                <p class="grapheEnteteElement" style="color:white;"> zoom : @(Math.Round(zoomIncrement * 100))%</p>
-                <span></span>
-                <button @onclick="@(e => ModeDeVue(1))" class="ModeButton" title="Mode Page">1</button>
-                <button @onclick="@(e => ModeDeVue(2))" class="ModeButton" title="Mode Edition">2</button>
-                <button @onclick="@(e => ModeDeVue(3))" class="ModeButton" title="Mode Etudiant">3</button>
-                <span style="color:white">Mode : @modeDeVuInfo</span>
+        <foreignObject x="5" y="5" width="1300" height="40">
+            <div class="divGrapheEntete" style="width: 1300px; height: 40px;">
+                <button class="spaceButton btn btn-primary" type="button" @onclick="AugmenterZoom">+</button>
+                <button class="spaceButton btn btn-primary" type="button" @onclick="ReduireZoom">-</button>
+                <button class="spaceButton btn btn-secondary" type="button" @onclick="ResetViewbox">Réinitialiser</button>
+                <h5 style="color: white;"> zoom : @(Math.Round(zoomIncrement * 100))%</h5>
+                <button style="color: white;" @onclick="@(e => ModeDeVue(1))" class="spaceButton btn btn-info" title="Mode Page">Gestion de Pages</button>
+                <button style="color: white;" @onclick="@(e => ModeDeVue(2))" class="spaceButton btn btn-info" title="Mode Edition">Édition</button>
+                <button style="color: white;" @onclick="@(e => ModeDeVue(3))" class="spaceButton btn btn-info" title="Mode Etudiant">Vue étudiante</button>
             </div>
+
         </foreignObject>
         <svg class="bg-transparent" width="100%" height="2000" xmlns="http://www.w3.org/2000/svg">
             <rect width="180" height="180" x="0" y="5" fill="#32587a"></rect>
@@ -79,7 +80,7 @@
         httpClient = new HttpClient(handler);
         httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
         client = new Client(httpClient);
-        UpdateGraphe();
+        await UpdateGraphe();
     }
     /// <summary>
     /// Permet de set le mode de vu. 1 => Page, 2 => Edit, 3 => Etudiant
@@ -105,7 +106,7 @@
     /// </summary>
     /// <returns></returns>
     private int GetModeFond() => 2; //Hardcode
-    //Quand la souris survole
+                                    //Quand la souris survole
     private void OnMouseHover() => displayHover = "show";
     //Quand la souris ne survole plus
     private void OnMouseLeave() => displayHover = "hidden";
@@ -134,36 +135,41 @@
     /// <summary>
     /// Recupere les noeuds du graph Numero X et permet la MAJ du graph
     /// </summary>
-    private async void UpdateGraphe()
+    private async Task UpdateGraphe()
     {
         Nodes = new();
-        if (sessionStorage != null )
+        if (sessionStorage != null)
         {
-            //Methode du ghetto, mais fonctionne
-            while(await sessionStorage.GetItemAsync<int>("idGraphe") == 0);
+            int idGraphe;
 
-            int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+            // Attendre 'idGraphe' pour ne pas etre 0 (utilise un timeout ou cancellation token = plus safe).
+            while ((idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe")) == 0)
+            {
+                //Plus chill qu'une boucle industrielle
+                await Task.Delay(100);
+            }
+
             Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
         }
-        NavigationManager.NavigateTo("/prof");
-
+        ShouldRender();
     }
+
     /// <summary>
     /// Permet l'ajout de noveau noeud
     /// </summary>
-    private void AjoutNouveauNoeud(Noeud nouveauNoeud)
+    private async void AjoutNouveauNoeud(Noeud nouveauNoeud)
     {
         SaveNouveauNoeud(nouveauNoeud);
-        UpdateGraphe();
+        await UpdateGraphe();
     }
     /// <summary>
     /// Supprime le noeud avec l'id selectionner
     /// </summary>
     /// <param name="id"></param>
-    private void SupprimerNoeud(int id)
+    private async void SupprimerNoeud(int id)
     {
         client.NoeudsDELETEAsync(id);
-        UpdateGraphe();
+        await UpdateGraphe();
     }
     /// <summary>
     /// Sauvegarde les mises a jour du graph
@@ -175,8 +181,11 @@
     /// <param name="noeud"></param>
     public async void SaveNouveauNoeud(Noeud noeud)
     {
-        if(noeud !=null)
+        if(noeud != null)
+        {
             await client.NoeudsPOSTAsync(noeud);
+
+        }
     }
     /// <summary>
     /// Reset le zoom a 100%

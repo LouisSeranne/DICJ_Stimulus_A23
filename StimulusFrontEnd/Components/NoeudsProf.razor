@@ -31,9 +31,13 @@
     }
     @if (GetModeDeVue() == 2)
     {
-        <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
+        @if (allLiaison.Count <= 0)
+        {
+           <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
             <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
-        </foreignObject>
+            </foreignObject>
+        }
+     
         @if (Node.LiaisonPrincipal == null || Node.Id == Node.LiaisonPrincipal)
         {
             <foreignObject x="@((-Node.Rayon) )" y="@((Node.Rayon)/2 )" width="20" height="20">
@@ -108,7 +112,7 @@
     else if (GetModeDeVue() == 2)
     {
         <NavLink >
-            <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
+            <text @onclick=@(e =>RelinkBindNode(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
         </NavLink>    
     }
     else if (GetModeDeVue() == 3)
@@ -120,6 +124,8 @@
     }
 </Draggable>
 @code {
+    private HttpClient httpClient;
+    private Client client;
     //ChildContent = Noeudception
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public StimulusFrontEnd.Services.Base.Noeud Node { get; set; }
@@ -132,6 +138,7 @@
     [Parameter] public Action<Noeud> ReLinkNoeud { get; set; }
     [Parameter] public Func<int> GetModeDeVue { get; set; }
 
+    private List<Noeud>? allLiaison = new();
     private string displayHover = "hidden";
     private bool viewPage = false;
     //Type de noeud
@@ -150,6 +157,19 @@
 
     protected override void OnInitialized()
     {
+        var builder = WebApplication.CreateBuilder();
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+        httpClient = new HttpClient(handler);
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
+        client = new Client(httpClient);
+        allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
+
         Couleur = COULEUR_BLOQUER;
         if(Node.Status == 1)
             Couleur = COULEUR_BLOQUER;
@@ -197,15 +217,22 @@
             AjoutNouveauNoeud(nouveauNoeud);
         else
             await JsRunTime.InvokeAsync<object>("alert", "Les saisies ne sont pas valides"); 
-            // Dans le cadre de champs vide ou invalide, une alert box apparait
+        // Dans le cadre de champs vide ou invalide, une alert box apparait
 
         nouveauNoeud = new();
         isOpen = false;
+        ShouldRender();
+
     }
     /// <summary>
     /// Appel la fonction en delegate de suppression de noeud
     /// </summary>
-    private void SupprimerNoeud() => SupprNoeud(Node.Id);
+    private void SupprimerNoeud()
+    {
+        SupprNoeud(Node.Id);
+        ShouldRender();
+
+    }
     /// <summary>
     /// Affiche le formulaire pour un nouveau noeud
     /// </summary>
