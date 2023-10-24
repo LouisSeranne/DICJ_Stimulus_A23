@@ -11,8 +11,35 @@
                 <div class="row">
                     <div class="col-sm-4 col-md-4 col-lg-4">
                         <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
-                    </div>                  
-                    <div class ="col-sm-1 col-md-1 col-lg-1">
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                       @* <button @onclick="ToggleMenu" class="LinkHeaderProf">
+                            <p class="LinkHeaderProf">
+                                Menu
+                            </p>
+                        </button>
+                        @if (isMenuOpen)
+                        {
+                            <div id="menuItems">
+                                <a class="LinkHeaderProf" href="/accueil">
+                                    <p class="LinkHeaderProf">
+                                        Création de cours
+                                    </p>
+                                </a>
+                                <a class="LinkHeaderProf" href="/accueil">
+                                    <p class="LinkHeaderProf">
+                                        Gestion Étudiants
+                                    </p>
+                                </a>
+                                <a class="LinkHeaderProf" href="/accueil">
+                                    <p class="LinkHeaderProf">
+                                        Gestion de graphe
+                                    </p>
+                                </a>
+                            </div>
+                        }*@
+                    </div>
+                    <div class ="col-sm-2 col-md-2 col-lg-2">
                         <select @onchange="ChangeGroupe" name="cours" class="ListeHeader" value=@listGroupeOrdered[0].IdGroupe>
                             @foreach (var groupeordered in listGroupeOrdered)
                             {
@@ -20,7 +47,7 @@
                             }
                         </select>
                     </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4 divDroiteHeader">
+                    <div class="col-sm-3 col-md-3 col-lg-3 divDroiteHeader">
                         <a href="/prof"><img src="/image/Graph.png" alt="Logo Graph" class="logoHeader"/></a>
                         <a href="/logout"><img src="/image/Logout.png" alt="Logo Graph" class="logoHeader"/></a>
                         <img src="/image/Avatar.png" alt="Logo Avatar" class="logoHeader"/>
@@ -133,6 +160,13 @@
         public string Nom { get; set; }
         public int IdGroupe { get; set; }
 
+    }
+
+    private bool isMenuOpen = false;
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
     }
 
 

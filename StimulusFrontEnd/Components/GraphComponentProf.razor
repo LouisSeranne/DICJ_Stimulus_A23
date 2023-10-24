@@ -38,7 +38,7 @@
             @onmousemove=@(e => mouseSrv.FireMove(this, e))
             @onmouseup=@(e => mouseSrv.FireUp(this, e))
             @onmousewheel="Zoom">
-                <Draggable X="0" Y="0" GetModeDeVue="GetModeFond">
+                <Draggable X="@((viewBoxWidth - 1800) / 2)" Y="@((viewBoxWidth - 1500) / 2)" GetModeDeVue="GetModeFond">
                     <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:0;stroke:rgb(0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
