@@ -198,38 +198,39 @@ main {
     color:white;
 }
 
-.bouttonNavigation {
-    text-align: right;
-    background-color: red;
+.LinkHeaderProf {
+    background-color: var(--secondaire-couleur);
+    width: 200px;
+    height: 50px;
+    color: white;
+    border-color: white;
 }
 
 .hidden {
     display: none;
 }
 
-#menuButton {
-    margin: 0 10px;
-    padding: 0;
-    font-weight: bold;
-    text-decoration: none;
-    color: white;
-    display: inline-block;
-    transition: var(--secondaire2-couleur) 0.3s, border 0.3s;
-    text-align: center;
-    line-height: 50px;
+#menuButton:hover {
+    background-color: var(--secondaire2-couleur);
+    border: 1px solid var(--secondaire2-couleur);
+    padding: 5px 10px;
 }
-
-    #menuButton:hover {
-        background-color: var(--secondaire2-couleur);
-        border: 1px solid var(--secondaire2-couleur);
-        padding: 5px 10px;
-    }
 
 #menuItems .LinkHeaderProf {
-    display: block;
+    border: 1px solid var(--secondaire-couleur);
+    line-height: 30px;
+    color: var(--principale-couleur);
+    text-decoration: none;
     text-align: center;
-    line-height: 50px;
+    margin: 0 0px;
+    width: 150px;
 }
+
+.LinkHeaderProf:hover {
+    background-color: var(--secondaire2-couleur);
+    border: 1px solid var(--secondaire2-couleur);
+}
+
 /*CSS pour les icons dans le footer*/
 .user-image {
     width: 20px; /* Ajustez la taille de l'image selon vos besoins */
