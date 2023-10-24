@@ -148,10 +148,8 @@
                 //Plus chill qu'une boucle industrielle
                 await Task.Delay(100);
             }
-
             Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
         }
-        ShouldRender();
     }
 
     /// <summary>
@@ -184,7 +182,6 @@
         if(noeud != null)
         {
             await client.NoeudsPOSTAsync(noeud);
-
         }
     }
     /// <summary>
