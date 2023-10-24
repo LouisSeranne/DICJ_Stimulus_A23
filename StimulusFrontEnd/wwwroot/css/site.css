@@ -290,6 +290,12 @@ main {
     font-weight: bold;
     cursor: pointer;
 }
+h5{
+    margin : 4px;
+}
+.spaceButton{
+    margin:2px;
+}
 /*Css cercle component*/
 #reLink:hover {
     cursor: pointer;

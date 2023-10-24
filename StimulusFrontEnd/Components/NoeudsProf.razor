@@ -9,7 +9,7 @@
 {
     @if (Node.Id == Nodes[i].LiaisonPrincipal && Nodes[i].LiaisonPrincipal != null && Nodes[i].LiaisonPrincipal != Nodes[i].Id)
     {
-        <Connector GetModeDeVue="GetModeDeVue" SaveChangeNoeud="SaveChangeNoeud" Noeud="Nodes[i]" X1=Node.PosX Y1=Node.PosY X2=Nodes[i].PosX Y2=Nodes[i].PosY />
+        <Connector ReRender="ReRender" GetModeDeVue="GetModeDeVue" SaveChangeNoeud="SaveChangeNoeud" Noeud="Nodes[i]" X1=Node.PosX Y1=Node.PosY X2=Nodes[i].PosX Y2=Nodes[i].PosY />
     }
 }
 <Draggable GetModeDeVue="GetModeDeVue" @bind-X=Node.PosX @bind-Y=Node.PosY>
@@ -31,10 +31,16 @@
     }
     @if (GetModeDeVue() == 2)
     {
-        <foreignObject x="@(-Node.Rayon)" y="@(-Node.Rayon)" width="20" height="20">
+        allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
+
+        @if (allLiaison.Count <= 0 || Node.Id == Node.LiaisonPrincipal)
+        {
+           <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
             <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
-        </foreignObject>
-    @if (Node.LiaisonPrincipal == null || Node.Id == Node.LiaisonPrincipal)
+            </foreignObject>
+            allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
+        }   
+        @if (Node.LiaisonPrincipal == null || Node.Id == Node.LiaisonPrincipal)
         {
             <foreignObject x="@((-Node.Rayon) )" y="@((Node.Rayon)/2 )" width="20" height="20">
                 <span class="oi oi-link-broken" id="reLink" @onclick="(e => ReLinkNoeud(Node))"></span>
@@ -109,7 +115,7 @@
     else if (GetModeDeVue() == 2)
     {
         <NavLink >
-            <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
+            <text @onclick=@(e =>RelinkBindNode(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
         </NavLink>    
     }
     else if (GetModeDeVue() == 3)
@@ -121,6 +127,8 @@
     }
 </Draggable>
 @code {
+    private HttpClient httpClient;
+    private Client client;
     //ChildContent = Noeudception
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public StimulusFrontEnd.Services.Base.Noeud Node { get; set; }
@@ -133,6 +141,7 @@
     [Parameter] public Action<Noeud> ReLinkNoeud { get; set; }
     [Parameter] public Func<int> GetModeDeVue { get; set; }
 
+    private List<Noeud>? allLiaison = new();
     private string displayHover = "hidden";
     private bool viewPage = false;
     //Type de noeud
@@ -152,7 +161,18 @@
 
     protected override void OnInitialized()
     {
-        nouveauNoeud.Rayon = 40;
+        var builder = WebApplication.CreateBuilder();
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+        httpClient = new HttpClient(handler);
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
+        client = new Client(httpClient);
+        allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
 
         Couleur = COULEUR_BLOQUER;
         if(Node.Status == 1)
@@ -210,9 +230,9 @@
             AjoutNouveauNoeud(nouveauNoeud);
         }
         else
-            await JsRunTime.InvokeAsync<object>("alert", "Les saisies ne sont pas valides"); 
+            await JsRunTime.InvokeAsync<object>("alert", "Les saisies ne sont pas valides");
         // Dans le cadre de champs vide ou invalide, une alert box apparait
-
+        ReRender();
         nouveauNoeud = new();
 
         isOpen = false;
@@ -251,7 +271,13 @@
     /// Quand on survole plus un noeud, ses elements lies apparaissent disparait
     /// </summary>
     private void OnMouseLeave() => displayHover = "hidden";
-
+    /// <summary>
+    /// Permet de refaire de rendu d'un composant
+    /// </summary>
+    private void ReRender()
+    {
+        StateHasChanged();
+    }
     /// <summary>
     /// Permet le changement de page en fonction du noeud choisis
     /// </summary>

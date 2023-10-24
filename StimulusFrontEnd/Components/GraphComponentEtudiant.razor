@@ -12,12 +12,12 @@
 
 <div class="row mt-2">
     <div class="col">
-            <foreignObject x="5" y="5" width="180" height="50">
-            <div class="divGrapheEntete" width="180" height="50">
-                <button style="font-size:15px" type="button" @onclick="AugmenterZoom">+</button>
-                <button style="font-size:15px" type="button" @onclick="ReduireZoom">-</button>
-                <button type="button" @onclick="ResetViewbox">Réinitialiser</button>
-                <p class="grapheEnteteElement" style="color:white;"> zoom : @(Math.Round(zoomIncrement * 100))%</p>
+        <foreignObject x="5" y="5" width="1300" height="40">
+            <div class="divGrapheEntete" style="width: 1300px; height: 40px;">
+                <button class="spaceButton btn btn-primary" type="button" @onclick="AugmenterZoom">+</button>
+                <button class="spaceButton btn btn-primary" type="button" @onclick="ReduireZoom">-</button>
+                <button class="spaceButton btn btn-secondary" type="button" @onclick="ResetViewbox">Réinitialiser</button>
+                <h5 style="color: white;"> zoom : @(Math.Round(zoomIncrement * 100))%</h5>
             </div>
         </foreignObject>
             <svg class="bg-transparent" width="100%" height="2000" xmlns="http://www.w3.org/2000/svg">
@@ -39,8 +39,8 @@
                         <NoeudsEtudiant Node="@noeud" Nodes="@Nodes"></NoeudsEtudiant>
                     }
                 </Draggable>
-                </svg>
             </svg>
+        </svg>
     </div>
 </div>
 
@@ -79,19 +79,26 @@
     /// <summary>
     /// Recupere les noeuds du graph Numero X
     /// </summary>
-    private async void UpdateGraphe()
+    private async Task UpdateGraphe()
     {
 
         Nodes = new();
         if (sessionStorage != null)
         {
-            //Methode du ghetto, mais fonctionne
-            while (await sessionStorage.GetItemAsync<int>("idGraphe") == 0) ;
+            int idGraphe;
 
-            int idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+            // Wait until 'idGraphe' is not zero (use a timeout or cancellation token for safety).
+            while ((idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe")) == 0)
+            {
+                // Add a delay to avoid continuous polling (e.g., 100ms).
+                await Task.Delay(100);
+            }
+
             Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
         }
-        NavigationManager.NavigateTo("/index");      
+
+        // Consider navigating using a relative URL
+        NavigationManager.NavigateTo("/index");
     }
     private int GetModeFond() => 2; //Hardcode
 
