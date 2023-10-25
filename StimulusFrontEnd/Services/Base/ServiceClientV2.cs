@@ -15,6 +15,11 @@
 
 namespace StimulusFrontEnd.Services.Base
 {
+    using Newtonsoft.Json;
+    using System.ComponentModel.DataAnnotations;
+    using System.Text;
+    using StimulusAPI.Models;
+    using StimulusAPI.ViewModels;
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.16.1.0 (NJsonSchema v10.7.2.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -5369,6 +5374,7 @@ namespace StimulusFrontEnd.Services.Base
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<Noeud> NoeudsPOSTAsync(Noeud body, System.Threading.CancellationToken cancellationToken)
         {
+            var t = body;
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/Noeuds");
 
@@ -5405,7 +5411,7 @@ namespace StimulusFrontEnd.Services.Base
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<Noeud>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -5537,8 +5543,16 @@ namespace StimulusFrontEnd.Services.Base
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    var jsonSettings = new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Include // Inclure les valeurs null
+                    };
+
+                    // Sérialisez l'objet en JSON à l'aide de JsonConvert
+                    var json = JsonConvert.SerializeObject(body, jsonSettings);
+
+                    // Créez un contenu HTTP avec le JSON sérialisé
+                    var content_ = new StringContent(json, Encoding.UTF8, "application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
 
@@ -5655,7 +5669,7 @@ namespace StimulusFrontEnd.Services.Base
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 204)
                         {
                             return;
                         }
@@ -8989,7 +9003,7 @@ namespace StimulusFrontEnd.Services.Base
         {
             if (value == null)
             {
-                return "";
+                return null;
             }
 
             if (value is System.Enum)
@@ -9440,9 +9454,12 @@ namespace StimulusFrontEnd.Services.Base
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int Id { get; set; }
 
+        [MinLength(2)]
+        [MaxLength(10)]
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Code { get; set; }
-
+        [MinLength(3)]
+        [MaxLength(100)]
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Description { get; set; }
 
@@ -9458,7 +9475,7 @@ namespace StimulusFrontEnd.Services.Base
         [Newtonsoft.Json.JsonProperty("grapheId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? GrapheId { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("liaisonPrincipal", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("liaisonPrincipal", Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Include)]
         public int? LiaisonPrincipal { get; set; }
 
         [Newtonsoft.Json.JsonProperty("obligatoire", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -9467,15 +9484,23 @@ namespace StimulusFrontEnd.Services.Base
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Status { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("graphe", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Graphe Graphe { get; set; }
+        [Newtonsoft.Json.JsonProperty("posx", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double? PosX { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("liaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Noeud LiaisonPrincipalNavigation { get; set; }
+        [Newtonsoft.Json.JsonProperty("posy", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double? PosY { get; set; }
 
+        [Newtonsoft.Json.JsonProperty("rayon", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double? Rayon { get; set; }
+
+        
+
+       /*[Newtonsoft.Json.JsonProperty("liaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Noeud? LiaisonPrincipalNavigation { get; set; }
+        
         [Newtonsoft.Json.JsonProperty("inverseLiaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Noeud> InverseLiaisonPrincipalNavigation { get; set; }
-
+        public System.Collections.Generic.ICollection<Noeud>? InverseLiaisonPrincipalNavigation { get; set; }
+       */
         [Newtonsoft.Json.JsonProperty("pages", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Page> Pages { get; set; }
 
@@ -9600,8 +9625,30 @@ namespace StimulusFrontEnd.Services.Base
         [Newtonsoft.Json.JsonProperty("motDePasse", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string MotDePasse { get; set; }
 
+        [Newtonsoft.Json.JsonProperty("numEmploye", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string NumEmploye { get; set; }
+
         [Newtonsoft.Json.JsonProperty("groupes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Groupe> Groupes { get; set; }
+
+    }
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.16.1.0 (NJsonSchema v10.7.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ProfVM
+    {
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("nom", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Nom { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("prenom", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Prenom { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("motDePasse", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string MotDePasse { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("groupes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<GroupeVM> Groupes { get; set; }
 
     }
 

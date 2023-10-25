@@ -70,7 +70,7 @@ namespace StimulusFrontEnd.Providers
             var user = new ClaimsPrincipal(new ClaimsIdentity(claims, "Boubidibap"));
             var authState = Task.FromResult(new AuthenticationState(user));
             //cette variable de session storage permet de donner le numéro de DA au Graph
-            await sessionStorage.SetItemAsync("idEtudiant", user.Identity.Name);
+            await sessionStorage.SetItemAsync("idConnexion", user.Identity.Name);
             
             NotifyAuthenticationStateChanged(authState);
         }

@@ -19,7 +19,7 @@ DbConfig dbConfig = new DbConfig();
 
 //Ajout des contexts
 
-builder.Services.AddDbContext<StimulusAPI.Context.DevProjetStimulusContext>(option => option.UseSqlServer(dbConfig.SqlConnStringBuilder.ConnectionString));
+builder.Services.AddDbContext<StimulusAPI.Context.TestStimulusProjet_Evolution>(option => option.UseSqlServer(dbConfig.SqlConnStringBuilder.ConnectionString));
 builder.Services.AddDbContext<_2022_Projet_StimulusLoginContext>(option => option.UseSqlServer(dbConfig.SqlLoginConnStringBuilder.ConnectionString));
 //Ajout de Identity
 builder.Services.AddIdentity<UtilisateurApplication, IdentityRole>()

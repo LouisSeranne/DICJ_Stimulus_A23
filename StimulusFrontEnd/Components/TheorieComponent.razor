@@ -3,7 +3,7 @@
 
 
 
-<div class="containerComponent">
+<div class="containerComponent @(IsVideoOrImage ? "video-image-container" : "containerComponent")">
 
     @if(InitDone)
     {
@@ -227,5 +227,18 @@
 
         
         return new Client(httpClient);
+    }
+
+    private bool IsVideoOrImage
+    {
+        get
+        {
+            // Votre logique de vérification du modèle
+            if (Components.Count > 0 && Components[0] is Models.Video || Components.Count > 0 && Components[0] is Models.Image)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

@@ -14,9 +14,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class PageComposantsController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public PageComposantsController(DevProjetStimulusContext context)
+        public PageComposantsController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

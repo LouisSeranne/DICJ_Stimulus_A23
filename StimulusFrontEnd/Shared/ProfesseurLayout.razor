@@ -1,0 +1,124 @@
+﻿@inherits LayoutComponentBase
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
+@inject IJSRuntime JSRuntim
+@inject IUpdateService updateService
+@inject IAuthenticationService authentificate
+
+@inject ViewOptionService ViewOption
+
+@using Microsoft.AspNetCore.Authentication
+@using StimulusFrontEnd.Models
+@using Newtonsoft.Json
+
+
+<!---->
+@if(initDone)
+{
+    <div class="page">
+        <main>          
+            @if(identifier)
+            {
+                <HeaderComponentProf/>
+            }         
+            <article class="content px-4">
+                @Body
+            </article>
+            @if(identifier)
+            {
+                <FooterEtudiantComponent/>
+            }         
+        </main>  
+    </div>
+}
+
+    
+@code {
+    public int idGraphe;
+    private bool initDone,identifier;
+    private Client client;
+    private HttpClient httpClient;
+    //Initialisation de l'id du graph a la main pour l'instant en attente de la page de connexion pour avoir directement le graph avec l'étuidant
+    protected override async void OnInitialized()
+    {
+        Console.WriteLine("layout initialized");
+        ViewOption.OnChanged = () => { 
+            StateHasChanged();//Refresh
+        };
+
+        initDone = false;
+
+        identifier = false;
+
+        var builder = WebApplication.CreateBuilder();
+
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+        httpClient = new HttpClient(handler);
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
+
+        client = new Client(httpClient);
+
+
+        initDone = true;
+
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected async override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            //JSRuntim.InvokeVoidAsync("console.log","debut onAfterender");
+            Console.WriteLine("layout afterrender first");
+
+            if (await sessionStorage.ContainKeyAsync("idConnexion") && await sessionStorage.GetItemAsync<string>("idConnexion") != null) //Garde le num employe en session
+            {
+                //JSRuntim.InvokeVoidAsync("console.log","rentrer premiere if");
+
+
+                if (await sessionStorage.ContainKeyAsync("idGroupe") == false)
+                {
+                    var numProf = await sessionStorage.GetItemAsync<string>("idConnexion"); //va chercher le num prof
+
+                    int idProf = 1; //Temporaire, sera changer par var idProf =  await sessionStorage.GetItemAsync<string>("idConnexion")
+
+                    var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).FirstOrDefault().Id; //Va chercher le premier groupe du prof
+
+                    await sessionStorage.SetItemAsync<int>("idGroupe", (int)profGroupe);//mets le groupe en session
+
+                }
+
+                if (await sessionStorage.ContainKeyAsync("idGraphe") == false)
+                {
+                    int idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe"); //ça met le groupe dans la session
+                    var graphe = await client.GraphesAllAsync();
+                    var grapheFiltered = graphe.Where(g => g.GroupeId == idGroupe); // va chercher le premier graph du prof
+                    await sessionStorage.SetItemAsync<int>("idGraphe", grapheFiltered.FirstOrDefault().Id); // met le graph en session
+                    idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");//ça met le graphe dans la session
+                    updateService.CallRequestRefresh();
+                }
+
+
+                Console.WriteLine("layout afterRender identifier = true");
+                identifier = true;
+                
+                await InvokeAsync(StateHasChanged);
+
+            }
+        }
+        
+    }
+
+    public async void Clear()
+    {
+        //Fonction de test pour supprimer le session storage a la main
+        await sessionStorage.ClearAsync();
+    }
+}

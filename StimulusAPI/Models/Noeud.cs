@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace StimulusAPI.Models
@@ -23,6 +24,9 @@ namespace StimulusAPI.Models
         public int? LiaisonPrincipal { get; set; }
         public bool Obligatoire { get; set; }
         public int? Status { get; set; }
+        public decimal? PosX { get; set; }
+        public decimal? PosY { get; set; }
+        public decimal? Rayon { get; set; }
 
         public virtual Graphe? Graphe { get; set; }
         public virtual Noeud? LiaisonPrincipalNavigation { get; set; }
