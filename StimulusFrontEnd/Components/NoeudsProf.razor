@@ -31,14 +31,11 @@
     }
     @if (GetModeDeVue() == 2)
     {
-        allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
-
-        @if (allLiaison.Count <= 0 || Node.Id == Node.LiaisonPrincipal)
+        @if (AllLiaison.Where(c => c.LiaisonPrincipal == Node.Id).ToList().Count == 0 || Node.Id == Node.LiaisonPrincipal)
         {
-           <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
-            <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
+            <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
+                <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
             </foreignObject>
-            allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
         }   
         @if (Node.LiaisonPrincipal == null || Node.Id == Node.LiaisonPrincipal)
         {
@@ -47,14 +44,14 @@
             </foreignObject>
         }
         <foreignObject x="@(Node.Rayon/2 )" y="@(Node.Rayon/2 )" width="20" height="20">
-            @if (!isOpen)
-            {
-                <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-plus" aria-hidden="true" @onclick="@NouveauNoeud"></span>
-            }
-            else
-            {
-                <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-minus" aria-hidden="true" @onclick="@FermeForm"></span>
-            }
+        @if (!isOpen)
+        {
+            <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-plus" aria-hidden="true" @onclick="@NouveauNoeud"></span>
+        }
+        else
+        {
+            <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-minus" aria-hidden="true" @onclick="@FermeForm"></span>
+        }
         </foreignObject>
         <rect x="@(Node.Rayon/2 +20 )" y="@(Node.Rayon/2 +20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="fill: rgba(255,255,255,255)" />
         <foreignObject x="@(Node.Rayon/2 +20 )" y="@(Node.Rayon/2 +20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="padding:5px">
@@ -115,7 +112,7 @@
     else if (GetModeDeVue() == 2)
     {
         <NavLink >
-            <text @onclick=@(e =>RelinkBindNode(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
+            <text @onclick=@(e => RelinkBindNode(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
         </NavLink>    
     }
     else if (GetModeDeVue() == 3)
@@ -129,6 +126,7 @@
 @code {
     private HttpClient httpClient;
     private Client client;
+    private bool delete = false; 
     //ChildContent = Noeudception
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public StimulusFrontEnd.Services.Base.Noeud Node { get; set; }
@@ -140,7 +138,8 @@
     [Parameter] public Action<Noeud> RelinkBindNode { get; set; }
     [Parameter] public Action<Noeud> ReLinkNoeud { get; set; }
     [Parameter] public Func<int> GetModeDeVue { get; set; }
-
+    [Parameter] public Func<Task> UpdateGraphe { get; set; }
+    [Parameter] public List<Noeud> AllLiaison { get; set; }
     private List<Noeud>? allLiaison = new();
     private string displayHover = "hidden";
     private bool viewPage = false;
@@ -241,7 +240,10 @@
     /// <summary>
     /// Appel la fonction en delegate de suppression de noeud
     /// </summary>
-    private void SupprimerNoeud() => SupprNoeud(Node.Id);
+    private void SupprimerNoeud() 
+    {
+        SupprNoeud(Node.Id);
+    }
     /// <summary>
     /// Affiche le formulaire pour un nouveau noeud
     /// </summary>

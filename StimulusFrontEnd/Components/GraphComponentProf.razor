@@ -43,7 +43,7 @@
                     <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:0;stroke:rgb(0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
-                        <NoeudsProf GetModeDeVue="GetModeDeVue" RelinkBindNode="RelinkBindNode" ReLinkNoeud="ReLinkNoeud" Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></NoeudsProf>
+                        <NoeudsProf AllLiaison="AllLiaison" UpdateGraphe="UpdateGraphe" GetModeDeVue="GetModeDeVue" RelinkBindNode="RelinkBindNode" ReLinkNoeud="ReLinkNoeud" Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></NoeudsProf>
                     }
                 </Draggable>
             </svg>
@@ -65,6 +65,7 @@
     private string modeDeVuInfo = "Édition";
     private Noeud nouveauNoeud = new();
     public List<Noeud> Nodes { get; set; } = new();
+    private List<Noeud> AllLiaison { get; set; } = new();
     protected async override void OnInitialized()
     {
         var builder = WebApplication.CreateBuilder();
@@ -138,6 +139,7 @@
     private async Task UpdateGraphe()
     {
         Nodes = new();
+        AllLiaison = new();
         if (sessionStorage != null)
         {
             int idGraphe;
@@ -148,16 +150,21 @@
                 //Plus chill qu'une boucle industrielle
                 await Task.Delay(100);
             }
-            Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
-        }
-    }
 
+            Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
+            foreach (var item in Nodes)
+            {
+                AllLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal != item.Id).ToList();
+            }
+        }
+        ShouldRender();
+    }
     /// <summary>
     /// Permet l'ajout de noveau noeud
     /// </summary>
     private async void AjoutNouveauNoeud(Noeud nouveauNoeud)
     {
-        SaveNouveauNoeud(nouveauNoeud);
+        await SaveNouveauNoeud(nouveauNoeud);
         await UpdateGraphe();
     }
     /// <summary>
@@ -166,8 +173,12 @@
     /// <param name="id"></param>
     private async void SupprimerNoeud(int id)
     {
-        client.NoeudsDELETEAsync(id);
+        await SupprimNoeud(id);
         await UpdateGraphe();
+    }
+    private async Task SupprimNoeud(int id)
+    {
+        await client.NoeudsDELETEAsync(id);
     }
     /// <summary>
     /// Sauvegarde les mises a jour du graph
@@ -177,7 +188,7 @@
     /// Ajoute un noeud dans la BD
     /// </summary>
     /// <param name="noeud"></param>
-    public async void SaveNouveauNoeud(Noeud noeud)
+    public async Task SaveNouveauNoeud(Noeud noeud)
     {
         if(noeud != null)
         {
