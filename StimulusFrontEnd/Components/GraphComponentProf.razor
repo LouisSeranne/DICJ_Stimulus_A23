@@ -157,7 +157,7 @@
                 AllLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal != item.Id).ToList();
             }
         }
-        ShouldRender();
+        StateHasChanged();
     }
     /// <summary>
     /// Permet l'ajout de noveau noeud
@@ -173,12 +173,8 @@
     /// <param name="id"></param>
     private async void SupprimerNoeud(int id)
     {
-        await SupprimNoeud(id);
-        await UpdateGraphe();
-    }
-    private async Task SupprimNoeud(int id)
-    {
         await client.NoeudsDELETEAsync(id);
+        await UpdateGraphe();
     }
     /// <summary>
     /// Sauvegarde les mises a jour du graph
