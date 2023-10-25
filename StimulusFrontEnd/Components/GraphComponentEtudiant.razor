@@ -14,7 +14,7 @@
     <div class="col">
             <foreignObject x="5" y="5" width="180" height="50">
             <div class="divGrapheEntete" width="180" height="50">
-                <button class="spaceButton btn btn-primary" type="button" @onclick="AugmenterZoom">+</button>
+               <button class="spaceButton btn btn-primary" type="button" @onclick="AugmenterZoom">+</button>
                 <button class="spaceButton btn btn-primary" type="button" @onclick="ReduireZoom">-</button>
                 <button class="spaceButton btn btn-secondary" type="button" @onclick="ResetViewbox">Réinitialiser</button>
                 <h5 style="color: white;"> Zoom : @AfficheZoom()</h5>
@@ -33,7 +33,7 @@
                 <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox="@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth" @onmousewheel="Zoom" @onmousemove=@(e => mouseSrv.FireMove(this, e))
                 @onmouseup=@(e => mouseSrv.FireUp(this, e))>
                 <Draggable GetModeDeVue="GetModeFond" X="@((viewBoxWidth - 1800) / 2)" Y="@((viewBoxWidth - 1500) / 2)">
-                    <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgb(0,0,0)" />
+                    <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:1;stroke:rgb(0,0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
                         <NoeudsEtudiant Node="@noeud" Nodes="@Nodes"></NoeudsEtudiant>

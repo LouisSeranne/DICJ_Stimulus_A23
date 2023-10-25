@@ -31,7 +31,7 @@
     }
     @if (GetModeDeVue() == 2)
     {
-        allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
+        //allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
 
         @if (allLiaison.Count <= 0 || Node.Id == Node.LiaisonPrincipal)
         {
@@ -173,8 +173,9 @@
         httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
         client = new Client(httpClient);
         allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
-
+        nouveauNoeud.Status = 1;
         Couleur = COULEUR_BLOQUER;
+
         if(Node.Status == 1)
         {
             Couleur = COULEUR_BLOQUER;
@@ -191,6 +192,7 @@
         {
             Couleur = COULEUR_COMPLETER;
         }
+
     }
     private void ViewPageTemplate()
     {
@@ -225,9 +227,10 @@
         nouveauNoeud.Image = "default";
         nouveauNoeud.Disponibilite = DateTime.Now;
 
-        if (nouveauNoeud.Code != null && nouveauNoeud.Description != null && nouveauNoeud.Code.Length >= 3 && nouveauNoeud.Code.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100 && nouveauNoeud.Rayon != null)
+
+        if (nouveauNoeud.Code != null && nouveauNoeud.Description != null && nouveauNoeud.Code.Length >= 3 && nouveauNoeud.Code.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100 && nouveauNoeud.Rayon != null && nouveauNoeud.Rayon == (int)nouveauNoeud.Rayon)
         {            
-            AjoutNouveauNoeud(nouveauNoeud);
+                AjoutNouveauNoeud(nouveauNoeud);
         }
         else
             await JsRunTime.InvokeAsync<object>("alert", "Les saisies ne sont pas valides");
