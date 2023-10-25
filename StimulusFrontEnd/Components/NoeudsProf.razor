@@ -1,4 +1,4 @@
-﻿@using StimulusFrontEnd.Services;
+@using StimulusFrontEnd.Services;
 @using StimulusFrontEnd.Components.TheorieComponents;
 @using static StimulusFrontEnd.Components.Connector;
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
@@ -9,7 +9,7 @@
 {
     @if (Node.Id == Nodes[i].LiaisonPrincipal && Nodes[i].LiaisonPrincipal != null && Nodes[i].LiaisonPrincipal != Nodes[i].Id)
     {
-        <Connector GetModeDeVue="GetModeDeVue" SaveChangeNoeud="SaveChangeNoeud" Noeud="Nodes[i]" X1=Node.PosX Y1=Node.PosY X2=Nodes[i].PosX Y2=Nodes[i].PosY />
+        <Connector ReRender="ReRender" GetModeDeVue="GetModeDeVue" SaveChangeNoeud="SaveChangeNoeud" Noeud="Nodes[i]" X1=Node.PosX Y1=Node.PosY X2=Nodes[i].PosX Y2=Nodes[i].PosY />
     }
 }
 <Draggable GetModeDeVue="GetModeDeVue" @bind-X=Node.PosX @bind-Y=Node.PosY>
@@ -21,8 +21,7 @@
     }
     @if (GetModeDeVue() == 2 || GetModeDeVue() == 3)
     {
-        <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />
-    
+        <rect x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="fill: rgba(255,255,255,255)" />    
         <foreignObject x="@(Node.Rayon*2- Node.Rayon/2 -10)" y="@(-180 + Node.Rayon/2)" visibility="@displayHover" width="200" height="150" style="padding:5px">
             <span> Nom :  @Node.Code / ID : @Node.Id</span><br />
             <span>Parent : @TestParent()</span><br /> @*Pour ne pas avoir de champ vide*@
@@ -31,55 +30,62 @@
     }
     @if (GetModeDeVue() == 2)
     {
-        <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
-            <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
-        </foreignObject>
+        @if (AllLiaison.Where(c => c.LiaisonPrincipal == Node.Id).ToList().Count == 0 || Node.Id == Node.LiaisonPrincipal)
+        {
+            <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
+                <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
+            </foreignObject>
+        }   
         @if (Node.LiaisonPrincipal == null || Node.Id == Node.LiaisonPrincipal)
         {
             <foreignObject x="@((-Node.Rayon) )" y="@((Node.Rayon)/2 )" width="20" height="20">
                 <span class="oi oi-link-broken" id="reLink" @onclick="(e => ReLinkNoeud(Node))"></span>
             </foreignObject>
         }
-        <foreignObject x="@(Node.Rayon/2 )" y="@(Node.Rayon/2 )" width="20" height="20">
-            @if (!isOpen)
-            {
-                <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-plus" aria-hidden="true" @onclick="@NouveauNoeud"></span>
-            }
-            else
-            {
-                <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-minus" aria-hidden="true" @onclick="@FermeForm"></span>
-            }
+        <foreignObject x="@(Node.Rayon - Node.Rayon/2)" y="@(Node.Rayon- Node.Rayon/2)" width="20" height="20">
+        @if (!isOpen)
+        {
+            <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-plus" aria-hidden="true" @onclick="@NouveauNoeud"></span>
+        }
+        else
+        {
+            <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-minus" aria-hidden="true" @onclick="@FermeForm"></span>
+        }
         </foreignObject>
-        <rect x="@(Node.Rayon/2 +20 )" y="@(Node.Rayon/2 +20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="fill: rgba(255,255,255,255)" />
+        <rect x="@(Node.Rayon/2 + 20)" y="@(Node.Rayon/2 + 20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="fill: rgba(0, 0, 0, 0.5); stroke: black; stroke-width: 1; rx: 10; ry: 10;" />
         <foreignObject x="@(Node.Rayon/2 +20 )" y="@(Node.Rayon/2 +20)" visibility="@displayNouveauNoeud" width="@formSizeW" height="@formSizeH" style="padding:5px">
-            <EditForm Model="nouveauNoeud" OnSubmit="AjoutNoeud" visibility="@displayNouveauNoeud">
-                <div class="form-group" visibility="@displayNouveauNoeud">
-                    <label visibility="@displayNouveauNoeud">Nom du noeud :</label>
-                    <InputText visibility="@displayNouveauNoeud" @bind-Value="nouveauNoeud.Code"></InputText>
+            <EditForm Model="nouveauNoeud" OnSubmit="AjoutNoeud" visibility="@displayNouveauNoeud" class="formLogin">
+                <div class="form-group">
+                    <label for="nomNoeud"><h5>Nom du noeud :</h5></label>
+                    <InputText type="text" class="form-control" id="nomNoeud" @bind-Value="nouveauNoeud.Code" />
                 </div>
-                <div visibility="@displayNouveauNoeud" class="form-group">
-                    <label visibility="@displayNouveauNoeud">Description :</label>
-                    <InputText visibility="@displayNouveauNoeud" @bind-Value="nouveauNoeud.Description"></InputText>
+                <div class="form-group">
+                    <label for="description"><h5>Description :</h5></label>
+                    <InputTextArea type="text" class="form-control" id="description" @bind-Value="nouveauNoeud.Description" />
                 </div>
-                <div visibility="@displayNouveauNoeud" class="form-group">
-                    <label visibility="@displayNouveauNoeud">Rayon :</label>
-                    <InputNumber visibility="@displayNouveauNoeud" min="40" max="80" @bind-Value="nouveauNoeud.Rayon"></InputNumber>
+                <div class="form-group">
+                    <label for="rayon"><h5>Rayon :</h5></label>
+                    <InputNumber type="number" class="form-control" id="rayon" min="40" max="80" @bind-Value="nouveauNoeud.Rayon" />
                 </div>
-                <div visibility="@displayNouveauNoeud" class="form-group">
-                    <label visibility="@displayNouveauNoeud">Status :</label>
-                    <InputNumber visibility="@displayNouveauNoeud" min="1" max="4" @bind-Value="nouveauNoeud.Status"></InputNumber>
+                <div class="form-group">
+                    <label for="status"><h5>Status :</h5></label>
+                    <select class="form-control" id="status" @bind="nouveauNoeud.Status">
+                        <option value="1" selected="@(nouveauNoeud.Status == 1)">Bloqué</option>
+                        <option value="2" selected="@(nouveauNoeud.Status == 2)">Non consulté</option>
+                        <option value="3" selected="@(nouveauNoeud.Status == 3)">Consulter</option>
+                        <option value="4" selected="@(nouveauNoeud.Status == 4)">Compléter</option>
+                    </select>
                 </div>
-                <div visibility="@displayNouveauNoeud" class="form-group">
-                    <InputRadioGroup @bind-Value="@modelNoeud">
-                        <label>
-                            <InputRadio Value="@("Noeud_Structure")" /> Noeud Structure
-                        </label>
-                        <label>
-                            <InputRadio Value="@("Noeud_Contenu")" /> Noeud Contenu
-                        </label>
-                    </InputRadioGroup>
+                <div class="form-group">
+                    <label for="modelNoeud"><h5>Modèle de Noeud :</h5></label>
+                    <select class="form-control" id="modelNoeud" @bind="modelNoeud">
+                        <option value="Noeud_Contenu" selected="@(modelNoeud == "Noeud_Contenu")">Noeud Contenu</option>
+                        <option value="Noeud_Structure" selected="@(modelNoeud == "Noeud_Structure")">Noeud Structure</option>
+                    </select>
                 </div>
-                <button class="btn btn-primary">Ajouter</button>
+                <div class="form-group" style="text-align: center;">
+                    <button style="margin-top: 10px" type="submit" class="btn btn-primary btn-lg w-100">Ajouter</button>
+                </div>
             </EditForm>
         </foreignObject>
     }
@@ -108,7 +114,7 @@
     else if (GetModeDeVue() == 2)
     {
         <NavLink >
-            <text @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
+            <text @onclick=@(e => RelinkBindNode(Node)) @onmouseover=@(e => OnMouseHover()) @onmouseout=@(e => OnMouseLeave()) class="textLink" text-anchor="middle" alignment-baseline="central">@Node.Code</text>
         </NavLink>    
     }
     else if (GetModeDeVue() == 3)
@@ -120,6 +126,9 @@
     }
 </Draggable>
 @code {
+    private HttpClient httpClient;
+    private Client client;
+    private bool delete = false; 
     //ChildContent = Noeudception
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public StimulusFrontEnd.Services.Base.Noeud Node { get; set; }
@@ -131,11 +140,14 @@
     [Parameter] public Action<Noeud> RelinkBindNode { get; set; }
     [Parameter] public Action<Noeud> ReLinkNoeud { get; set; }
     [Parameter] public Func<int> GetModeDeVue { get; set; }
-
+    [Parameter] public Func<Task> UpdateGraphe { get; set; }
+    [Parameter] public List<Noeud> AllLiaison { get; set; }
+    private List<Noeud>? allLiaison = new();
     private string displayHover = "hidden";
     private bool viewPage = false;
     //Type de noeud
     private string modelNoeud = "Noeud_Contenu";
+    private string statusNom = "";
     private Noeud nouveauNoeud = new();  
     private string displayNouveauNoeud = "hidden";
     private int formSizeH = 0;
@@ -150,15 +162,38 @@
 
     protected override void OnInitialized()
     {
+        var builder = WebApplication.CreateBuilder();
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+        httpClient = new HttpClient(handler);
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
+        client = new Client(httpClient);
+        allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
+        nouveauNoeud.Status = 1;
         Couleur = COULEUR_BLOQUER;
+
         if(Node.Status == 1)
+        {
             Couleur = COULEUR_BLOQUER;
+        }
         else if (Node.Status == 2)
+        {
             Couleur = COULEUR_NON_CONSULTER;
+        }
         else if (Node.Status == 3)
+        {
             Couleur = COULEUR_CONSULTER;
+        }
         else if (Node.Status == 4)
+        {
             Couleur = COULEUR_COMPLETER;
+        }
+
     }
     private void ViewPageTemplate()
     {
@@ -181,7 +216,6 @@
     /// </summary>
     private async void AjoutNoeud()
     {
-        var t = modelNoeud;
         displayNouveauNoeud = "hidden";
         formSizeW = 0;
         formSizeH = 0;
@@ -193,27 +227,36 @@
         nouveauNoeud.Obligatoire = true;
         nouveauNoeud.Image = "default";
         nouveauNoeud.Disponibilite = DateTime.Now;
-        if (nouveauNoeud.Code != null && nouveauNoeud.Description != null && nouveauNoeud.Code.Length >= 3 && nouveauNoeud.Code.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100)
-            AjoutNouveauNoeud(nouveauNoeud);
-        else
-            await JsRunTime.InvokeAsync<object>("alert", "Les saisies ne sont pas valides"); 
-            // Dans le cadre de champs vide ou invalide, une alert box apparait
 
+
+        if (nouveauNoeud.Code != null && nouveauNoeud.Description != null && nouveauNoeud.Code.Length >= 3 && nouveauNoeud.Code.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100 && nouveauNoeud.Rayon != null && nouveauNoeud.Rayon == (int)nouveauNoeud.Rayon)
+        {            
+                AjoutNouveauNoeud(nouveauNoeud);
+        }
+        else
+            await JsRunTime.InvokeAsync<object>("alert", "Les saisies ne sont pas valides");
+        // Dans le cadre de champs vide ou invalide, une alert box apparait
+        ReRender();
         nouveauNoeud = new();
+
         isOpen = false;
     }
+
     /// <summary>
     /// Appel la fonction en delegate de suppression de noeud
     /// </summary>
-    private void SupprimerNoeud() => SupprNoeud(Node.Id);
+    private void SupprimerNoeud() 
+    {
+        SupprNoeud(Node.Id);
+    }
     /// <summary>
     /// Affiche le formulaire pour un nouveau noeud
     /// </summary>
     private void NouveauNoeud()
     {
         //Base du nouveau noeud
-        formSizeW = 200;
-        formSizeH = 320;
+        formSizeW = 250;
+        formSizeH = 480;
         displayNouveauNoeud = "visible";
         isOpen = true;
     }
@@ -235,7 +278,13 @@
     /// Quand on survole plus un noeud, ses elements lies apparaissent disparait
     /// </summary>
     private void OnMouseLeave() => displayHover = "hidden";
-
+    /// <summary>
+    /// Permet de refaire de rendu d'un composant
+    /// </summary>
+    private void ReRender()
+    {
+        StateHasChanged();
+    }
     /// <summary>
     /// Permet le changement de page en fonction du noeud choisis
     /// </summary>

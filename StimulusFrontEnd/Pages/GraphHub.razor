@@ -1,0 +1,75 @@
+﻿@using Radzen.Blazor
+@using Radzen;
+﻿@using StimulusFrontEnd.Services.Base
+@using StimulusFrontEnd.Services.Authentification
+@using StimulusFrontEnd.Providers
+
+@inject IAuthenticationService authService
+@inject ApiAuthenticationStateProvider apiAuthentificationStateProvider
+@inject NavigationManager NavigationManager
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IJSRuntime JsRunTime
+@page "/graphub"
+@layout ProfesseurLayout
+
+@* <h3>GrapheHub</h3>
+<RadzenDataGrid Data="@" TItem="GrapheVM" AllowSorting="true" AllowFiltering="true" Sortable="true">
+    <Columns>
+        <RadzenDataGridColumn TItem="Graphes" Property="Nom" Title="Nom du Graphe"  />
+        <RadzenDataGridColumn TItem="" Property="" Title="Dernièrere date de Modification" />
+        <RadzenDataGridColumn TItem="" Property="" Title="Nom du cours" />
+        <RadzenDataGridColumn TItem="" Property="" Title="No Groupe" />
+        <RadzenDataGridColumn TItem="" Property="" Title="No Groupe" />
+        <RadzenDataGridColumn TItem="" Property="" Title="Modifier">
+           <Template >
+               <RadzenButton ButtonStyle="ButtonStyle.Info">Modifier</RadzenButton>
+
+           </Template>
+        </RadzenDataGridColumn>
+
+       
+    </Columns> 
+</RadzenDataGrid>
+  <RadzenStack AlignItems="AlignItems.End">
+    <RadzenLink Path="RedirectToCreerGraph"><RadzenButton ButtonStyle="ButtonStyle.Info">Creer nouveau Graphe </RadzenButton></RadzenLink>
+</RadzenStack>
+ *@
+
+
+
+
+
+
+
+
+@code {
+    private HttpClient httpClient;
+    private Client client;
+    protected async override void OnInitialized()
+    {
+        var builder = WebApplication.CreateBuilder();
+
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+        httpClient = new HttpClient(handler);
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
+        client = new Client(httpClient);
+    }
+
+    protected async override void OnParametersSet()
+    {
+        var numProf = await sessionStorage.GetItemAsync<string>("idConnexion"); //va chercher le num prof
+
+        var idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe"); //va chercher le dernier graphe
+
+        var idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe"); //va chercher le groupe
+
+        int idProf = 1; //Temporaire, sera changer par var idProf =  await sessionStorage.GetItemAsync<string>("idConnexion")
+        
+    }
+}

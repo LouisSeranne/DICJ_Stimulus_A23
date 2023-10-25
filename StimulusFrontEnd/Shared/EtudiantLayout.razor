@@ -83,6 +83,8 @@
             {
                 //JSRuntim.InvokeVoidAsync("console.log","rentrer premiere if");
 
+
+
                 if(await sessionStorage.ContainKeyAsync("idGroupe") == false)
                 {
 
@@ -105,9 +107,9 @@
                 {
                     int idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
                     var graphe = await client.GraphesAllAsync();
-                    var grapheFiltered = graphe.Where(g => g.GroupeId == idGroupe);
-                    await sessionStorage.SetItemAsync<int>("idGraphe", grapheFiltered.FirstOrDefault().Id);
-                    idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");
+                    var grapheFiltered = graphe.Where(g => g.GroupeId == idGroupe); // va chercher le premier graph du prof
+                    await sessionStorage.SetItemAsync<int>("idGraphe", grapheFiltered.FirstOrDefault().Id); // met le graph en session
+                    idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe");//ça met le graphe dans la session
                     updateService.CallRequestRefresh();
                 }
 

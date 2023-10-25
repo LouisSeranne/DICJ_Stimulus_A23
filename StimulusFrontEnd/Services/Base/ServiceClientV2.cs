@@ -5669,7 +5669,7 @@ namespace StimulusFrontEnd.Services.Base
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 204)
                         {
                             return;
                         }

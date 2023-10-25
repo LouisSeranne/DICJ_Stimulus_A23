@@ -8,6 +8,7 @@
     [Parameter] public Noeud Noeud { get; set; }
     [Parameter] public Action<Noeud> SaveChangeNoeud { get; set; }
     [Parameter] public Func<int> GetModeDeVue { get; set; }
+    [Parameter] public Action ReRender { get; set; }
 
     [Parameter] public Direction Dir1 { get; set; } = Direction.Right;
     [Parameter] public double? X1 { get; set; }
@@ -31,6 +32,7 @@
         //Methode du bled, impossible de null le champs en put. fonctionne sans soucis pour le nouveau graph, boucle infinie sur l'ancien
         Noeud.LiaisonPrincipal = Noeud.Id;
         SaveChangeNoeud(Noeud);
+        ReRender();
     }
     protected override void OnParametersSet()
     {
