@@ -54,88 +54,87 @@
 
     protected async override void OnInitialized()
     {
-        initDone = false;
-
         var builder = WebApplication.CreateBuilder();
 
-        //Handler : Permet de contourner les certifications sinon le projet crash
-        var handler = new HttpClientHandler();
-        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-        handler.ServerCertificateCustomValidationCallback =
-            (httpRequestMessage, cert, cetChain, policyErrors) =>
+        // Initialize the 'initDone' flag
+        initDone = false;
+
+        // Create a HttpClient with custom handler to bypass certificate checks
+        var handler = new HttpClientHandler
             {
-                return true;
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
             };
 
-        //Set une nouvelle Uri pour lien le Front-End a la Bd
-        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri(builder.Configuration["API:Use"]) };
+        // Set the base URI for the HttpClient
+        var httpClient = new HttpClient(handler)
+            {
+                BaseAddress = new System.Uri(builder.Configuration["API:Use"])
+            };
 
+        // Initialize the 'client' with the HttpClient
         client = new Client(httpClient);
-
-        //Requete utilisée pour aller chercher les données du cours en fonction de l'id du graphe
-
     }
 
-    protected async override void OnParametersSet()
+
+    protected async override Task OnParametersSetAsync()
     {
         idCours = await sessionStorage.GetItemAsync<int>("idCours");
         idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
         daEtudiant = await sessionStorage.GetItemAsync<string>("idConnexion");
 
-        cours = client.CoursGETAsync(idCours).Result;
+        cours = await client.CoursGETAsync(idCours);
+        etu = await client.EtudiantsGETAsync(daEtudiant);
 
-        //listCours = client.CoursAllAsync().Result.Where(c => client.GroupesAllAsync().Result.Where(g => client.EtudiantsGETAsync(daEtudiant).Result.Groupes.Any(gr => gr.Id == g.Id)).Any(g => g.CoursId == c.Id)).ToList();
+        listCours = client.CoursAllAsync().Result
+            .Where(c => etu.Groupes.Any(gr => gr.CoursId == c.Id))
+            .ToList();
 
-        etu = client.EtudiantsGETAsync(daEtudiant).Result;
+        listCourGroupe = listCours
+            .Select(c => new CoursGroupeHeader(etu.Groupes.FirstOrDefault(gr => gr.CoursId == c.Id), c))
+            .ToList();
 
-        listCours = client.CoursAllAsync().Result.Where(c => etu.Groupes.Any(gr => gr.CoursId == c.Id)).ToList();
-
-
-        listCourGroupe = new List<CoursGroupeHeader>();
-        listCourGroupeOrdered = new List<CoursGroupeHeader>();
-
-        foreach(Cour cour in listCours)
+        listCourGroupeOrdered = new List<CoursGroupeHeader>
         {
-            listCourGroupe.Add(new CoursGroupeHeader(etu.Groupes.Where(gr => gr.CoursId == cour.Id).FirstOrDefault(),cour));
-        }
+            listCourGroupe.FirstOrDefault(c => c.IdGroupe == idGroupe)
+        };
+        listCourGroupeOrdered.AddRange(listCourGroupe.Where(c => c.IdGroupe != idGroupe));
 
-
-        listCourGroupeOrdered.Add(listCourGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());
-
-        foreach(CoursGroupeHeader cour in listCourGroupe)
-        {
-            if(cour.IdGroupe != idGroupe)
-            {
-                listCourGroupeOrdered.Add(cour);
-            }
-        }
         initDone = true;
 
         await InvokeAsync(StateHasChanged);
     }
 
+
     private async void ChangeCours(ChangeEventArgs e)
     {
-        JSRuntim.InvokeVoidAsync("console.log","appele changeCour");
+        JSRuntim.InvokeVoidAsync("console.log", "appele changeCour");
 
-        await sessionStorage.SetItemAsync<int>("idGroupe", Int32.Parse((string)e.Value));
+        int selectedGroupId = Int32.Parse((string)e.Value);
 
-        int idCours = (int)client.GroupesGETAsync(Int32.Parse((string)e.Value)).Result.CoursId;
+        await sessionStorage.SetItemAsync("idGroupe", selectedGroupId);
 
-        await sessionStorage.SetItemAsync<int>("idCours", idCours);
+        // Use await for asynchronous operations
+        var groupeResponse = await client.GroupesGETAsync(selectedGroupId);
+        int? idCours = groupeResponse.CoursId;
 
-        int idGraphe = client.GraphesAllAsync().Result.Where(gra => gra.GroupeId == Int32.Parse((string)e.Value)).Select(gra => gra.Id).FirstOrDefault();
+        await sessionStorage.SetItemAsync("idCours", idCours);
 
-        await sessionStorage.SetItemAsync<int>("idGraphe", idGraphe);
+        int idGraphe = client.GraphesAllAsync().Result
+            .Where(gra => gra.GroupeId == selectedGroupId)
+            .Select(gra => gra.Id)
+            .FirstOrDefault();
 
+        await sessionStorage.SetItemAsync("idGraphe", idGraphe);
+
+        // If you want to wait for OnParametersSet to complete, use await
         OnParametersSet();
 
         updateService.CallRequestRefresh();
 
-        //C'est shlag mais ca fonctionne
-        NavigationManager.NavigateTo("/inde"); //TU TOUCHE PAS ! /!\ DANGER (DE MORT)
+        // Consider navigating using a relative URL
+        NavigationManager.NavigateTo("/inde");
         NavigationManager.NavigateTo("/index");
-
     }
    
     private class CoursGroupeHeader

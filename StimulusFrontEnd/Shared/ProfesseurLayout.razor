@@ -87,8 +87,6 @@
                 {
                     var numProf = await sessionStorage.GetItemAsync<string>("idConnexion"); //va chercher le num prof
 
-                    //var idProf = client.ProfesseursAllAsync().Result.FirstOrDefault(p => p.NumEmploye == numProf)?.Id; NE FONCTIONE PAS
-
                     int idProf = 1; //Temporaire, sera changer par var idProf =  await sessionStorage.GetItemAsync<string>("idConnexion")
 
                     var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).FirstOrDefault().Id; //Va chercher le premier groupe du prof

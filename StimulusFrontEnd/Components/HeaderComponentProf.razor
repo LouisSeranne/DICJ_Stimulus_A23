@@ -13,31 +13,27 @@
                         <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-3">
-                       @* <button @onclick="ToggleMenu" class="LinkHeaderProf">
-                            <p class="LinkHeaderProf">
-                                Menu
-                            </p>
-                        </button>
+                        <button @onclick="ToggleMenu" class="LinkHeaderProf">Menu</button>
                         @if (isMenuOpen)
                         {
                             <div id="menuItems">
-                                <a class="LinkHeaderProf" href="/accueil">
+                                <a class="LinkHeaderProf" href="">
                                     <p class="LinkHeaderProf">
                                         Création de cours
                                     </p>
                                 </a>
-                                <a class="LinkHeaderProf" href="/accueil">
+                                <a class="LinkHeaderProf" href="">
                                     <p class="LinkHeaderProf">
                                         Gestion Étudiants
                                     </p>
                                 </a>
-                                <a class="LinkHeaderProf" href="/accueil">
+                                <a class="LinkHeaderProf" href="">
                                     <p class="LinkHeaderProf">
                                         Gestion de graphe
                                     </p>
                                 </a>
                             </div>
-                        }*@
+                        }
                     </div>
                     <div class ="col-sm-2 col-md-2 col-lg-2">
                         <select @onchange="ChangeGroupe" name="cours" class="ListeHeader" value=@listGroupeOrdered[0].IdGroupe>
@@ -75,80 +71,81 @@
 
     protected async override void OnInitialized()
     {
-
-        initDone = false;
-
         var builder = WebApplication.CreateBuilder();
 
-        //Handler : Permet de contourner les certifications sinon le projet crash
-        var handler = new HttpClientHandler();
-        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-        handler.ServerCertificateCustomValidationCallback =
-            (httpRequestMessage, cert, cetChain, policyErrors) =>
+        // Initialize the 'initDone' flag
+        initDone = false;
+
+        // Create a HttpClient with custom handler to bypass certificate checks
+        var handler = new HttpClientHandler
             {
-                return true;
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
             };
 
-        //Set une nouvelle Uri pour lien le Front-End a la Bd
-        HttpClient httpClient = new HttpClient(handler) { BaseAddress = new System.Uri(builder.Configuration["API:Use"]) };
+        // Set the base URI for the HttpClient
+        var httpClient = new HttpClient(handler)
+            {
+                BaseAddress = new System.Uri(builder.Configuration["API:Use"])
+            };
 
+        // Initialize the 'client' with the HttpClient
         client = new Client(httpClient);
-
-        //Requete utilisée pour aller chercher les données du cours en fonction de l'id du graphe
-
     }
 
-    protected async override void OnParametersSet()
+    protected async override Task OnParametersSetAsync()
     {
         idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
         numProf = await sessionStorage.GetItemAsync<string>("idConnexion");
 
         //var idProf = client.ProfesseursAllAsync().Result.FirstOrDefault(p => p.NumEmploye == numProf).Id;
-        var idProf = 1;//Temporaire, sera changer par var idProf =  await sessionStorage.GetItemAsync<string>("idConnexion")
 
-        var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).ToList();// cherche tous les groupes des prof
+        // Temporarily using a hardcoded value; replace with actual logic
+        var idProf = 1; // For now, will be replaced with the actual value
 
-        listGroupe = new List<GroupeHeader>();
-        listGroupeOrdered = new List<GroupeHeader>();
+        var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).ToList();
 
+        listGroupe = profGroupe.Select(groupe => new GroupeHeader(groupe)).ToList();
 
-        foreach (GroupeVM groupe in profGroupe)//mets les groupes dans une liste
+        listGroupeOrdered = new List<GroupeHeader>
         {
-            listGroupe.Add(new GroupeHeader(groupe));
-        }
-        
-        listGroupeOrdered.Add(listGroupe.Where(c => c.IdGroupe == idGroupe).FirstOrDefault());//permet de mettre le groupe sélectionné au dessus de une deuxième liste
+            listGroupe.FirstOrDefault(g => g.IdGroupe == idGroupe)
+        };
 
-        foreach (GroupeHeader groupeordered in listGroupe)
-        {
-            if (groupeordered.IdGroupe != idGroupe)
-            {
-                listGroupeOrdered.Add(groupeordered);
-            }
-        }
+        listGroupeOrdered.AddRange(listGroupe.Where(g => g.IdGroupe != idGroupe));
 
         initDone = true;
 
         await InvokeAsync(StateHasChanged);
-     
     }
 
-    private async void ChangeGroupe(ChangeEventArgs e) 
+
+    private async Task ChangeGroupe(ChangeEventArgs e)
     {
-        JSRuntim.InvokeVoidAsync("console.log", "appele ChangeGroupe");
+        JSRuntim.InvokeVoidAsync("console.log", "appelé ChangeGroupe");
 
-        await sessionStorage.SetItemAsync<int>("idGroupe", Int32.Parse((string)e.Value));//change le groupe lorsque sélectionné
+        int selectedGroupId = Int32.Parse((string)e.Value);
 
-        int idGraphe = client.GraphesAllAsync().Result.Where(gra => gra.GroupeId == Int32.Parse((string)e.Value)).Select(gra => gra.Id).FirstOrDefault();
+        await sessionStorage.SetItemAsync("idGroupe", selectedGroupId);
 
-        await sessionStorage.SetItemAsync<int>("idGraphe", idGraphe);//change le graph losque le groupe change
+        int idGraphe = client.GraphesAllAsync().Result
+            .Where(gra => gra.GroupeId == selectedGroupId)
+            .Select(gra => gra.Id)
+            .FirstOrDefault();
 
+        await sessionStorage.SetItemAsync("idGraphe", idGraphe);
+
+        // If you want to wait for OnParametersSet to complete, use await
         OnParametersSet();
 
         updateService.CallRequestRefresh();
-        NavigationManager.NavigateTo("/pro"); //BIDON
+
+        // Consider navigating using a relative URL
+        NavigationManager.NavigateTo("/pro");
+
         NavigationManager.NavigateTo("/prof");
     }
+
     private class GroupeHeader //C'est un espèce de groupe custom pour l'affichage
     {
         public GroupeHeader(GroupeVM groupe)
@@ -168,6 +165,4 @@
     {
         isMenuOpen = !isMenuOpen;
     }
-
-
 }
