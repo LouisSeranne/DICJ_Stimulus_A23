@@ -30,7 +30,7 @@
     }
     @if (GetModeDeVue() == 2)
     {
-        @if (AllLiaison.Where(c => c.LiaisonPrincipal == Node.Id).ToList().Count == 0 || Node.Id == Node.LiaisonPrincipal)
+        @if (Nodes.Where(c => c.LiaisonPrincipal == Node.Id).ToList().Count == 0 || Node.Id == Node.LiaisonPrincipal)
         {
             <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
                 <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
@@ -141,7 +141,6 @@
     [Parameter] public Action<Noeud> ReLinkNoeud { get; set; }
     [Parameter] public Func<int> GetModeDeVue { get; set; }
     [Parameter] public Func<Task> UpdateGraphe { get; set; }
-    [Parameter] public List<Noeud> AllLiaison { get; set; }
     private List<Noeud>? allLiaison = new();
     private string displayHover = "hidden";
     private bool viewPage = false;

@@ -43,7 +43,7 @@
                     <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:0;stroke:rgb(0,0,0)" />
                     @foreach (var noeud in Nodes)
                     {
-                        <NoeudsProf AllLiaison="AllLiaison" UpdateGraphe="UpdateGraphe" GetModeDeVue="GetModeDeVue" RelinkBindNode="RelinkBindNode" ReLinkNoeud="ReLinkNoeud" Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></NoeudsProf>
+                        <NoeudsProf UpdateGraphe="UpdateGraphe" GetModeDeVue="GetModeDeVue" RelinkBindNode="RelinkBindNode" ReLinkNoeud="ReLinkNoeud" Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></NoeudsProf>
                     }
                 </Draggable>
             </svg>
@@ -65,7 +65,6 @@
     private string modeDeVuInfo = "Édition";
     private Noeud nouveauNoeud = new();
     public List<Noeud> Nodes { get; set; } = new();
-    private List<Noeud> AllLiaison { get; set; } = new();
     protected async override void OnInitialized()
     {
         var builder = WebApplication.CreateBuilder();
@@ -139,7 +138,6 @@
     private async Task UpdateGraphe()
     {
         Nodes = new();
-        AllLiaison = new();
         if (sessionStorage != null)
         {
             int idGraphe;
@@ -152,10 +150,6 @@
             }
 
             Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
-            foreach (var item in Nodes)
-            {
-                AllLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal != item.Id).ToList();
-            }
         }
         StateHasChanged();
     }
