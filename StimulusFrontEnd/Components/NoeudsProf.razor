@@ -30,7 +30,7 @@
     }
     @if (GetModeDeVue() == 2)
     {
-        @if (AllLiaison.Where(c => c.LiaisonPrincipal == Node.Id).ToList().Count == 0 || Node.Id == Node.LiaisonPrincipal)
+        @if (Nodes.Where(c => c.LiaisonPrincipal == Node.Id).ToList().Count == 0 || Node.Id == Node.LiaisonPrincipal)
         {
             <foreignObject x="@(-Node.Rayon )" y="@(-Node.Rayon )" width="20" height="20">
                 <span id="deleteNoeud" title="Supprimer le noeud @Node.Code" class="oi oi-circle-x" aria-hidden="true" @onclick="@SupprimerNoeud"></span>
@@ -42,7 +42,7 @@
                 <span class="oi oi-link-broken" id="reLink" @onclick="(e => ReLinkNoeud(Node))"></span>
             </foreignObject>
         }
-        <foreignObject x="@(Node.Rayon - Node.Rayon/2)" y="@(Node.Rayon- Node.Rayon/2)" width="20" height="20">
+        <foreignObject x="@(Node.Rayon/2 )" y="@(Node.Rayon/2 )" width="20" height="20">
         @if (!isOpen)
         {
             <span title="Ajouter un nouveau noeud a @Node.Code" id="addNoeud" class="oi oi-plus" aria-hidden="true" @onclick="@NouveauNoeud"></span>
@@ -141,7 +141,6 @@
     [Parameter] public Action<Noeud> ReLinkNoeud { get; set; }
     [Parameter] public Func<int> GetModeDeVue { get; set; }
     [Parameter] public Func<Task> UpdateGraphe { get; set; }
-    [Parameter] public List<Noeud> AllLiaison { get; set; }
     private List<Noeud>? allLiaison = new();
     private string displayHover = "hidden";
     private bool viewPage = false;
@@ -174,9 +173,8 @@
         httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
         client = new Client(httpClient);
         allLiaison = client.NoeudsAllAsync().Result.Where(c => c.LiaisonPrincipal == Node.Id).ToList();
-        nouveauNoeud.Status = 1;
-        Couleur = COULEUR_BLOQUER;
 
+        Couleur = COULEUR_BLOQUER;
         if(Node.Status == 1)
         {
             Couleur = COULEUR_BLOQUER;
@@ -193,7 +191,6 @@
         {
             Couleur = COULEUR_COMPLETER;
         }
-
     }
     private void ViewPageTemplate()
     {
@@ -228,10 +225,9 @@
         nouveauNoeud.Image = "default";
         nouveauNoeud.Disponibilite = DateTime.Now;
 
-
-        if (nouveauNoeud.Code != null && nouveauNoeud.Description != null && nouveauNoeud.Code.Length >= 3 && nouveauNoeud.Code.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100 && nouveauNoeud.Rayon != null && nouveauNoeud.Rayon == (int)nouveauNoeud.Rayon)
+        if (nouveauNoeud.Code != null && nouveauNoeud.Description != null && nouveauNoeud.Code.Length >= 3 && nouveauNoeud.Code.Length <= 10 && nouveauNoeud.Description.Length >= 3 && nouveauNoeud.Description.Length <= 100 && nouveauNoeud.Rayon != null)
         {            
-                AjoutNouveauNoeud(nouveauNoeud);
+            AjoutNouveauNoeud(nouveauNoeud);
         }
         else
             await JsRunTime.InvokeAsync<object>("alert", "Les saisies ne sont pas valides");
