@@ -1,4 +1,4 @@
-﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
 @using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
@@ -16,6 +16,7 @@
         }
         <button @onclick="AddPage">+</button>
     </div>
+
 
 <div class="d-flex justify-content-around">
     <div class="d-flex justify-content-between">
@@ -49,7 +50,6 @@
     .focused {
         display: block;
     }
-
     .hidden {
         display: none;
     }
@@ -187,9 +187,8 @@
         }
         }
         */
-
         //FichierCode[0].Css = FocusedTab;
-
+        
 
         InitDone = true;
         await InvokeAsync(StateHasChanged);
@@ -213,6 +212,7 @@
                 var deletedTab = FichierCode.Find(tab => tab.Id == id);
                 deletedTab.Css = FocusedTab;
                 FichierCode.Remove(deletedTab);
+                
                 await ApiClient.FichierSauvegardesDELETEAsync(id);
             }
             catch (Exception e)
@@ -222,7 +222,6 @@
             }
             Result = "Fichier supprimé";
         }
-        await SetCode();
         StateHasChanged();
     }
 
@@ -281,12 +280,10 @@
     private async void Save()
     {
         List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
+
         int id = -1;
         foreach (Fichier fichier in FichierCode)
         {
-            if (fichier.Css != "hidden")
-                id = fichier.Id;
-            await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
                 {
                     Id = fichier.Id,
@@ -325,8 +322,7 @@
         Result = "Fichiers enregistrés";
 
         Console.WriteLine("File saved");
-        if (id != -1)
-            await ChangeTab(id);
+
         StateHasChanged();
     }
 
@@ -334,19 +330,13 @@
     /// Change le focus du fichier à éditer
     /// </summary>
     /// <param name="id"> id du fichier qui récupère le focus </param>
-    private async Task ChangeTab(int id)
+    private void ChangeTab(int id)
     {
         foreach (Fichier fichier in FichierCode)
         {
-            if (fichier.Css != "hidden")
-            {
-                fichier.Contenu = await GetCode();
-                fichier.Css = HiddenTab;
-            }
+            fichier.Css = HiddenTab;
         }
         FichierCode.Find(f => f.Id == id).Css = FocusedTab;
-        await SetCode(FichierCode.Find(f => f.Id == id).Contenu);
-        StateHasChanged();
     }
 
 
