@@ -17,25 +17,24 @@
         <button @onclick="AddPage">+</button>
     </div>
 
-
-<div class="d-flex justify-content-around">
-    <div class="d-flex justify-content-between">
-        <div>
-            <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
-        </div>
-        @foreach (Fichier fichier in FichierCode)
-        {
-            if (fichier.Css != "hidden")
+    <div class="d-flex justify-content-around">
+        <div class="d-flex justify-content-between">
+            <div>
+                <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
+            </div>
+            @foreach (Fichier fichier in FichierCode)
             {
-                SetCode(@fichier.Contenu);
+                if (fichier.Css != "hidden")
+                {
+                    SetCode(@fichier.Contenu);
+                }
+                <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
             }
-            <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
-        }
+        </div>
+        <div id="background-result">
+            <p style="white-space:pre-wrap">@Result</p>
+        </div>
     </div>
-    <div id="background-result">
-        <p style="white-space:pre-wrap">@Result</p>
-    </div>
-</div>
 }
 
 <!-- Section bouton -->
@@ -50,6 +49,7 @@
     .focused {
         display: block;
     }
+
     .hidden {
         display: none;
     }
@@ -187,8 +187,9 @@
         }
         }
         */
+
         //FichierCode[0].Css = FocusedTab;
-        
+
 
         InitDone = true;
         await InvokeAsync(StateHasChanged);
@@ -212,7 +213,6 @@
                 var deletedTab = FichierCode.Find(tab => tab.Id == id);
                 deletedTab.Css = FocusedTab;
                 FichierCode.Remove(deletedTab);
-                
                 await ApiClient.FichierSauvegardesDELETEAsync(id);
             }
             catch (Exception e)
@@ -222,6 +222,7 @@
             }
             Result = "Fichier supprimé";
         }
+        await SetCode();
         StateHasChanged();
     }
 
@@ -265,7 +266,7 @@
         {
             Nom = "main.py",
             Contenu = texte.Replace("\"", "\'")
-        });        
+        });
 
         jsonString = JsonConvert.SerializeObject(fichiers);
 
@@ -280,10 +281,12 @@
     private async void Save()
     {
         List<FichierSauvegarde> fichiersSauvegardes = new List<FichierSauvegarde>();
-
         int id = -1;
         foreach (Fichier fichier in FichierCode)
         {
+            if (fichier.Css != "hidden")
+                id = fichier.Id;
+            await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
                 {
                     Id = fichier.Id,
@@ -322,7 +325,8 @@
         Result = "Fichiers enregistrés";
 
         Console.WriteLine("File saved");
-
+        if (id != -1)
+            await ChangeTab(id);
         StateHasChanged();
     }
 
@@ -330,13 +334,19 @@
     /// Change le focus du fichier à éditer
     /// </summary>
     /// <param name="id"> id du fichier qui récupère le focus </param>
-    private void ChangeTab(int id)
+    private async Task ChangeTab(int id)
     {
         foreach (Fichier fichier in FichierCode)
         {
-            fichier.Css = HiddenTab;
+            if (fichier.Css != "hidden")
+            {
+                fichier.Contenu = await GetCode();
+                fichier.Css = HiddenTab;
+            }
         }
         FichierCode.Find(f => f.Id == id).Css = FocusedTab;
+        await SetCode(FichierCode.Find(f => f.Id == id).Contenu);
+        StateHasChanged();
     }
 
 
@@ -381,7 +391,7 @@
                     Contenu = "print('Hello World !')",
                     Nom = nomFichier,
                     Id = -(FichierCode.Count + 1),
-                    Css = FocusedTab                    
+                    Css = FocusedTab
                 });
         }
 
