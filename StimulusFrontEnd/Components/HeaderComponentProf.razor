@@ -1,0 +1,168 @@
+﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IJSRuntime JSRuntim
+
+@inject NavigationManager NavigationManager
+@inject IUpdateService updateService
+<AuthorizeView>
+    <Authorized>
+        @if (initDone)
+        {         
+            <header class="containerHeader">
+                <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <img class="LogoCEPI" src="/RessourceVisuel/lologo.png" alt="Logo CEPI"/>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <button @onclick="ToggleMenu" class="LinkHeaderProf">Menu</button>
+                        @if (isMenuOpen)
+                        {
+                            <div id="menuItems">
+                                <a class="LinkHeaderProf" href="">
+                                    <p class="LinkHeaderProf">
+                                        Création de cours
+                                    </p>
+                                </a>
+                                <a class="LinkHeaderProf" href="">
+                                    <p class="LinkHeaderProf">
+                                        Gestion Étudiants
+                                    </p>
+                                </a>
+                                <a class="LinkHeaderProf" href="">
+                                    <p class="LinkHeaderProf">
+                                        Gestion de graphe
+                                    </p>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                    <div class ="col-sm-2 col-md-2 col-lg-2">
+                        <select @onchange="ChangeGroupe" name="cours" class="ListeHeader" value=@listGroupeOrdered[0].IdGroupe>
+                            @foreach (var groupeordered in listGroupeOrdered)
+                            {
+                                <option value="@groupeordered.IdGroupe">@groupeordered.Nom</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3 divDroiteHeader">
+                        <a href="/prof"><img src="/image/Graph.png" alt="Logo Graph" class="logoHeader"/></a>
+                        <a href="/logout"><img src="/image/Logout.png" alt="Logo Graph" class="logoHeader"/></a>
+                        <img src="/image/Avatar.png" alt="Logo Avatar" class="logoHeader"/>
+                    </div>
+                </div>
+            </header>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    Cour cours;
+
+    private int idGroupe,idCours;
+    private string numProf;
+    private bool initDone;
+
+    private List<GroupeHeader> listGroupe, listGroupeOrdered;
+    private Professeur prof;
+
+    private Client client;
+
+    protected async override void OnInitialized()
+    {
+        var builder = WebApplication.CreateBuilder();
+
+        // Initialize the 'initDone' flag
+        initDone = false;
+
+        // Create a HttpClient with custom handler to bypass certificate checks
+        var handler = new HttpClientHandler
+            {
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
+            };
+
+        // Set the base URI for the HttpClient
+        var httpClient = new HttpClient(handler)
+            {
+                BaseAddress = new System.Uri(builder.Configuration["API:Use"])
+            };
+
+        // Initialize the 'client' with the HttpClient
+        client = new Client(httpClient);
+    }
+
+    protected async override Task OnParametersSetAsync()
+    {
+        idGroupe = await sessionStorage.GetItemAsync<int>("idGroupe");
+        numProf = await sessionStorage.GetItemAsync<string>("idConnexion");
+
+        //var idProf = client.ProfesseursAllAsync().Result.FirstOrDefault(p => p.NumEmploye == numProf).Id;
+
+        // Temporarily using a hardcoded value; replace with actual logic
+        var idProf = 1; // For now, will be replaced with the actual value
+
+        var profGroupe = client.GroupesAllAsync().Result.Where(g => g.ProfesseurId == idProf).ToList();
+
+        listGroupe = profGroupe.Select(groupe => new GroupeHeader(groupe)).ToList();
+
+        listGroupeOrdered = new List<GroupeHeader>
+        {
+            listGroupe.FirstOrDefault(g => g.IdGroupe == idGroupe)
+        };
+
+        listGroupeOrdered.AddRange(listGroupe.Where(g => g.IdGroupe != idGroupe));
+
+        initDone = true;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+    private async Task ChangeGroupe(ChangeEventArgs e)
+    {
+        JSRuntim.InvokeVoidAsync("console.log", "appelé ChangeGroupe");
+
+        int selectedGroupId = Int32.Parse((string)e.Value);
+
+        await sessionStorage.SetItemAsync("idGroupe", selectedGroupId);
+
+        int idGraphe = client.GraphesAllAsync().Result
+            .Where(gra => gra.GroupeId == selectedGroupId)
+            .Select(gra => gra.Id)
+            .FirstOrDefault();
+
+        await sessionStorage.SetItemAsync("idGraphe", idGraphe);
+
+        // If you want to wait for OnParametersSet to complete, use await
+        OnParametersSet();
+
+        updateService.CallRequestRefresh();
+
+        // Consider navigating using a relative URL
+        NavigationManager.NavigateTo("/pro");
+
+        NavigationManager.NavigateTo("/prof");
+    }
+
+    private class GroupeHeader //C'est un espèce de groupe custom pour l'affichage
+    {
+        public GroupeHeader(GroupeVM groupe)
+        {
+            Nom = groupe.Nom;
+            IdGroupe = groupe.Id;
+        }
+
+        public string Nom { get; set; }
+        public int IdGroupe { get; set; }
+
+    }
+
+    private bool isMenuOpen = false;
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
+    }
+}

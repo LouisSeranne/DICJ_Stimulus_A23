@@ -15,9 +15,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class FichierSauvegardesController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public FichierSauvegardesController(DevProjetStimulusContext context)
+        public FichierSauvegardesController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

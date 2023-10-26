@@ -1,0 +1,308 @@
+﻿@using Microsoft.CodeAnalysis;
+@using System.Text;
+@using StimulusFrontEnd.Services;
+@using static StimulusFrontEnd.Components.Connector
+@using static StimulusFrontEnd.Components.NoeudsProf
+@inject MouseService mouseSrv;
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntim
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IUpdateService updateService
+@inject MouseService mouseSrv;
+@inject NavigationManager Navigation
+
+<div class="row mt-2">
+    <div class="col">
+        <foreignObject x="5" y="5" width="1300" height="40">
+            <div class="divGrapheEntete" style="width: 1300px; height: 40px;">
+                <button class="spaceButton btn btn-primary" type="button" @onclick="AugmenterZoom">+</button>
+                <button class="spaceButton btn btn-primary" type="button" @onclick="ReduireZoom">-</button>
+                <button class="spaceButton btn btn-secondary" type="button" @onclick="ResetViewbox">Réinitialiser</button>
+                <h5 style="color: white;"> Zoom : @AfficheZoom()</h5>
+                <button style="color: white;" @onclick="@(e => ModeDeVue(1))" class="spaceButton btn btn-info" title="Mode Page">Gestion de Pages</button>
+                <button style="color: white;" @onclick="@(e => ModeDeVue(2))" class="spaceButton btn btn-info" title="Mode Edition">Édition</button>
+                <button style="color: white;" @onclick="@(e => ModeDeVue(3))" class="spaceButton btn btn-info" title="Mode Etudiant">Vue étudiante</button>
+            </div>
+
+        </foreignObject>
+        <svg class="bg-transparent" width="100%" height="2000" xmlns="http://www.w3.org/2000/svg">
+            <rect width="180" height="180" x="0" y="5" fill="#32587a"></rect>
+            <foreignObject x="0" y="5" width="180" height="180">
+                <div>
+                    <p style="color:rgb(140,140,140); margin-left:10px;">1 - gris : bloqué</p>
+                    <p style="color:rgb(228, 231, 245); margin-left:10px;">2 - blanc: disponible</p>
+                    <p style="color:rgb(199,160,53); margin-left:10px;">3 - jaune: consulté</p>
+                    <p style="color:rgb(88,150,105); margin-left:10px;">4  vert : completé</p>
+                </div>                
+            </foreignObject>
+            <svg class="bg-transparent" width="100%" height="1800" xmlns="http://www.w3.org/2000/svg" viewBox = "@viewBoxX @viewBoxY @viewBoxWidth @viewBoxWidth"
+            @onmousemove=@(e => mouseSrv.FireMove(this, e))
+            @onmouseup=@(e => mouseSrv.FireUp(this, e))
+            @onmousewheel="Zoom">
+                <Draggable X="@((viewBoxWidth - 1800) / 2)" Y="@((viewBoxWidth - 1500) / 2)" GetModeDeVue="GetModeFond">
+                    <rect x="-1000" y="-1000" width="4000" height="4000" style="fill:rgb(0,0,0,0);stroke-width:0;stroke:rgb(0,0,0)" />
+                    @foreach (var noeud in Nodes)
+                    {
+                        <NoeudsProf UpdateGraphe="UpdateGraphe" GetModeDeVue="GetModeDeVue" RelinkBindNode="RelinkBindNode" ReLinkNoeud="ReLinkNoeud" Node="@noeud" Nodes="@Nodes" SaveChangeNoeud="SaveChange" AjoutNouveauNoeud="AjoutNouveauNoeud" SupprNoeud="SupprimerNoeud"></NoeudsProf>
+                    }
+                </Draggable>
+            </svg>
+        </svg>
+    </div>
+</div>
+@code {
+    private HttpClient httpClient;
+    private Client client;
+    private string displayHover = "hidden";
+    private double viewBoxX = 0;
+    private double viewBoxY = 0;
+    private double viewBoxWidth = 2000;
+    private double viewBoxHeight = 2000;
+    private double zoomIncrement = 100;
+    private Noeud enfantRechercheParent = new();
+    private bool enRecherche = false;
+    private int modeDeVue = 2;
+    private string modeDeVuInfo = "Édition";
+    private Noeud nouveauNoeud = new();
+    public List<Noeud> Nodes { get; set; } = new();
+    protected async override void OnInitialized()
+    {
+        var builder = WebApplication.CreateBuilder();
+
+        nouveauNoeud = new();
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            };
+        httpClient = new HttpClient(handler);
+        httpClient.BaseAddress = new Uri(builder.Configuration["API:Use"]);
+        client = new Client(httpClient);
+        await UpdateGraphe();
+    }
+    /// <summary>
+    /// Permet de set le mode de vu. 1 => Page, 2 => Edit, 3 => Etudiant
+    /// </summary>
+    /// <param name="v">valeur de la vue</param>
+    private void ModeDeVue(int v) 
+    {
+        if(v == 1)
+            modeDeVuInfo = "Gestion de Pages";
+        else if(v == 2)
+            modeDeVuInfo = "Édition";
+        else
+            modeDeVuInfo = "Vue étudiante";
+        modeDeVue = v;
+    }
+    /// <summary>
+    /// Permet a tout les noeuds d'adapter leur mode (fonction delegate au noeud et connecteur)
+    /// </summary>
+    /// <returns></returns>
+    private int GetModeDeVue() => modeDeVue;
+    /// <summary>
+    /// Pour conserver le fond dragable quand en mode "vue etudiant"
+    /// </summary>
+    /// <returns></returns>
+    private int GetModeFond() => 2; //Hardcode
+                                    //Quand la souris survole
+    private void OnMouseHover() => displayHover = "show";
+    //Quand la souris ne survole plus
+    private void OnMouseLeave() => displayHover = "hidden";
+    /// <summary>
+    /// Permet de rattacher un noeud enfant a un parent clique
+    /// </summary>
+    /// <param name="noeud"></param>
+    private void RelinkBindNode(Noeud noeud)
+    {
+        if (enRecherche)
+        {
+            enfantRechercheParent.LiaisonPrincipal = noeud.Id;
+            enRecherche = false;
+            SaveChange(enfantRechercheParent);
+        }
+    }
+    /// <summary>
+    /// Detache un noeud enfant de son parent
+    /// </summary>
+    /// <param name="noeud"></param>
+    private void ReLinkNoeud(Noeud noeud)
+    {
+        enfantRechercheParent = noeud;
+        enRecherche = true;
+    }
+    /// <summary>
+    /// Recupere les noeuds du graph Numero X et permet la MAJ du graph
+    /// </summary>
+    private async Task UpdateGraphe()
+    {
+        Nodes = new();
+        if (sessionStorage != null)
+        {
+            int idGraphe;
+
+            // Attendre 'idGraphe' pour ne pas etre 0 (utilise un timeout ou cancellation token = plus safe).
+            while ((idGraphe = await sessionStorage.GetItemAsync<int>("idGraphe")) == 0)
+            {
+                //Plus chill qu'une boucle industrielle
+                await Task.Delay(100);
+            }
+            Nodes = client.NoeudsAllAsync().Result.Where(c => c.GrapheId == idGraphe).ToList();
+        }
+        StateHasChanged();
+    }
+    /// <summary>
+    /// Permet l'ajout de noveau noeud
+    /// </summary>
+    private async void AjoutNouveauNoeud(Noeud nouveauNoeud)
+    {
+        await SaveNouveauNoeud(nouveauNoeud);
+        await UpdateGraphe();
+    }
+    /// <summary>
+    /// Supprime le noeud avec l'id selectionner
+    /// </summary>
+    /// <param name="id"></param>
+    private async void SupprimerNoeud(int id)
+    {
+        await client.NoeudsDELETEAsync(id);
+        await UpdateGraphe();
+    }
+    /// <summary>
+    /// Sauvegarde les mises a jour du graph
+    /// </summary>
+    public async void SaveChange(Noeud noeud) => await client.NoeudsPUTAsync(noeud.Id, noeud);
+    /// <summary>
+    /// Ajoute un noeud dans la BD
+    /// </summary>
+    /// <param name="noeud"></param>
+    public async Task SaveNouveauNoeud(Noeud noeud)
+    {
+        if(noeud != null)
+        {
+            await client.NoeudsPOSTAsync(noeud);
+        }
+    }
+    /// <summary>
+    /// Reset le zoom a 100%
+    /// </summary>
+    private void ResetViewbox()
+    {
+        viewBoxX = 0;
+        viewBoxY = 0;
+        viewBoxHeight = 2000;
+        viewBoxWidth = 2000;
+        zoomIncrement = 100;
+        AfficheZoom();
+    }
+    /// <summary>
+    /// Augmenter le zoom
+    /// </summary>
+    private void AugmenterZoom()
+    {
+        if (zoomIncrement != 150)
+        {
+            viewBoxX = viewBoxX + 10;
+            viewBoxY = viewBoxY + 10;
+            viewBoxWidth = viewBoxWidth - 20;
+            viewBoxHeight = viewBoxHeight - 20;
+            zoomIncrement = zoomIncrement + 1;
+            AfficheZoom();
+        }
+        else
+        {
+            viewBoxX = viewBoxY;
+            viewBoxHeight = viewBoxWidth;
+            AfficheZoom();
+        }
+    }
+    /// <summary>
+    /// Reduit le zoom
+    /// </summary>
+    private void ReduireZoom()
+    {
+        if (zoomIncrement != 0)
+        {
+            viewBoxX = viewBoxX - 10;
+            viewBoxY = viewBoxY - 10;
+            viewBoxWidth = viewBoxWidth + 20;
+            viewBoxHeight = viewBoxHeight + 20;
+            zoomIncrement = zoomIncrement - 1;
+            AfficheZoom();
+        }
+        else
+        {
+            viewBoxX = viewBoxY;
+            viewBoxHeight = viewBoxWidth;
+            AfficheZoom();
+        }
+    }
+    /// <summary>
+    /// Zoom scroll molette
+    /// </summary>
+    /// <param name="mouse"></param>
+    public void Zoom(WheelEventArgs mouse)
+    {
+        if (mouse.ShiftKey) // get le shift key
+        {
+            // Utilisation de mouse.DeltaY pour vérifier la direction du défilement
+            if (mouse.DeltaY < 0)
+            {
+                // Faire zoom vers le haut
+
+                if (zoomIncrement != 150)
+                {
+                    viewBoxX = viewBoxX + 10;
+                    viewBoxY = viewBoxY + 10;
+                    viewBoxWidth = viewBoxWidth - 20;
+                    viewBoxHeight = viewBoxHeight - 20;
+                    zoomIncrement = zoomIncrement + 1;
+                    AfficheZoom();
+                }
+                else
+                {
+                    viewBoxX = viewBoxY;
+                    viewBoxHeight = viewBoxWidth;
+                    AfficheZoom();
+                }
+            }
+            else if (mouse.DeltaY > 0)
+            {
+                // Faire zoom vers le bas
+
+                if (zoomIncrement != 0)
+                {
+                    viewBoxX = viewBoxX - 10;
+                    viewBoxY = viewBoxY - 10;
+                    viewBoxWidth = viewBoxWidth + 20;
+                    viewBoxHeight = viewBoxHeight + 20;
+                    zoomIncrement = zoomIncrement - 1;
+                    AfficheZoom();
+                }
+                else
+                {
+                    viewBoxX = viewBoxY;
+                    viewBoxHeight = viewBoxWidth;
+                    AfficheZoom();
+                }
+            }
+        }
+    }
+    public string AfficheZoom()
+    {
+        if (zoomIncrement <= 0)
+        {
+            // Vous pouvez ajuster la valeur selon vos besoins
+            return ("0%");
+        }
+        if (zoomIncrement >= 150)
+        {
+            return ("150%");
+        }
+        else
+        {
+            return (zoomIncrement + "%");
+        }
+    }
+}

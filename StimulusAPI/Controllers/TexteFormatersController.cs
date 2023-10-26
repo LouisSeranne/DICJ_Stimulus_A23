@@ -14,9 +14,9 @@ namespace StimulusAPI.Controllers
     [ApiController]
     public class TexteFormatersController : ControllerBase
     {
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
 
-        public TexteFormatersController(DevProjetStimulusContext context)
+        public TexteFormatersController(TestStimulusProjet_Evolution context)
         {
             _context = context;
         }

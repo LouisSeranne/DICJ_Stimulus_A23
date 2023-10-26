@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication;
 using StimulusFrontEnd;
 using Microsoft.AspNetCore.Components.Authorization;
 using Serilog;
+using StimulusFrontEnd.Services;
 using Microsoft.JSInterop;
 
 
@@ -28,10 +29,16 @@ builder.Services.AddServerSideBlazor();
 //Initialise les local et session storage
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services
+            .AddSingleton<MouseService>()
+            .AddSingleton<IMouseService>(ff => ff.GetRequiredService<MouseService>());
+
+
 
 //configure le client utiliser par les autres services avec la validation custom
-builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri(builder.Configuration["API:Use"])).ConfigurePrimaryHttpMessageHandler(() =>
 
+
+builder.Services.AddHttpClient<IClient, Client>().ConfigureHttpClient((test) => test.BaseAddress = new Uri(builder.Configuration["API:Use"])).ConfigurePrimaryHttpMessageHandler(() =>
 {
     return new HttpClientHandler()
     {

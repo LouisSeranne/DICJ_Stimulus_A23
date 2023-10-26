@@ -25,10 +25,10 @@ namespace StimulusAPI.Controllers
         private readonly UserManager<UtilisateurApplication> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
-        private readonly DevProjetStimulusContext _context;
+        private readonly TestStimulusProjet_Evolution _context;
         private readonly _2022_Projet_StimulusLoginContext _loginContext;
 
-        public LoginController(UserManager<UtilisateurApplication> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, DevProjetStimulusContext context, _2022_Projet_StimulusLoginContext loginContext)
+        public LoginController(UserManager<UtilisateurApplication> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, TestStimulusProjet_Evolution context, _2022_Projet_StimulusLoginContext loginContext)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
@@ -252,25 +252,6 @@ namespace StimulusAPI.Controllers
                     }
                     break;
                 case "Administrateur":
-                    await using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            connection.Open();
-                            string insertQuery = "INSERT INTO dbo.administrateur (nom, prenom, mot_de_passe) VALUES (@Valeur1, @Valeur2, @Valeur3)";
-                            using (SqlCommand command = new SqlCommand(insertQuery, connection))
-                            {
-                                command.Parameters.AddWithValue("@Valeur1", user.Nom);
-                                command.Parameters.AddWithValue("@Valeur2", user.Prenom);
-                                command.Parameters.AddWithValue("@Valeur3", user.Password);
-                                command.ExecuteNonQuery();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Erreur inattendue liée à la base de données, contactez un administrateur" });
-                        }
-                    }
                     break;
             }
             return Ok(new Reponse { Status = "200 Ok", Message = "200 Ok" });
