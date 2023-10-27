@@ -83,8 +83,8 @@ namespace StimulusAPI.Controllers
             }
             foreach(string s in theorieComponentVMs)
             {
-                Console.WriteLine(s);
-                Console.WriteLine("\n");
+                //Console.WriteLine(s);
+                //Console.WriteLine("\n");
             }
             Console.WriteLine("Get PageTheorie (API)");
             return theorieComponentVMs;
