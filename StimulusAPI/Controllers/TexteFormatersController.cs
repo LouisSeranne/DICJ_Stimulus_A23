@@ -25,6 +25,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TexteFormater>>> GetTexteFormaters()
         {
+            Console.WriteLine("Get TexteFormater (API)");
+
             return await _context.TexteFormaters.ToListAsync();
         }
 
@@ -38,6 +40,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get TexteFormater Id (API)");
 
             return texteFormater;
         }
@@ -70,6 +74,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put TexteFormater (API)");
+
             return NoContent();
         }
 
@@ -95,6 +101,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Post TexteFormater (API)");
+
             return CreatedAtAction("GetTexteFormater", new { id = texteFormater.Id }, texteFormater);
         }
 
@@ -110,6 +118,8 @@ namespace StimulusAPI.Controllers
 
             _context.TexteFormaters.Remove(texteFormater);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete TexteFormater (API)");
 
             return NoContent();
         }

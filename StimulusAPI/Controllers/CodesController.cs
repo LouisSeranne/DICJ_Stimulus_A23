@@ -26,6 +26,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Code>>> GetCodes()
         {
+            Console.WriteLine("Get Code (API)");
+
             return await _context.Codes.ToListAsync();
         }
 
@@ -39,6 +41,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get Code Id (API)");
 
             return code;
         }
@@ -71,6 +75,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Code (API)");
+
             return NoContent();
         }
 
@@ -81,6 +87,8 @@ namespace StimulusAPI.Controllers
         {
             _context.Codes.Add(code);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post Code (API)");
 
             return CreatedAtAction("GetCode", new { id = code.Id }, code);
         }
@@ -97,6 +105,8 @@ namespace StimulusAPI.Controllers
 
             _context.Codes.Remove(code);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Code (API)");
 
             return NoContent();
         }

@@ -26,6 +26,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Etudiant>>> GetEtudiants()
         {
+            Console.WriteLine("Get Etudiant (API)");
+
             return await _context.Etudiants.ToListAsync();
         }
 
@@ -42,6 +44,8 @@ namespace StimulusAPI.Controllers
             }
 
             var response = new EtudiantVM(etudiant);
+
+            Console.WriteLine("Get Etudiant Id (API)");
 
             return response;
         }
@@ -74,6 +78,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Etudiant (API)");
+
             return NoContent();
         }
 
@@ -99,6 +105,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Post Etudiant (API)");
+
             return CreatedAtAction("GetEtudiant", new { id = etudiant.CodeDa }, etudiant);
         }
 
@@ -114,6 +122,8 @@ namespace StimulusAPI.Controllers
 
             _context.Etudiants.Remove(etudiant);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Etudiant (API)");
 
             return NoContent();
         }

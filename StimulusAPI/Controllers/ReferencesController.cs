@@ -25,6 +25,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Reference>>> GetReferences()
         {
+            Console.WriteLine("Get Reference (API)");
+
             return await _context.References.ToListAsync();
         }
 
@@ -38,6 +40,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get Reference Id (API)");
 
             return reference;
         }
@@ -70,6 +74,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Reference (API)");
+
             return NoContent();
         }
 
@@ -80,6 +86,8 @@ namespace StimulusAPI.Controllers
         {
             _context.References.Add(reference);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post Reference (API)");
 
             return CreatedAtAction("GetReference", new { id = reference.Id }, reference);
         }
@@ -96,6 +104,8 @@ namespace StimulusAPI.Controllers
 
             _context.References.Remove(reference);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Reference (API)");
 
             return NoContent();
         }

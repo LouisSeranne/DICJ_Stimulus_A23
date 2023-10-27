@@ -25,6 +25,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PageComposant>>> GetPageComposants()
         {
+            Console.WriteLine("Get PageComposant (API)");
+
             return await _context.PageComposants.ToListAsync();
         }
 
@@ -38,6 +40,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get PageComposant Id (API)");
 
             return pageComposant;
         }
@@ -70,6 +74,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put PageComposant (API)");
+
             return NoContent();
         }
 
@@ -80,6 +86,8 @@ namespace StimulusAPI.Controllers
         {
             _context.PageComposants.Add(pageComposant);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post PageComposant (API)");
 
             return CreatedAtAction("GetPageComposant", new { id = pageComposant.Id }, pageComposant);
         }
@@ -96,6 +104,8 @@ namespace StimulusAPI.Controllers
 
             _context.PageComposants.Remove(pageComposant);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete PageComposant (API)");
 
             return NoContent();
         }

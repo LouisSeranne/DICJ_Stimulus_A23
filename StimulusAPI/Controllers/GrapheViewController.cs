@@ -26,8 +26,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GrapheView>>> GetGraphesView()
         {
-            return await _context.GrapheViews.ToListAsync();
+            Console.WriteLine("Get Graphe (API)");
 
+            return await _context.GrapheViews.ToListAsync();
         }
 
         // GET: api/Graphes/5
@@ -41,6 +42,7 @@ namespace StimulusAPI.Controllers
                 return NotFound();
             }
 
+            Console.WriteLine("Get Graphe Id (API)");
 
             return new ActionResult<IEnumerable<GrapheView>>(graphe);
         }

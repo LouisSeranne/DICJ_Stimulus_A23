@@ -33,6 +33,8 @@ namespace StimulusAPI.Controllers
                 response.Add(new GroupeVM(groupe));
             }
 
+            Console.WriteLine("Get Groupes (API)");
+
             return response;
 
         }
@@ -48,6 +50,8 @@ namespace StimulusAPI.Controllers
                 return NotFound();
             }
             var response = new GroupeVM(groupe);
+
+            Console.WriteLine("Get Groupe Id (API)");
 
             return response;
         }
@@ -80,6 +84,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Groupe (API)");
+
             return NoContent();
         }
 
@@ -91,6 +97,8 @@ namespace StimulusAPI.Controllers
         {
             _context.Groupes.Add(groupe);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post Groupe (API)");
 
             return CreatedAtAction("GetGroupe", new { id = groupe.Id }, groupe);
         }
@@ -107,6 +115,8 @@ namespace StimulusAPI.Controllers
 
             _context.Groupes.Remove(groupe);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Groupe (API)");
 
             return NoContent();
         }

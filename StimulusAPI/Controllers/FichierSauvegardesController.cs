@@ -39,6 +39,8 @@ namespace StimulusAPI.Controllers
                 fichiersReturn.Add(new FichierSauvegarderVM(fichier));
             }
 
+            Console.WriteLine("Get FichierSauvegarde Id (API)");
+
             return fichiersReturn;
         }
 
@@ -69,6 +71,8 @@ namespace StimulusAPI.Controllers
                     throw;
                 }
             }
+
+            Console.WriteLine("Put FichierSauvegarde (API)");
 
             return NoContent();
         }
@@ -130,6 +134,8 @@ namespace StimulusAPI.Controllers
 
             _context.FichierSauvegardes.Remove(fichierSauvegarde);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete FichierSauvegarde (API)");
 
             return NoContent();
         }

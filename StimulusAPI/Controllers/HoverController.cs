@@ -20,6 +20,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HoverView>>> GetHovers()
         {
+            Console.WriteLine("Get Hover (API)");
+
             return await _context.HoverViews.ToListAsync();
         }
         // GET: api/Hover/5
@@ -33,6 +35,7 @@ namespace StimulusAPI.Controllers
                 return NotFound();
             }
 
+            Console.WriteLine("Get Hover Id (API)");
 
             return new ActionResult<IEnumerable<HoverView>>(hover);
         }

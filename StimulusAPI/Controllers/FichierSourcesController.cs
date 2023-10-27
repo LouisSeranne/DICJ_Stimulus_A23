@@ -25,6 +25,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FichierSource>>> GetFichierSources()
         {
+            Console.WriteLine("Get FichierSource (API)");
+
             return await _context.FichierSources.ToListAsync();
         }
 
@@ -38,6 +40,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get FichierSource Id (API)");
 
             return fichierSource;
         }
@@ -70,6 +74,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put FichierSource (API)");
+
             return NoContent();
         }
 
@@ -80,6 +86,8 @@ namespace StimulusAPI.Controllers
         {
             _context.FichierSources.Add(fichierSource);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post FichierSource (API)");
 
             return CreatedAtAction("GetFichierSource", new { id = fichierSource.Id }, fichierSource);
         }
@@ -96,6 +104,8 @@ namespace StimulusAPI.Controllers
 
             _context.FichierSources.Remove(fichierSource);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete FichierSource (API)");
 
             return NoContent();
         }

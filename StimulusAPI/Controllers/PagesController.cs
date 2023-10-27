@@ -26,6 +26,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Page>>> GetPages()
         {
+            Console.WriteLine("Get Pages (API)");
+
             return await _context.Pages.ToListAsync();
         }
 
@@ -42,6 +44,8 @@ namespace StimulusAPI.Controllers
                 PageVM pageVMadd = new PageVM(page);
                 pageVM.Add(pageVMadd);
             }
+
+            Console.WriteLine("Get PageNoeud (API)");
 
             return pageVM;
         }
@@ -74,6 +78,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put PageNoeud (API)");
+
             return NoContent();
         }
 
@@ -100,6 +106,8 @@ namespace StimulusAPI.Controllers
 
             _context.Pages.Remove(page);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete PageNoeud (API)");
 
             return NoContent();
         }

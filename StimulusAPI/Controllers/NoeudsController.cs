@@ -27,6 +27,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Noeud>>> GetNoeuds()
         {
+            Console.WriteLine("Get Noeud (API)");
+
             return await _context.Noeuds.ToListAsync();
         }
 
@@ -40,6 +42,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get Noeud Id (API)");
 
             return noeud;
         }
@@ -84,6 +88,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Noeud (API)");
+
             return NoContent();
         }
 
@@ -94,6 +100,8 @@ namespace StimulusAPI.Controllers
         {
             _context.Noeuds.Add(noeud);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post Noeud (API)");
 
             return CreatedAtAction("GetNoeud", new { id = noeud.Id }, noeud);
         }
@@ -110,6 +118,8 @@ namespace StimulusAPI.Controllers
 
             _context.Noeuds.Remove(noeud);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Noeud (API)");
 
             return NoContent();
         }

@@ -32,8 +32,10 @@ namespace StimulusAPI.Controllers
             {
                 retour.Add(new GrapheVM(graphe));
             }
+
+            Console.WriteLine("Get Graphe (API)");
+
             return retour;
-            
         }
 
         // GET: api/Graphes/5
@@ -48,6 +50,8 @@ namespace StimulusAPI.Controllers
             }
 
             var response = new GrapheVM(graphe);
+
+            Console.WriteLine("Get Graphe Id (API)");
 
             return response;
         }
@@ -80,6 +84,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Graphe (API)");
+
             return NoContent();
         }
 
@@ -90,6 +96,8 @@ namespace StimulusAPI.Controllers
         {
             _context.Graphes.Add(graphe);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post Graphe (API)");
 
             return CreatedAtAction("GetGraphe", new { id = graphe.Id }, graphe);
         }
@@ -106,6 +114,8 @@ namespace StimulusAPI.Controllers
 
             _context.Graphes.Remove(graphe);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Graphe (API)");
 
             return NoContent();
         }

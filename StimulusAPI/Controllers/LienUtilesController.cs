@@ -36,8 +36,10 @@ namespace StimulusAPI.Controllers
                 result.Add(lienUtileVM);
                 lien.Graphe.LienUtiles = null;
             }
-            return result;
 
+            Console.WriteLine("Get LienUtile (API)");
+
+            return result;
         }
 
         // GET: api/LienUtiles/5
@@ -53,6 +55,8 @@ namespace StimulusAPI.Controllers
                 LienUtileVM lienUtileVM = new LienUtileVM(lien);
                 lienUtileVMs.Add(lienUtileVM);
             }
+
+            Console.WriteLine("Get LienUtile Id (API)");
 
             return lienUtileVMs;
         }
@@ -85,6 +89,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put LienUtile (API)");
+
             return NoContent();
         }
 
@@ -95,6 +101,8 @@ namespace StimulusAPI.Controllers
         {
             _context.LienUtiles.Add(lienUtile);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post LienUtile (API)");
 
             return CreatedAtAction("GetLienUtile", new { id = lienUtile.Id }, lienUtile);
         }
@@ -111,6 +119,8 @@ namespace StimulusAPI.Controllers
 
             _context.LienUtiles.Remove(lienUtile);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete LienUtile (API)");
 
             return NoContent();
         }

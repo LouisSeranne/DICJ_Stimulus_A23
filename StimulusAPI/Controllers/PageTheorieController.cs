@@ -35,10 +35,8 @@ namespace StimulusAPI.Controllers
 
             foreach(object o in pageTheoryQuery)
             {
-                Console.WriteLine(o.ToString());
                 object typeComposant = o?.GetType()?.GetProperty("TypeComposant")?.GetValue(o, null);
                 object composantID= o?.GetType()?.GetProperty("IdReference")?.GetValue(o, null);
-                Console.WriteLine(typeComposant.ToString());
 
                 if (typeComposant.ToString() == "texte_formater")
                 {
@@ -88,6 +86,7 @@ namespace StimulusAPI.Controllers
                 Console.WriteLine(s);
                 Console.WriteLine("\n");
             }
+            Console.WriteLine("Get PageTheorie (API)");
             return theorieComponentVMs;
         }
 

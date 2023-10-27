@@ -25,6 +25,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Exercice>>> GetExercices()
         {
+            Console.WriteLine("Get Exercice (API)");
+
             return await _context.Exercices.ToListAsync();
         }
 
@@ -38,6 +40,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get Exercice Id (API)");
 
             return exercice;
         }
@@ -70,6 +74,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Exercice (API)");
+
             return NoContent();
         }
 
@@ -95,6 +101,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Post Exercice (API)");
+
             return CreatedAtAction("GetExercice", new { id = exercice.Id }, exercice);
         }
 
@@ -110,6 +118,8 @@ namespace StimulusAPI.Controllers
 
             _context.Exercices.Remove(exercice);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Exercice (API)");
 
             return NoContent();
         }

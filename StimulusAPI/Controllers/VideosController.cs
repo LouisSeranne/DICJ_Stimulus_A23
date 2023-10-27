@@ -25,6 +25,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Video>>> GetVideos()
         {
+            Console.WriteLine("Get Video (API)");
+
             return await _context.Videos.ToListAsync();
         }
 
@@ -38,6 +40,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get Video Id (API)");
 
             return video;
         }
@@ -70,6 +74,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Video (API)");
+
             return NoContent();
         }
 
@@ -80,6 +86,8 @@ namespace StimulusAPI.Controllers
         {
             _context.Videos.Add(video);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post Video (API)");
 
             return CreatedAtAction("GetVideo", new { id = video.Id }, video);
         }
@@ -96,6 +104,8 @@ namespace StimulusAPI.Controllers
 
             _context.Videos.Remove(video);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Video (API)");
 
             return NoContent();
         }

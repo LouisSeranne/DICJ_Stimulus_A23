@@ -25,6 +25,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Progression>>> GetProgressions()
         {
+            Console.WriteLine("Get Progression (API)");
+
             return await _context.Progressions.ToListAsync();
         }
 
@@ -38,6 +40,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get Progression Id (API)");
 
             return progression;
         }
@@ -70,6 +74,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Progression (API)");
+
             return NoContent();
         }
 
@@ -95,6 +101,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Post Progression (API)");
+
             return CreatedAtAction("GetProgression", new { id = progression.PageId }, progression);
         }
 
@@ -110,6 +118,8 @@ namespace StimulusAPI.Controllers
 
             _context.Progressions.Remove(progression);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Progression (API)");
 
             return NoContent();
         }

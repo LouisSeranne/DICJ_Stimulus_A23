@@ -25,6 +25,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Image>>> GetImages()
         {
+            Console.WriteLine("Get Image (API)");
+
             return await _context.Images.ToListAsync();
         }
 
@@ -38,6 +40,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get Image Id (API)");
 
             return image;
         }
@@ -70,6 +74,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Image (API)");
+
             return NoContent();
         }
 
@@ -80,6 +86,8 @@ namespace StimulusAPI.Controllers
         {
             _context.Images.Add(image);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post Image (API)");
 
             return CreatedAtAction("GetImage", new { id = image.Id }, image);
         }
@@ -96,6 +104,8 @@ namespace StimulusAPI.Controllers
 
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Image (API)");
 
             return NoContent();
         }

@@ -25,6 +25,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<StatusGraphe>>> GetStatusGraphes()
         {
+            Console.WriteLine("Get StatusGraphe (API)");
+
             return await _context.StatusGraphes.ToListAsync();
         }
 
@@ -38,6 +40,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get StatusGraphe Id (API)");
 
             return statusGraphe;
         }
@@ -70,6 +74,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put StatusGraphe (API)");
+
             return NoContent();
         }
 
@@ -95,6 +101,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Post StatusGraphe (API)");
+
             return CreatedAtAction("GetStatusGraphe", new { id = statusGraphe.Code }, statusGraphe);
         }
 
@@ -110,6 +118,8 @@ namespace StimulusAPI.Controllers
 
             _context.StatusGraphes.Remove(statusGraphe);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete StatusGraphe (API)");
 
             return NoContent();
         }

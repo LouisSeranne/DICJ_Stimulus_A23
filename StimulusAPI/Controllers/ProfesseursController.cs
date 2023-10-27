@@ -25,6 +25,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Professeur>>> GetProfesseurs()
         {
+            Console.WriteLine("Get Professeurs (API)");
+            
             return await _context.Professeurs.ToListAsync();
         }
 
@@ -38,6 +40,8 @@ namespace StimulusAPI.Controllers
             {
                 return NotFound();
             }
+
+            Console.WriteLine("Get Professeur Id (API)");
 
             return professeur;
         }
@@ -70,6 +74,8 @@ namespace StimulusAPI.Controllers
                 }
             }
 
+            Console.WriteLine("Put Professeur (API)");
+
             return NoContent();
         }
 
@@ -80,6 +86,8 @@ namespace StimulusAPI.Controllers
         {
             _context.Professeurs.Add(professeur);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Post Professeur (API)");
 
             return CreatedAtAction("GetProfesseur", new { id = professeur.Id }, professeur);
         }
@@ -96,6 +104,8 @@ namespace StimulusAPI.Controllers
 
             _context.Professeurs.Remove(professeur);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("Delete Professeur");
 
             return NoContent();
         }

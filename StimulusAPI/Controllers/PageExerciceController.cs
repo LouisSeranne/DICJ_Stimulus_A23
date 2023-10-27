@@ -46,6 +46,8 @@ public class PageExerciceController : ControllerBase
 
         exerciceVM.FichierSource = JsonConvert.SerializeObject(fichierSourceVM);
 
+        Console.WriteLine("Get Page Id (API)");
+
         return exerciceVM;
     }
 
