@@ -9,9 +9,8 @@
     <div class="fileSelector">
         @foreach (Fichier fichier in FichierCode)
         {
-            <div>
-                <button @onclick="() => ChangeTab(fichier.Id)">@fichier.Nom</button>
-                <button @onclick="() => Delete(fichier.Id)">X</button>
+            <div class="file-tab">
+                <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@fichier.Nom <button class="close-button" @onclick="() => Delete(fichier.Id)">X</button></button>
             </div>
         }
         <button @onclick="AddPage">+</button>
@@ -344,7 +343,7 @@
                 fichier.Css = HiddenTab;
             }
         }
-        FichierCode.Find(f => f.Id == id).Css = FocusedTab;
+        FichierCode.Find(f => f.Id == id).Css = "focused";
         await SetCode(FichierCode.Find(f => f.Id == id).Contenu);
         StateHasChanged();
     }
