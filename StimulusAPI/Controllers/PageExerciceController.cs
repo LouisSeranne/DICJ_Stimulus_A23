@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using InterpreteurPython;
 using Serilog;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
+using System.Runtime.Intrinsics.X86;
 
 namespace StimulusAPI.Controllers;
 
@@ -58,6 +60,7 @@ public class PageExerciceController : ControllerBase
         DirectoryInfo dossier;
         StreamWriter fichier = null;
         string path = "Python/" + idEtudiant;
+        bool status = false;
         try
         {
             JArray objetJson = JArray.Parse(codeJson);
@@ -66,6 +69,7 @@ public class PageExerciceController : ControllerBase
                 dossier = Directory.CreateDirectory(path);
             fichier = new StreamWriter(path + "/main.py");
             fichier.Write(code);
+            status = true;
         }
         catch (Exception e)
         {
@@ -75,6 +79,15 @@ public class PageExerciceController : ControllerBase
         {
             fichier.Close();
         }
+
+        if (status)
+            await Start_Script(idEtudiant);
+
         return JsonConvert.SerializeObject(PythonReader.Run(JsonConvert.DeserializeObject<List<FichierPython>>(codeJson), idEtudiant.ToString()));
+    }
+
+    private async Task Start_Script(int id)
+    {
+#warning J'ai pas la moindre idée de ce que je fais
     }
 }
