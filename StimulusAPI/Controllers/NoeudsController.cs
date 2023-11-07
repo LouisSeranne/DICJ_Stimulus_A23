@@ -9,6 +9,7 @@ using StimulusAPI.Context;
 using StimulusAPI.Models;
 using System.Reflection;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace StimulusAPI.Controllers
 {
@@ -27,6 +28,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Noeud>>> GetNoeuds()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.NoeudsController>();
+            log.Information($"GetNoeuds(): Context : {_context}");
+
             return await _context.Noeuds.ToListAsync();
         }
 
@@ -34,10 +38,14 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Noeud>> GetNoeud(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.NoeudsController>();
+
             var noeud = await _context.Noeuds.FindAsync(id);
 
             if (noeud == null)
             {
+                log.Information($"NULL PARAMETER -> GetNoeud(int id = {id}): GET REQUEST Le noeud est null");
+
                 return NotFound();
             }
 
@@ -52,8 +60,12 @@ namespace StimulusAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<string>> PutNoeud(int id, Noeud noeud)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.NoeudsController>();
+
             if (id != noeud.Id)
             {
+                log.Information($"INVALID ID -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST L'id fourni ne correspond pas à l'id du noeud : {id} != {noeud.Id}");
+
                 return BadRequest();
             }
             Noeud noeudOrigin = _context.Noeuds.AsNoTracking().Where(n => n.Id == id).FirstOrDefault();
@@ -76,13 +88,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!NoeudExists(id))
                 {
+                    log.Information($"INVALID ID -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST L'id fourni ne correspond à aucun noeud");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Information($"ERROR -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Information($"NO CONTENT -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -102,9 +119,13 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteNoeud(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.NoeudsController>();
+
             var noeud = await _context.Noeuds.FindAsync(id);
             if (noeud == null)
             {
+                log.Information($"NULL PARAMETER -> DeleteNoeud(int id = {id}): DELETE REQUEST Le noeud est null");
+
                 return NotFound();
             }
 

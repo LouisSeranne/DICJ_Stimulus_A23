@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -25,6 +26,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TexteFormater>>> GetTexteFormaters()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.TexteFormatersController>();
+            log.Information($"GetTexteFormaters(): Context: {_context}");
+
             return await _context.TexteFormaters.ToListAsync();
         }
 
@@ -32,10 +36,14 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TexteFormater>> GetTexteFormater(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.TexteFormatersController>();
+
             var texteFormater = await _context.TexteFormaters.FindAsync(id);
 
             if (texteFormater == null)
             {
+                log.Information($"NULL PARAMETER -> GetTexteFormater(int id = {id}): GET REQUEST texteFormater est null");
+
                 return NotFound();
             }
 
@@ -47,8 +55,12 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTexteFormater(int id, TexteFormater texteFormater)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.TexteFormatersController>();
+
             if (id != texteFormater.Id)
             {
+                log.Information($"INVALID ID -> PutTexteFormater(int id = {id}, TexteFormater texteFormater = {texteFormater}): PUT REQUEST L'id ne correspond pas à texteFormater.Id: {id} != {texteFormater.Id}");
+
                 return BadRequest();
             }
 
@@ -62,13 +74,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!TexteFormaterExists(id))
                 {
+                    log.Information($"INVALID ID -> PutTexteFormater(int id = {id}, TexteFormater texteFormater = {texteFormater}): PUT REQUEST L'id ne correspond à aucun texteFormater.Id");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Information($"ERROR -> PutTexteFormater(int id = {id}, TexteFormater texteFormater = {texteFormater}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Information($"NO CONTENT -> PutTexteFormater(int id = {id}, TexteFormater texteFormater = {texteFormater}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -78,6 +95,8 @@ namespace StimulusAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<TexteFormater>> PostTexteFormater(TexteFormater texteFormater)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.TexteFormatersController>();
+
             _context.TexteFormaters.Add(texteFormater);
             try
             {
@@ -87,10 +106,14 @@ namespace StimulusAPI.Controllers
             {
                 if (TexteFormaterExists(texteFormater.Id))
                 {
+                    log.Information($"CONFLICT -> PostTexteFormater(TexteFormater texteFormater = {texteFormater}): POST REQUEST Un texteFormater dont l'id = {texteFormater.Id} existe déjà");
+
                     return Conflict();
                 }
                 else
                 {
+                    log.Information($"ERROR -> PostTexteFormater(TexteFormater texteFormater = {texteFormater}): POST REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
@@ -102,9 +125,13 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTexteFormater(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.TexteFormatersController>();
+
             var texteFormater = await _context.TexteFormaters.FindAsync(id);
             if (texteFormater == null)
             {
+                log.Information($"NULL PARAMETER -> DeleteTexteFormater(int id = {id}): DELETE REQUEST texteFormater est null");
+
                 return NotFound();
             }
 
