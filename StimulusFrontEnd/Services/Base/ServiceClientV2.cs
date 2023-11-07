@@ -21,6 +21,7 @@ namespace StimulusFrontEnd.Services.Base
     using StimulusAPI.Models;
     using StimulusAPI.ViewModels;
     using System = global::System;
+    using Serilog;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.16.1.0 (NJsonSchema v10.7.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial interface IClient
@@ -2720,7 +2721,10 @@ namespace StimulusFrontEnd.Services.Base
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            Console.WriteLine("The HTTP status code of the response was not expected in FichierSauvegardeDELETEAsync (" + status_ + ").", status_, responseData_, headers_, null);
+                            //Console.WriteLine("The HTTP status code of the response was not expected in FichierSauvegardeDELETEAsync (" + status_ + ").", status_, responseData_, headers_, null);
+                            var log = Log.ForContext<StimulusFrontEnd.Services.Base.Client>();
+                            log.Information($"FichierSauvegardesDELETEAsync(int id = {id}, System.Threading.CancellationToken cancellationToken = {cancellationToken}): The HTTP status code of the response was not expected in FichierSauvegardeDELETEAsync (\" + status_ + \").\", status_, responseData_, headers_, null);");
+
                             throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
@@ -2792,7 +2796,10 @@ namespace StimulusFrontEnd.Services.Base
                         else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            Console.WriteLine("The HTTP status code of the response was not expected in FichierSauvegardePOSTAsync (" + status_ + ").", status_, responseData_, headers_, null);
+                            //Console.WriteLine("The HTTP status code of the response was not expected in FichierSauvegardePOSTAsync (" + status_ + ").", status_, responseData_, headers_, null);
+                            var log = Log.ForContext<StimulusFrontEnd.Services.Base.Client>();
+                            log.Information($"FichierSauvegardePOSTAsync(System.Collections.Generic.IEnumerable<FichierSauvegarde> body= {body}, System.Threading.CancellationToken cancellationToken= {cancellationToken}): The HTTP status code of the response was not expected in FichierSauvegardePOSTAsync (\" + status_ + \").\", status_, responseData_, headers_, null)");
+
                             throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
