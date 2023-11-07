@@ -45,6 +45,34 @@ html, body {
   transition: color 0.2s; /* Animation de changement de couleur du "X" au survol */
 }
 
+.modal-confirm {
+    text-align: center;
+    font-size: 26px;
+    margin: 30px 0 -10px;
+    color: black;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Couleur semi-transparente */
+    z-index: 1000; /* Empilement au-dessus de tout le contenu */
+}
+
+.confirmation-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px; /* Largeur du rectangle */
+    background-color: #fff; /* Couleur de fond */
+    border: 1px solid #ccc; /* Bordure */
+    padding: 20px;
+    z-index: 1000; /* Empilement au-dessus de tout le contenu */
+}
 .close-button:hover {
   color: red; /* Couleur du "X" en rouge au survol */
 }

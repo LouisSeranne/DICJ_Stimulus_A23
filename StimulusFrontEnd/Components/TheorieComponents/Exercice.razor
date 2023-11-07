@@ -1,4 +1,5 @@
 ﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
+
 @using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
@@ -9,59 +10,91 @@
     <div class="fileSelector">
         @foreach (Fichier fichier in FichierCode)
         {
-            <div class ="file-tab">
-                <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@fichier.Nom</button>
-                <button class="close-button" @onclick="() => Delete(fichier.Id)">X</button>
+            <div class="file-tab">
+                <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@fichier.Nom </button>
+                <button class="close-button" @onclick="() => ShowDeleteConfirmationDialog(fichier.Id)">X</button>
             </div>
+            @if (showDeleteConfirmation && fichier.Id <= 0)
+            {
+                <div class="overlay" style="display: @(showDeleteConfirmation ? "block" : "none")">
+                    <div class="confirmation-box">
+                        <DeleteConfirmation OnConfirmation="HandleDeleteConfirmation" />
+                    </div>
+                </div>
+            }
         }
         <button @onclick="AddPage">+</button>
     </div>
 
-<div class="d-flex justify-content-around">
-    <div class="d-flex justify-content-between">
-        <div>
-            <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
-        </div>
-        @foreach (Fichier fichier in FichierCode)
-        {
-            if (fichier.Css != "hidden")
+    <div class="d-flex justify-content-around">
+        <div class="d-flex justify-content-between">
+            <div>
+                <StandaloneCodeEditor Id="monaco" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
+            </div>
+            @foreach (Fichier fichier in FichierCode)
             {
-                SetCode(@fichier.Contenu);
+                if (fichier.Css != "hidden")
+                {
+                    SetCode(@fichier.Contenu);
+                }
+                <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
             }
-            <textarea class="textareaCode hidden" id="@fichier.Id" cols="50" rows="25" name="@fichier.Nom" @bind=@fichier.Contenu @bind:event="oninput" @onfocus="() => Tab(fichier.Id)"></textarea>
+        </div>
+        <div id="background-result">
+            <p style="white-space:pre-wrap">@Result</p>
+        </div>
+    </div>
+
+    <!-- Section bouton -->
+    <div class="row">
+        <div class="d-flex flex-row-reverse" style="width: 800px">
+            <button @onclick=@Post class="boutonExerciceGauche">Éxecuter</button>
+            <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
+        </div>
+    </div>
+
+    <style>
+        .focused {
+            display: block;
         }
-    </div>
-    <div id="background-result">
-        <p style="white-space:pre-wrap">@Result</p>
-    </div>
-</div>
-}
 
-<!-- Section bouton -->
-<div class="row">
-    <div class="d-flex flex-row-reverse" style="width: 800px">
-        <button @onclick=@Post class="boutonExerciceGauche">Éxecuter</button>
-        <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
-    </div>
-</div>
+        .hidden {
+            display: none;
+        }
 
-<style>
-    .focused {
-        display: block;
-    }
+        .monaco-editor-container { /* for all editor instances */
+            height: 600px;
+            width: 800px;
+        }
+    </style>
 
-    .hidden {
-        display: none;
-    }
-
-    .monaco-editor-container { /* for all editor instances */
-        height: 600px;
-        width: 800px;
-    }
-</style>
-
-@code {
+    @code {
     private StandaloneCodeEditor _editor { get; set; }
+    private bool showDeleteConfirmation = false;
+    private int fileIdToDelete; // Pour stocker l'ID du fichier à supprimer
+
+    private void ShowDeleteConfirmationDialog(int id)
+    {
+        fileIdToDelete = id;
+        showDeleteConfirmation = true;
+    }
+
+    private void HandleDeleteConfirmation(bool? result)
+    {
+        if (result == true)
+        {
+            // Supprimer le fichier avec fileIdToDelete
+            var deletedTab = FichierCode.Find(tab => tab.Id == fileIdToDelete);
+            deletedTab.Css = FocusedTab;
+            FichierCode.Remove(deletedTab);
+        }
+        else if (result == false)
+        {
+            Save();
+        }
+
+        showDeleteConfirmation = false;
+    }
 
     private async Task<string> GetCode()
     {
@@ -201,27 +234,27 @@
     /// <param name="id"> id du fichier a supprimer </param>
     private async void Delete(int id)
     {
-        if (id <= 0)
+        //if (id <= 0)
+        //{
+        //    Result = "Erreur : Ne peut pas supprimer ce qui n'existe pas. Avez-vous sauvegardé?";
+        //}
+        //else
+        //{
+        Console.WriteLine("Trying to delete fichier_sauvegarde #" + id);
+        try
         {
-            Result = "Erreur : Ne peut pas supprimer ce qui n'existe pas. Avez-vous sauvegardé?";
+            var deletedTab = FichierCode.Find(tab => tab.Id == id);
+            deletedTab.Css = FocusedTab;
+            FichierCode.Remove(deletedTab);
+            await ApiClient.FichierSauvegardesDELETEAsync(id);
         }
-        else
+        catch (Exception e)
         {
-            Console.WriteLine("Trying to delete fichier_sauvegarde #" + id);
-            try
-            {
-                var deletedTab = FichierCode.Find(tab => tab.Id == id);
-                deletedTab.Css = FocusedTab;
-                FichierCode.Remove(deletedTab);
-                await ApiClient.FichierSauvegardesDELETEAsync(id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Failed to delete : " + e.Message);
-                Result = "Échec de la supression des fichiers";
-            }
-            Result = "Fichier supprimé";
+            Console.WriteLine("Failed to delete : " + e.Message);
+            Result = "Échec de la supression des fichiers";
         }
+        Result = "Fichier supprimé";
+        //}
         await SetCode();
         StateHasChanged();
     }
@@ -266,7 +299,7 @@
         {
             Nom = "main.py",
             Contenu = texte.Replace("\"", "\'")
-        });        
+        });
 
         jsonString = JsonConvert.SerializeObject(fichiers);
 
@@ -344,7 +377,7 @@
                 fichier.Css = HiddenTab;
             }
         }
-        FichierCode.Find(f => f.Id == id).Css = FocusedTab;
+        FichierCode.Find(f => f.Id == id).Css = "focused";
         await SetCode(FichierCode.Find(f => f.Id == id).Contenu);
         StateHasChanged();
     }
@@ -391,7 +424,7 @@
                     Contenu = "print('Hello World !')",
                     Nom = nomFichier,
                     Id = -(FichierCode.Count + 1),
-                    Css = FocusedTab                    
+                    Css = FocusedTab
                 });
         }
 
@@ -399,4 +432,5 @@
     }
 
     public EventCallback<List<FichierSource>> FichierSourceChanged { get; set; }
+    }
 }
