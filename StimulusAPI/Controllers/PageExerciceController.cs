@@ -11,6 +11,7 @@ using System.Text.Json;
 using Newtonsoft.Json;
 using InterpreteurPython;
 using Serilog;
+using Newtonsoft.Json.Linq;
 
 namespace StimulusAPI.Controllers;
 
@@ -53,6 +54,27 @@ public class PageExerciceController : ControllerBase
     [HttpPost]
     public async Task<string> GetPythonResult(string codeJson, int idEtudiant)
     {
+        var log = Log.ForContext<StimulusAPI.Controllers.PageExerciceController>();
+        DirectoryInfo dossier;
+        StreamWriter fichier = null;
+        string path = "Python/" + idEtudiant;
+        try
+        {
+            JArray objetJson = JArray.Parse(codeJson);
+            string code = (string)objetJson[0]["Contenu"];
+            if (!Directory.Exists(path))
+                dossier = Directory.CreateDirectory(path);
+            fichier = new StreamWriter(path + "/main.py");
+            fichier.Write(code);
+        }
+        catch (Exception e)
+        {
+            log.Information($"{e.Source} -> GetPythonResult(string codeJson = {codeJson}, int idEtudiant = {idEtudiant}): {e.Message}");
+        }
+        finally
+        {
+            fichier.Close();
+        }
         return JsonConvert.SerializeObject(PythonReader.Run(JsonConvert.DeserializeObject<List<FichierPython>>(codeJson), idEtudiant.ToString()));
     }
 }
