@@ -14,6 +14,7 @@
                 <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@fichier.Nom </button>
                 <button class="close-button" @onclick="() => ShowDeleteConfirmationDialog(fichier.Id)">X</button>
             </div>
+
             @if (showDeleteConfirmation && fichier.Id <= 0)
             {
                 <div class="overlay" style="display: @(showDeleteConfirmation ? "block" : "none")">
@@ -23,6 +24,7 @@
                 </div>
             }
         }
+
         <button @onclick="AddPage">+</button>
     </div>
 
@@ -79,7 +81,7 @@
         showDeleteConfirmation = true;
     }
 
-    private void HandleDeleteConfirmation(bool? result)
+    private async void HandleDeleteConfirmation(bool? result)
     {
         if (result == true)
         {
@@ -87,6 +89,9 @@
             var deletedTab = FichierCode.Find(tab => tab.Id == fileIdToDelete);
             deletedTab.Css = FocusedTab;
             FichierCode.Remove(deletedTab);
+            await ApiClient.FichierSauvegardesDELETEAsync(fileIdToDelete);
+
+            
         }
         else if (result == false)
         {
