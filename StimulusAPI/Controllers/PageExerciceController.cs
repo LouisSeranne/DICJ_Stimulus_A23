@@ -14,6 +14,14 @@ using Serilog;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Runtime.Intrinsics.X86;
+using Microsoft.Extensions.Hosting;
+using Renci.SshNet;
+using System;
+using System.IO;
+using System.Text;
+using NuGet.Protocol.Plugins;
+using Radzen.Blazor.Rendering;
+using Renci.SshNet.Common;
 
 namespace StimulusAPI.Controllers;
 
@@ -83,11 +91,60 @@ public class PageExerciceController : ControllerBase
         if (status)
             await Start_Script(idEtudiant);
 
-        return JsonConvert.SerializeObject(PythonReader.Run(JsonConvert.DeserializeObject<List<FichierPython>>(codeJson), idEtudiant.ToString()));
+        var x = JsonConvert.SerializeObject(PythonReader.Run(JsonConvert.DeserializeObject<List<FichierPython>>(codeJson), idEtudiant.ToString()));
+        log.Information($"LogLouis -> {x} ");
+        return x;
     }
 
     private async Task Start_Script(int id)
     {
-#warning J'ai pas la moindre idée de ce que je fais
+        string host = "10.10.10.100";
+        string username = "tech";
+        string password = "jambon1723!";
+
+        string localMainPy = $"Python/{id}/main.py";
+        string remoteMainPy = $"{id}/main.py";
+
+        string localOutput = $"Python/{id}/output_interpreteur_{id}.txt";
+        string remoteOutput = $"{id}/output_interpreteur_{id}.txt";
+
+        try
+        {
+            using (SshClient client = new SshClient(host, username, password))
+            {
+                client.Connect();
+                client.RunCommand($"cp -r base/ {id}/");
+
+                using (var scp = new ScpClient(client.ConnectionInfo))
+                {
+                    scp.Connect();
+                    using (var fileStream = new FileStream(localMainPy, FileMode.Open))
+                    {
+                        scp.Upload(fileStream, remoteMainPy);
+                    }
+                    scp.Disconnect();
+                }
+
+                client.RunCommand($"cd {id} && ./start.sh interpreteur_{id}");
+
+                using (var scp = new ScpClient(client.ConnectionInfo))
+                {
+                    scp.Connect();
+                    using (var fileStream = System.IO.File.OpenWrite(localOutput))
+                    {
+                        scp.Download(remoteOutput, fileStream);
+                    }
+                    scp.Disconnect();
+                }
+
+                client.RunCommand($"rm {id}/* && rmdir {id}");
+                client.Disconnect();
+            }
+        }
+        catch (Exception e )
+        {
+            var log = Log.ForContext<StimulusAPI.Controllers.PageExerciceController>();
+            log.Information($"{e.Source} -> Start_Script(int id = {id}): {e.Message}");
+        }
     }
 }
