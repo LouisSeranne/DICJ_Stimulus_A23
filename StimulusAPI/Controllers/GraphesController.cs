@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 using StimulusAPI.ViewModels;
@@ -27,31 +26,24 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GrapheVM>>> GetGraphes()
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.GraphesController>();
-            log.Information($"GetGraphes(): Context : {_context}");
-
-            List<Graphe> response = await _context.Graphes.ToListAsync();
+            List<Graphe> response  = await _context.Graphes.ToListAsync();
             List<GrapheVM> retour = new List<GrapheVM>();
-            foreach (Graphe graphe in response)
+            foreach(Graphe graphe in response)
             {
                 retour.Add(new GrapheVM(graphe));
             }
             return retour;
-
+            
         }
 
         // GET: api/Graphes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<GrapheVM>> GetGraphe(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.GraphesController>();
-
             var graphe = await _context.Graphes.FindAsync(id);
 
             if (graphe == null)
             {
-                log.Information($" NULL PARAMETER -> GetGraphe(int id = {id}): GET REQUEST Le graphe est null ");
-
                 return NotFound();
             }
 
@@ -65,12 +57,8 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGraphe(int id, Graphe graphe)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.GraphesController>();
-
             if (id != graphe.Id)
             {
-                log.Information($" INVALID ID -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST L'id ne correspond pas au graphe: {id} =! {graphe.Id} ");
-
                 return BadRequest();
             }
 
@@ -84,18 +72,13 @@ namespace StimulusAPI.Controllers
             {
                 if (!GrapheExists(id))
                 {
-                    log.Information($" INVALID ID -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST L'id ne correspond à aucun graphe");
-
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($" ERROR -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST THROWING ERROR");
-
                     throw;
                 }
             }
-            log.Information($" NO CONTENT -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST Aucun contenu, aucune modification possible");
 
             return NoContent();
         }
@@ -115,20 +98,14 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGraphe(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.GraphesController>();
-
             var graphe = await _context.Graphes.FindAsync(id);
             if (graphe == null)
             {
-                log.Information($"NULL PARAMETER -> DeleteGraphe(int id = {id}): DELETE REQUEST Le graphe est null");
-
                 return NotFound();
             }
 
             _context.Graphes.Remove(graphe);
             await _context.SaveChangesAsync();
-
-            log.Information($"NO CONTENT -> DeleteGraphe(int id = {id}): DELETE REQUEST Aucun contenu, aucune modification possible");
 
             return NoContent();
         }

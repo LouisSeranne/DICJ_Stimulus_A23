@@ -2,7 +2,6 @@
 @using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
-@using Serilog
 
 <!--Interpreteur-->
 @if (InitDone)
@@ -110,7 +109,6 @@
     /// Result : résultat du code python de l'étudiant
     /// InitDone : Dit si oui ou non l'initialisation du component est fait
     /// </summary>
-    /// Surveiller les string Result, devrait être visible par l'étudiant selon les infos laissé par les élèves de l'an passé, s'assurer de ne pas être redondant avec les logs -TM
     [Inject]
     private IJSRuntime JS { get; set; }
     private string FocusedTab { get; set; } = "focused";
@@ -209,8 +207,7 @@
         }
         else
         {
-            var log = Log.ForContext<StimulusFrontEnd.Models.Exercice>();
-            log.Information($"Delete():Tentative de supprimer le fichier de sauvegarde #{id}");
+            Console.WriteLine("Trying to delete fichier_sauvegarde #" + id);
             try
             {
                 var deletedTab = FichierCode.Find(tab => tab.Id == id);
@@ -220,8 +217,7 @@
             }
             catch (Exception e)
             {
-                log.Information($"Delete(): Échec de la suppression des fichiers : {e.Message}");
-
+                Console.WriteLine("Failed to delete : " + e.Message);
                 Result = "Échec de la supression des fichiers";
             }
             Result = "Fichier supprimé";
@@ -254,10 +250,7 @@
         string jsonString = "";
 
         Result = "Interprétation du code...";
-        //Console.WriteLine("Running python code...");
-        var log = Log.ForContext<StimulusFrontEnd.Models.Exercice>();
-        log.Information($"Post():Running Python code");
-
+        Console.WriteLine("Running python code...");
         StateHasChanged();
 
         foreach (var fichier in FichierCode)
@@ -331,10 +324,7 @@
         }
         Result = "Fichiers enregistrés";
 
-        //Console.WriteLine("File saved");
-        var log = Log.ForContext<StimulusFrontEnd.Models.Exercice>();
-        log.Information($"Save(): File saved");
-
+        Console.WriteLine("File saved");
         if (id != -1)
             await ChangeTab(id);
         StateHasChanged();
