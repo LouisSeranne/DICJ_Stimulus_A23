@@ -89,13 +89,20 @@ public class PageExerciceController : ControllerBase
         }
 
         if (status)
+        {
             await Start_Script(idEtudiant);
 
-        var old = JsonConvert.SerializeObject(PythonReader.Run(JsonConvert.DeserializeObject<List<FichierPython>>(codeJson), idEtudiant.ToString()));
-        var nouveau = System.IO.File.ReadAllText(path + $"/output_interpreteur_{idEtudiant}.txt");
-        log.Information($"Sortie attendue -> {old} ");
-        log.Information($"Sortie obtenue -> {nouveau} ");
-        return old;
+            string main = path + $"/output_{idEtudiant}.txt";
+            string file = System.IO.File.ReadAllText(main);
+            if (String.IsNullOrEmpty(file))
+                return JsonConvert.SerializeObject("Erreur lors de la compilation du code");
+            return JsonConvert.SerializeObject(file);
+        }
+        else
+        {
+            log.Information($"Status was false -> GetPythonResult(string codeJson = {codeJson}, int idEtudiant = {idEtudiant}): Status was false");
+            return JsonConvert.SerializeObject("Erreur lors de l'éxécution du code");
+        }
     }
 
     private async Task Start_Script(int id)
@@ -104,18 +111,21 @@ public class PageExerciceController : ControllerBase
         string username = "tech";
         string password = "jambon1723!";
 
-        string localMainPy = $"Python/{id}/main.py";
-        string remoteMainPy = $"{id}/main.py";
+        int rand = new Random().Next(0, 99999);
+        string name = $"interpreteur_{id}_{rand}";
 
-        string localOutput = $"Python/{id}/output_interpreteur_{id}.txt";
-        string remoteOutput = $"{id}/output_interpreteur_{id}.txt";
+        string localMainPy = $"Python/{id}/main.py";
+        string localOutput = $"Python/{id}/output_{id}.txt";
+
+        string remoteMainPy = $"{name}/main.py";
+        string remoteOutput = $"{name}/output_{name}.txt";
 
         try
         {
             using (SshClient client = new SshClient(host, username, password))
             {
                 client.Connect();
-                client.RunCommand($"cp -r base/ {id}/");
+                client.RunCommand($"cp -r base/ {name}/");
 
                 using (var scp = new ScpClient(client.ConnectionInfo))
                 {
@@ -127,7 +137,7 @@ public class PageExerciceController : ControllerBase
                     scp.Disconnect();
                 }
 
-                client.RunCommand($"cd {id} && ./start.sh interpreteur_{id}");
+                client.RunCommand($"cd {name} && ./start.sh {name}");
 
                 using (var scp = new ScpClient(client.ConnectionInfo))
                 {
@@ -139,7 +149,7 @@ public class PageExerciceController : ControllerBase
                     scp.Disconnect();
                 }
 
-                client.RunCommand($"rm {id}/* && rmdir {id}");
+                client.RunCommand($"rm {name}/* && rmdir {name}");
                 client.Disconnect();
             }
         }
