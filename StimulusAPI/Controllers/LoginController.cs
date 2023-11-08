@@ -80,7 +80,7 @@ namespace StimulusAPI.Controllers
                 });
             }
 
-            log.Information($"FAILED LOGIN ATTEMPT -> Login([FromBody] UtilisateurApplication model = {model}): UNAUTHORIZED LOGIN");
+            log.Warning($"FAILED LOGIN ATTEMPT -> Login([FromBody] UtilisateurApplication model = {model}): UNAUTHORIZED LOGIN");
             return Unauthorized();
         }
 
