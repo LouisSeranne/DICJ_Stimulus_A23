@@ -177,13 +177,13 @@
         }
 
         /*
-            if (FichierCode.Count == 0)
+        if (FichierCode.Count == 0)
+        {
+        var fichiers = await ApiClient.PageExerciceGETAsync(ExerciceModel.Id);
+        List<FichierSource>? fichiersSource = JsonConvert.DeserializeObject<List<FichierSource>>(fichiers.FichierSource);
+        foreach (FichierSource fichier in fichiersSource)
             {
-            var fichiers = await ApiClient.PageExerciceGETAsync(ExerciceModel.Id);
-            List<FichierSource>? fichiersSource = JsonConvert.DeserializeObject<List<FichierSource>>(fichiers.FichierSource);
-            foreach (FichierSource fichier in fichiersSource)
-                {
-                FichierCode.Add(new Fichier(-(FichierCode.Count + 1), fichier.Nom, fichier.Contenu));
+            FichierCode.Add(new Fichier(-(FichierCode.Count + 1), fichier.Nom, fichier.Contenu));
         }
         }
         */
@@ -286,6 +286,9 @@
         {
             if (fichier.Css != "hidden")
                 id = fichier.Id;
+        }
+        foreach (Fichier fichier in FichierCode)
+        {
             await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
                 {
@@ -325,8 +328,14 @@
         Result = "Fichiers enregistrés";
 
         Console.WriteLine("File saved");
-        if (id != -1)
-            await ChangeTab(id);
+
+        if (FichierCode.Count() > 0)
+        {
+            if (id < 0)
+                id = FichierCode.Last().Id;
+            await ChangeTab(id);  
+        }
+        
         StateHasChanged();
     }
 
