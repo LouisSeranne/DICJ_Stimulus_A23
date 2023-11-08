@@ -10,9 +10,9 @@
     <div class="fileSelector">
         @foreach (Fichier fichier in FichierCode)
         {
-            <div>
-                <button @onclick="() => ChangeTab(fichier.Id)">@fichier.Nom</button>
-                <button @onclick="() => Delete(fichier.Id)">X</button>
+            <div class ="file-tab">
+                <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@fichier.Nom</button>
+                <button class="close-button" @onclick="() => Delete(fichier.Id)">X</button>
             </div>
         }
         <button @onclick="AddPage">+</button>
@@ -179,13 +179,13 @@
         }
 
         /*
-            if (FichierCode.Count == 0)
+        if (FichierCode.Count == 0)
+        {
+        var fichiers = await ApiClient.PageExerciceGETAsync(ExerciceModel.Id);
+        List<FichierSource>? fichiersSource = JsonConvert.DeserializeObject<List<FichierSource>>(fichiers.FichierSource);
+        foreach (FichierSource fichier in fichiersSource)
             {
-            var fichiers = await ApiClient.PageExerciceGETAsync(ExerciceModel.Id);
-            List<FichierSource>? fichiersSource = JsonConvert.DeserializeObject<List<FichierSource>>(fichiers.FichierSource);
-            foreach (FichierSource fichier in fichiersSource)
-                {
-                FichierCode.Add(new Fichier(-(FichierCode.Count + 1), fichier.Nom, fichier.Contenu));
+            FichierCode.Add(new Fichier(-(FichierCode.Count + 1), fichier.Nom, fichier.Contenu));
         }
         }
         */
@@ -293,6 +293,9 @@
         {
             if (fichier.Css != "hidden")
                 id = fichier.Id;
+        }
+        foreach (Fichier fichier in FichierCode)
+        {
             await ChangeTab(fichier.Id);
             fichiersSauvegardes.Add(new FichierSauvegarde()
                 {
@@ -330,13 +333,20 @@
             Result = "Échec de l'enregistrement des fichiers";
         }
         Result = "Fichiers enregistrés";
-
-        //Console.WriteLine("File saved");
+      
+        Console.WriteLine("File saved");
+                   
         var log = Log.ForContext<StimulusFrontEnd.Models.Exercice>();
+      
         log.Information($"Save(): File saved");
-
-        if (id != -1)
-            await ChangeTab(id);
+      
+        if (FichierCode.Count() > 0)
+        {
+            if (id < 0)
+                id = FichierCode.Last().Id;
+            await ChangeTab(id);  
+        }
+        
         StateHasChanged();
     }
 
