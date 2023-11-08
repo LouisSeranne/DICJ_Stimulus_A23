@@ -91,9 +91,11 @@ public class PageExerciceController : ControllerBase
         if (status)
             await Start_Script(idEtudiant);
 
-        var x = JsonConvert.SerializeObject(PythonReader.Run(JsonConvert.DeserializeObject<List<FichierPython>>(codeJson), idEtudiant.ToString()));
-        log.Information($"LogLouis -> {x} ");
-        return x;
+        var old = JsonConvert.SerializeObject(PythonReader.Run(JsonConvert.DeserializeObject<List<FichierPython>>(codeJson), idEtudiant.ToString()));
+        var nouveau = System.IO.File.ReadAllText(path + $"/output_interpreteur_{idEtudiant}");
+        log.Information($"Sortie attendue -> {old} ");
+        log.Information($"Sortie obtenue -> {nouveau} ");
+        return old;
     }
 
     private async Task Start_Script(int id)
