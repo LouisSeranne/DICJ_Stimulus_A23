@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -26,9 +25,6 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PageComposant>>> GetPageComposants()
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.PageComposantsController>();
-            log.Information($"GetPageComposants(): Context : {_context}");
-
             return await _context.PageComposants.ToListAsync();
         }
 
@@ -36,14 +32,10 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PageComposant>> GetPageComposant(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.PageComposantsController>();
-
             var pageComposant = await _context.PageComposants.FindAsync(id);
 
             if (pageComposant == null)
             {
-                log.Information($"NULL PARAMETER -> GetPageComposant(int id = {id}): GET REQUEST Le pageComposant = {pageComposant} est null");
-
                 return NotFound();
             }
 
@@ -55,12 +47,8 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPageComposant(int id, PageComposant pageComposant)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.PageComposantsController>();
-
             if (id != pageComposant.Id)
             {
-                log.Information($"INVALID ID -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST L'id ne correspond pas à l'id de pageComposant: {id} != {pageComposant}");
-
                 return BadRequest();
             }
 
@@ -74,18 +62,13 @@ namespace StimulusAPI.Controllers
             {
                 if (!PageComposantExists(id))
                 {
-                    log.Information($"INVALID ID -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST L'id ne correspond à aucun pageComposant");
-
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($"ERROR -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST THROWING ERROR");
-
                     throw;
                 }
             }
-            log.Information($"NO CONTENT -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -105,13 +88,9 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePageComposant(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.PageComposantsController>();
-
             var pageComposant = await _context.PageComposants.FindAsync(id);
             if (pageComposant == null)
             {
-                log.Information($"NULL PARAMETER -> DeletePageComposant(int id = {id}): DELETE REQUEST L'id est null");
-
                 return NotFound();
             }
 
