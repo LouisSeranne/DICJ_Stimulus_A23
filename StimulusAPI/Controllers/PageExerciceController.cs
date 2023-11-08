@@ -130,7 +130,7 @@ public class PageExerciceController : ControllerBase
                 using (var scp = new ScpClient(client.ConnectionInfo))
                 {
                     scp.Connect();
-                    using (var fileStream = System.IO.File.OpenWrite(localOutput))
+                    using (var fileStream = System.IO.File.Create(localOutput))
                     {
                         scp.Download(remoteOutput, fileStream);
                     }
