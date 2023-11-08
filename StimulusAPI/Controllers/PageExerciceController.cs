@@ -93,15 +93,32 @@ public class PageExerciceController : ControllerBase
             await Start_Script(idEtudiant);
 
             string main = path + $"/output_{idEtudiant}.txt";
-            string file = System.IO.File.ReadAllText(main);
+            string file = "";
+
+            using (StreamReader sr = new StreamReader(main))
+            {
+                int nombreLignes = 1;
+                string ligne;
+
+                while ((ligne = sr.ReadLine()) != null)
+                {
+                    file += ligne + "\n";
+                    nombreLignes++;
+                    if (nombreLignes == 25)
+                    {
+                        break;
+                    }
+                }
+            }
+
             if (String.IsNullOrEmpty(file))
-                return JsonConvert.SerializeObject("Erreur lors de la compilation du code");
+                return JsonConvert.SerializeObject("Le code n'affiche pas de sortie");
             return JsonConvert.SerializeObject(file);
         }
         else
         {
             log.Information($"Status was false -> GetPythonResult(string codeJson = {codeJson}, int idEtudiant = {idEtudiant}): Status was false");
-            return JsonConvert.SerializeObject("Erreur lors de l'éxécution du code");
+            return JsonConvert.SerializeObject("Erreur lors de l'exécution du code");
         }
     }
 
