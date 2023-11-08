@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -25,6 +26,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Professeur>>> GetProfesseurs()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ProfesseursController>();
+            log.Information($"GetProfesseurs(): Context: {_context}");
             return await _context.Professeurs.ToListAsync();
         }
 
@@ -32,10 +35,14 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Professeur>> GetProfesseur(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ProfesseursController>();
+
             var professeur = await _context.Professeurs.FindAsync(id);
 
             if (professeur == null)
             {
+                log.Information($"NULL PARAMETER -> GetProfesseur(int id = {id}): GET REQUEST professeur est null");
+
                 return NotFound();
             }
 
@@ -47,8 +54,12 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProfesseur(int id, Professeur professeur)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ProfesseursController>();
+
             if (id != professeur.Id)
             {
+                log.Information($"INVALID ID -> PutProfesseur(int id = {id}, Professeur professeur = {professeur}): PUT REQUEST L'id ne correspond pas a l'id de professeur : {id} != {professeur.Id}");
+
                 return BadRequest();
             }
 
@@ -62,13 +73,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!ProfesseurExists(id))
                 {
+                    log.Information($"INVALID ID -> PutProfesseur(int id = {id}, Professeur professeur = {professeur}): PUT REQUEST L'id ne correspond à aucun professeur");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Information($"ERROR -> PutProfesseur(int id = {id}, Professeur professeur = {professeur}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Information($"NO CONTENT -> PutProfesseur(int id = {id}, Professeur professeur = {professeur}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -88,9 +104,13 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProfesseur(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ProfesseursController>();
+
             var professeur = await _context.Professeurs.FindAsync(id);
             if (professeur == null)
             {
+                log.Information($"NULL PARAMETER -> DeleteProfesseur(int id = {id}): DELETE REQUEST professeur est null");
+
                 return NotFound();
             }
 

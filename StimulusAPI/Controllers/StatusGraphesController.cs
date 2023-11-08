@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -25,6 +26,10 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<StatusGraphe>>> GetStatusGraphes()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.StatusGraphesController>();
+            log.Information($"GetStatusGraphes(): Context: {_context}");
+
+
             return await _context.StatusGraphes.ToListAsync();
         }
 
@@ -32,10 +37,14 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<StatusGraphe>> GetStatusGraphe(string id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.StatusGraphesController>();
+
             var statusGraphe = await _context.StatusGraphes.FindAsync(id);
 
             if (statusGraphe == null)
             {
+                log.Information($"NULL PARAMETER -> GetStatusGraphe(string id = {id}): GET REQUEST statusGraphe est null");
+
                 return NotFound();
             }
 
@@ -47,8 +56,12 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutStatusGraphe(string id, StatusGraphe statusGraphe)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.StatusGraphesController>();
+
             if (id != statusGraphe.Code)
             {
+                log.Information($"INVALID ID -> PutStatusGraphe(string id = {id}, StatusGraphe statusGraphe = {statusGraphe}): PUT REQUEST L'id ne correspond pas à statusGraphe.Code: {id} != {statusGraphe.Code}");
+
                 return BadRequest();
             }
 
@@ -62,13 +75,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!StatusGrapheExists(id))
                 {
+                    log.Information($"INVALID ID -> PutStatusGraphe(string id = {id}, StatusGraphe statusGraphe = {statusGraphe}): PUT REQUEST L'id ne correspond à aucun statusGraphe.Code");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Information($"ERROR -> PutStatusGraphe(string id = {id}, StatusGraphe statusGraphe = {statusGraphe}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Information($"NO CONTENT -> PutStatusGraphe(string id = {id}, StatusGraphe statusGraphe = {statusGraphe}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -78,6 +96,8 @@ namespace StimulusAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<StatusGraphe>> PostStatusGraphe(StatusGraphe statusGraphe)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.StatusGraphesController>();
+
             _context.StatusGraphes.Add(statusGraphe);
             try
             {
@@ -87,10 +107,14 @@ namespace StimulusAPI.Controllers
             {
                 if (StatusGrapheExists(statusGraphe.Code))
                 {
+                    log.Information($"CONFLICT -> PostStatusGraphe(StatusGraphe statusGraphe = {statusGraphe}): POST REQUEST Un StatusGraphes dont l'id = {statusGraphe.Code} existe déjà");
+
                     return Conflict();
                 }
                 else
                 {
+                    log.Information($"ERROR -> PostStatusGraphe(StatusGraphe statusGraphe = {statusGraphe}): POST REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
@@ -102,9 +126,13 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStatusGraphe(string id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.StatusGraphesController>();
+
             var statusGraphe = await _context.StatusGraphes.FindAsync(id);
             if (statusGraphe == null)
             {
+                log.Information($"NULL PARAMETER-> DeleteStatusGraphe(string id = {id}): DELETE REQUEST statusGraphe est null");
+
                 return NotFound();
             }
 

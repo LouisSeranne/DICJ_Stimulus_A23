@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 using StimulusAPI.ViewModels;
@@ -26,6 +27,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LienUtileVM>>> GetLienUtiles()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.LienUtilesController>();
+            log.Information($"GetLienUtiles(): Context : {_context}");
+
             var lienUtile = await _context.LienUtiles.Include(l => l.Graphe).ToListAsync();
 
             List<LienUtileVM> result = new List<LienUtileVM>();
@@ -44,6 +48,7 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<List<LienUtileVM>> GetLienUtile(int id)
         {
+
             var lienUtile = await _context.LienUtiles.Where(x =>x.GrapheId == id).ToListAsync();
 
             List<LienUtileVM> lienUtileVMs = new List<LienUtileVM>();
@@ -62,8 +67,12 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLienUtile(int id, LienUtile lienUtile)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.LienUtilesController>();
+
             if (id != lienUtile.Id)
             {
+                log.Information($"INVALID ID -> PutLienUtile(int id = {id}, LienUtile lienUtile = {lienUtile}): PUT REQUEST L'id ne correspond pas au lienUtile : {id} != {lienUtile.Id}");
+
                 return BadRequest();
             }
 
@@ -77,13 +86,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!LienUtileExists(id))
                 {
+                    log.Information($"INVALID ID -> PutLienUtile(int id = {id}, LienUtile lienUtile = {lienUtile}): PUT REQUEST L'id ne correspond à aucun lienUtile");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Information($"ERROR -> PutLienUtile(int id = {id}, LienUtile lienUtile = {lienUtile}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Information($"NO CONTENT -> PutLienUtile(int id = {id}, LienUtile lienUtile = {lienUtile}): PUT REQUEST Aucun contenu, aucune modification possible");
 
             return NoContent();
         }
@@ -103,14 +117,19 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLienUtile(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.LienUtilesController>();
+
             var lienUtile = await _context.LienUtiles.FindAsync(id);
             if (lienUtile == null)
             {
+                log.Information($"INVALID ID ->  DeleteLienUtile(int id = {id}): DELETE REQUEST Le lienUtile est null");
+
                 return NotFound();
             }
 
             _context.LienUtiles.Remove(lienUtile);
             await _context.SaveChangesAsync();
+            log.Information($"NO CONTENT ->  DeleteLienUtile(int id = {id}): DELETE REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
