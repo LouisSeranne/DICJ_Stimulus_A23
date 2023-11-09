@@ -106,7 +106,7 @@ public class PageExerciceController : ControllerBase
                     nombreLignes++;
                     if (nombreLignes == 25)
                     {
-                        file += "Arrêt de la lecture : Nombre d'affichage trop important\nEst-il possible qu'il y ait une boucle infini ?";
+                        file += "Arrêt de la lecture : Nombre d'affichage trop important\nEst-il possible qu'il y ait une boucle infinie ?";
                         break;
                     }
                 }
