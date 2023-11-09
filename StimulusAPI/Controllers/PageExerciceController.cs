@@ -118,7 +118,7 @@ public class PageExerciceController : ControllerBase
         else
         {
             log.Information($"Status was false -> GetPythonResult(string codeJson = {codeJson}, int idEtudiant = {idEtudiant}): Status was false");
-            return JsonConvert.SerializeObject("Erreur lors de l'exécution du code");
+            return JsonConvert.SerializeObject("Erreur lors de la récupération du code");
         }
     }
 
