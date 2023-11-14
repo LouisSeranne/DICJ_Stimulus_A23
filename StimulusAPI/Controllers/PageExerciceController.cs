@@ -81,7 +81,7 @@ public class PageExerciceController : ControllerBase
         }
         catch (Exception e)
         {
-            log.Information($"{e.Source} -> GetPythonResult(string codeJson = {codeJson}, int idEtudiant = {idEtudiant}): {e.Message}");
+            log.Error($"{e.Source} -> GetPythonResult(string codeJson = {codeJson}, int idEtudiant = {idEtudiant}): {e.Message}");
         }
         finally
         {
@@ -118,7 +118,7 @@ public class PageExerciceController : ControllerBase
         }
         else
         {
-            log.Information($"Status was false -> GetPythonResult(string codeJson = {codeJson}, int idEtudiant = {idEtudiant}): Status was false");
+            log.Warning($"Status was false -> GetPythonResult(string codeJson = {codeJson}, int idEtudiant = {idEtudiant}): Status was false");
             return JsonConvert.SerializeObject("Erreur lors de la récupération du code");
         }
     }
@@ -148,22 +148,19 @@ public class PageExerciceController : ControllerBase
                 using (var scp = new ScpClient(client.ConnectionInfo))
                 {
                     scp.Connect();
+
                     using (var fileStream = new FileStream(localMainPy, FileMode.Open))
                     {
                         scp.Upload(fileStream, remoteMainPy);
                     }
-                    scp.Disconnect();
-                }
 
-                client.RunCommand($"cd {name} && ./start.sh {name}");
+                    client.RunCommand($"cd {name} && ./start.sh {name}");
 
-                using (var scp = new ScpClient(client.ConnectionInfo))
-                {
-                    scp.Connect();
                     using (var fileStream = System.IO.File.Create(localOutput))
                     {
                         scp.Download(remoteOutput, fileStream);
                     }
+
                     scp.Disconnect();
                 }
 
@@ -174,7 +171,7 @@ public class PageExerciceController : ControllerBase
         catch (Exception e )
         {
             var log = Log.ForContext<StimulusAPI.Controllers.PageExerciceController>();
-            log.Information($"{e.Source} -> Start_Script(int id = {id}): {e.Message}");
+            log.Error($"{e.Source} -> Start_Script(int id = {id}): {e.Message}");
         }
     }
 }
