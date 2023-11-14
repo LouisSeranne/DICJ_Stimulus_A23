@@ -120,9 +120,9 @@
                 }
 
                 //Console.WriteLine("layout afterRender identifier = true");
-                log.Information($"OnAfterRender(bool firstRender = {firstRender}): layout afterrender identifier = true");
                 identifier = true;
-                
+                log.Information($"OnAfterRender(bool firstRender = {firstRender}): layout afterrender identifier = {identifier}");
+
                 await InvokeAsync(StateHasChanged);
 
             }

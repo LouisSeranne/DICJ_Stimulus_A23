@@ -13,29 +13,29 @@
 @using Serilog
 
 <!---->
-@if(initDone)
+@if (initDone)
 {
     <div class="page" style="overflow: hidden;">
         <main>          
             @if(identifier)
             {
-                <HeaderComponentProf/>
-            }         
+                <HeaderComponentProf />
+            }
             <article class="content px-4">
                 @Body
             </article>
-            @if(identifier)
+            @if (identifier)
             {
-                <FooterEtudiantComponent/>
-            }         
-        </main>  
+                <FooterEtudiantComponent />
+            }
+        </main>
     </div>
 }
 
-    
+
 @code {
     public int idGraphe;
-    private bool initDone,identifier;
+    private bool initDone, identifier;
     private Client client;
     private HttpClient httpClient;
     //Initialisation de l'id du graph a la main pour l'instant en attente de la page de connexion pour avoir directement le graph avec l'étuidant
@@ -45,7 +45,8 @@
         var log = Log.ForContext<StimulusFrontEnd.Shared.ProfesseurLayout>();
         log.Information($"OnInitialized(): layout initialized");
 
-        ViewOption.OnChanged = () => { 
+        ViewOption.OnChanged = () =>
+        {
             StateHasChanged();//Refresh
         };
 
@@ -76,7 +77,7 @@
 
     protected async override void OnAfterRender(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             //JSRuntim.InvokeVoidAsync("console.log","debut onAfterender");
             //Console.WriteLine("layout afterrender first");
@@ -114,12 +115,12 @@
                 //Console.WriteLine("layout afterRender identifier = true");
                 log.Information($"OnAfterRender(bool firstRender = {firstRender}): layout afterrender identifier = true");
                 identifier = true;
-                
+
                 await InvokeAsync(StateHasChanged);
 
             }
         }
-        
+
     }
 
     public async void Clear()

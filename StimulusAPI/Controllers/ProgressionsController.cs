@@ -59,7 +59,7 @@ namespace StimulusAPI.Controllers
 
             if (id != progression.PageId)
             {
-                log.Information($"INVALID ID -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST L'id ne correspond pas à l'id de progression: {id} != {progression.PageId}");
+                log.Warning($"INVALID ID -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST L'id ne correspond pas à l'id de progression: {id} != {progression.PageId}");
 
                 return BadRequest();
             }
@@ -74,18 +74,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!ProgressionExists(id))
                 {
-                    log.Information($"INVALID ID -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST L'id ne correspond à aucun id de progression");
+                    log.Warning($"INVALID ID -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST L'id ne correspond à aucun id de progression");
 
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($"ERROR -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST THROWING ERROR");
+                    log.Error($"ERROR -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST THROWING ERROR");
 
                     throw;
                 }
             }
-            log.Information($"NO CONTENT -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST Aucun contenu, aucun changement possible");
+            log.Warning($"NO CONTENT -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -106,13 +106,13 @@ namespace StimulusAPI.Controllers
             {
                 if (ProgressionExists(progression.PageId))
                 {
-                    log.Information($"CONFLICT -> PostProgression(Progression progression ={progression}): POST REQUEST Un élément progression dont l'id = {progression.PageId} existe déjà");
+                    log.Warning($"CONFLICT -> PostProgression(Progression progression ={progression}): POST REQUEST Un élément progression dont l'id = {progression.PageId} existe déjà");
 
                     return Conflict();
                 }
                 else
                 {
-                    log.Information($"ERROR -> PostProgression(Progression progression ={progression}): POST REQUEST THROWING ERROR");
+                    log.Error($"ERROR -> PostProgression(Progression progression ={progression}): POST REQUEST THROWING ERROR");
 
                     throw;
                 }
@@ -130,7 +130,7 @@ namespace StimulusAPI.Controllers
             var progression = await _context.Progressions.FindAsync(id);
             if (progression == null)
             {
-                log.Information($"NULL PARAMETER -> DeleteProgression(int id = {id}): DELETE REQUEST progression est null");
+                log.Warning($"NULL PARAMETER -> DeleteProgression(int id = {id}): DELETE REQUEST progression est null");
 
                 return NotFound();
             }

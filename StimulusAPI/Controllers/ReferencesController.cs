@@ -42,7 +42,7 @@ namespace StimulusAPI.Controllers
 
             if (reference == null)
             {
-                log.Information($"NULL PARAMETER -> GetReference(int id = {id}): GET REQUEST reference est null");
+                log.Warning($"NULL PARAMETER -> GetReference(int id = {id}): GET REQUEST reference est null");
 
                 return NotFound();
             }
@@ -59,7 +59,7 @@ namespace StimulusAPI.Controllers
 
             if (id != reference.Id)
             {
-                log.Information($"INVALID ID -> PutReference(int id = {id}, Reference reference = {reference}): PUT REQUEST L'id ne correspond pas à l'id de reference: {id} != {reference.Id}");
+                log.Warning($"INVALID ID -> PutReference(int id = {id}, Reference reference = {reference}): PUT REQUEST L'id ne correspond pas à l'id de reference: {id} != {reference.Id}");
 
                 return BadRequest();
             }
@@ -74,18 +74,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!ReferenceExists(id))
                 {
-                    log.Information($"INVALID ID -> PutReference(int id = {id}, Reference reference = {reference}): PUT REQUEST L'id ne correspond à aucun id de reference");
+                    log.Warning($"INVALID ID -> PutReference(int id = {id}, Reference reference = {reference}): PUT REQUEST L'id ne correspond à aucun id de reference");
 
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($"ERROR -> PutReference(int id = {id}, Reference reference = {reference}): PUT REQUEST THROWING ERROR");
+                    log.Error($"ERROR -> PutReference(int id = {id}, Reference reference = {reference}): PUT REQUEST THROWING ERROR");
 
                     throw;
                 }
             }
-            log.Information($"NO CONTENT -> PutReference(int id = {id}, Reference reference = {reference}): PUT REQUEST Aucun contenu, aucun changement possible");
+            log.Warning($"NO CONTENT -> PutReference(int id = {id}, Reference reference = {reference}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -110,7 +110,7 @@ namespace StimulusAPI.Controllers
             var reference = await _context.References.FindAsync(id);
             if (reference == null)
             {
-                log.Information($"NULL PARAMETER -> DeleteReference(int id = {id}): DELETE REQUEST reference est null");
+                log.Warning($"NULL PARAMETER -> DeleteReference(int id = {id}): DELETE REQUEST reference est null");
 
                 return NotFound();
             }

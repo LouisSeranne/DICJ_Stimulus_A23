@@ -2723,8 +2723,8 @@ namespace StimulusFrontEnd.Services.Base
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
                             //Console.WriteLine("The HTTP status code of the response was not expected in FichierSauvegardeDELETEAsync (" + status_ + ").", status_, responseData_, headers_, null);
                             var log = Log.ForContext<StimulusFrontEnd.Services.Base.Client>();
-                            log.Information($"FichierSauvegardesDELETEAsync(int id = {id}, System.Threading.CancellationToken cancellationToken = {cancellationToken}): The HTTP status code of the response was not expected in FichierSauvegardeDELETEAsync (\" + status_ + \").\", status_, responseData_, headers_, null);");
-
+                            log.Fatal($"FichierSauvegardesDELETEAsync(int id = {id}, System.Threading.CancellationToken cancellationToken = {cancellationToken}): The HTTP status code of the response was not expected in FichierSauvegardeDELETEAsync (\" + status_ + \").\", status_, responseData_, headers_, null) Nuking the entire api;");
+                            //no way que avoir n'importe quelle réponse autre que 200/204 devrait lancer une exception dans l'API, faut changer ça ou défenestrer swagger au complet
                             throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
@@ -2798,8 +2798,8 @@ namespace StimulusFrontEnd.Services.Base
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
                             //Console.WriteLine("The HTTP status code of the response was not expected in FichierSauvegardePOSTAsync (" + status_ + ").", status_, responseData_, headers_, null);
                             var log = Log.ForContext<StimulusFrontEnd.Services.Base.Client>();
-                            log.Information($"FichierSauvegardePOSTAsync(System.Collections.Generic.IEnumerable<FichierSauvegarde> body= {body}, System.Threading.CancellationToken cancellationToken= {cancellationToken}): The HTTP status code of the response was not expected in FichierSauvegardePOSTAsync (\" + status_ + \").\", status_, responseData_, headers_, null)");
-
+                            log.Fatal($"FichierSauvegardePOSTAsync(System.Collections.Generic.IEnumerable<FichierSauvegarde> body= {body}, System.Threading.CancellationToken cancellationToken= {cancellationToken}): The HTTP status code of the response was not expected in FichierSauvegardePOSTAsync (\" + status_ + \").\", status_, responseData_, headers_, null) Nuking the entire api");
+                            //No way qu'une réponse autre que 200 devrait faire sauter l'api
                             throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
                         }
                     }
@@ -9021,7 +9021,7 @@ namespace StimulusFrontEnd.Services.Base
                     var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
                     if (field != null)
                     {
-                        var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute)) 
+                        var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
                             as System.Runtime.Serialization.EnumMemberAttribute;
                         if (attribute != null)
                         {
@@ -9033,17 +9033,17 @@ namespace StimulusFrontEnd.Services.Base
                     return converted == null ? string.Empty : converted;
                 }
             }
-            else if (value is bool) 
+            else if (value is bool)
             {
                 return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
             }
             else if (value is byte[])
             {
-                return System.Convert.ToBase64String((byte[]) value);
+                return System.Convert.ToBase64String((byte[])value);
             }
             else if (value.GetType().IsArray)
             {
-                var array = System.Linq.Enumerable.OfType<object>((System.Array) value);
+                var array = System.Linq.Enumerable.OfType<object>((System.Array)value);
                 return string.Join(",", System.Linq.Enumerable.Select(array, o => ConvertToString(o, cultureInfo)));
             }
 
@@ -9500,14 +9500,14 @@ namespace StimulusFrontEnd.Services.Base
         [Newtonsoft.Json.JsonProperty("rayon", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Rayon { get; set; }
 
-        
 
-       /*[Newtonsoft.Json.JsonProperty("liaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Noeud? LiaisonPrincipalNavigation { get; set; }
-        
-        [Newtonsoft.Json.JsonProperty("inverseLiaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Noeud>? InverseLiaisonPrincipalNavigation { get; set; }
-       */
+
+        /*[Newtonsoft.Json.JsonProperty("liaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+         public Noeud? LiaisonPrincipalNavigation { get; set; }
+
+         [Newtonsoft.Json.JsonProperty("inverseLiaisonPrincipalNavigation", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+         public System.Collections.Generic.ICollection<Noeud>? InverseLiaisonPrincipalNavigation { get; set; }
+        */
         [Newtonsoft.Json.JsonProperty("pages", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Page> Pages { get; set; }
 
@@ -9852,8 +9852,8 @@ namespace StimulusFrontEnd.Services.Base
 
 #pragma warning restore 1591
 #pragma warning restore 1573
-#pragma warning restore  472
-#pragma warning restore  114
-#pragma warning restore  108
+#pragma warning restore 472
+#pragma warning restore 114
+#pragma warning restore 108
 #pragma warning restore 3016
 #pragma warning restore 8603

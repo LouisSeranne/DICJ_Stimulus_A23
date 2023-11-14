@@ -43,7 +43,7 @@ namespace StimulusAPI.Controllers
 
             if (graphe == null)
             {
-                log.Information($"NULL PARAMETER -> GetGrapheView(int id = {id}): GET REQUEST Le graphe est null");
+                log.Warning($"NULL PARAMETER -> GetGrapheView(int id = {id}): GET REQUEST Le graphe est null");
 
                 return NotFound();
             }

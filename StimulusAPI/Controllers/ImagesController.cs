@@ -42,7 +42,7 @@ namespace StimulusAPI.Controllers
 
             if (image == null)
             {
-                log.Information($"NULL PARAMETER -> GetImage(int id = {id}): GET REQUEST L'image est null");
+                log.Warning($"NULL PARAMETER -> GetImage(int id = {id}): GET REQUEST L'image est null");
                 return NotFound();
             }
 
@@ -58,7 +58,7 @@ namespace StimulusAPI.Controllers
 
             if (id != image.Id)
             {
-                log.Information($"INVALID ID -> PutImage(int id = {id}, Image image ={image}): PUT REQUEST L'image est null");
+                log.Warning($"INVALID ID -> PutImage(int id = {id}, Image image ={image}): PUT REQUEST L'image est null");
 
                 return BadRequest();
             }
@@ -73,13 +73,13 @@ namespace StimulusAPI.Controllers
             {
                 if (!ImageExists(id))
                 {
-                    log.Information($"INVALID ID ->PutImage(int id = {id}, Image image = {image}): PUT REQUEST L'id ne correspond à aucune image");
+                    log.Warning($"INVALID ID ->PutImage(int id = {id}, Image image = {image}): PUT REQUEST L'id ne correspond à aucune image");
 
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($"ERROR ->PutImage(int id = {id}, Image image = {image}): PUT REQUEST THROWING ERROR");
+                    log.Error($"ERROR ->PutImage(int id = {id}, Image image = {image}): PUT REQUEST THROWING ERROR");
 
                     throw;
                 }
@@ -108,7 +108,7 @@ namespace StimulusAPI.Controllers
             var image = await _context.Images.FindAsync(id);
             if (image == null)
             {
-                log.Information($"NULL PARAMETER -> DeleteImage(int id = {id}): DELETE REQUEST L'image est null");
+                log.Warning($"NULL PARAMETER -> DeleteImage(int id = {id}): DELETE REQUEST L'image est null");
 
                 return NotFound();
             }

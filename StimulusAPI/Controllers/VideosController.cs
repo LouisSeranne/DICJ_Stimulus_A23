@@ -42,7 +42,7 @@ namespace StimulusAPI.Controllers
 
             if (video == null)
             {
-                log.Information($"NULL PARAMETER -> GetVideo(int id = {id}): GET REQUEST video est null");
+                log.Warning($"NULL PARAMETER -> GetVideo(int id = {id}): GET REQUEST video est null");
 
                 return NotFound();
             }
@@ -59,7 +59,7 @@ namespace StimulusAPI.Controllers
 
             if (id != video.Id)
             {
-                log.Information($"INVALID ID -> PutVideo(int id = {id}, Video video = {video}: PUT REQUEST L'id ne correspond pas à video.Id: {id} != {video.Id}");
+                log.Warning($"INVALID ID -> PutVideo(int id = {id}, Video video = {video}: PUT REQUEST L'id ne correspond pas à video.Id: {id} != {video.Id}");
 
                 return BadRequest();
             }
@@ -74,18 +74,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!VideoExists(id))
                 {
-                    log.Information($"INVALID ID -> PutVideo(int id = {id}, Video video = {video}: PUT REQUEST L'id ne correspond à aucun video.Id");
+                    log.Warning($"INVALID ID -> PutVideo(int id = {id}, Video video = {video}: PUT REQUEST L'id ne correspond à aucun video.Id");
 
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($"ERROR -> PutVideo(int id = {id}, Video video = {video}: PUT REQUEST THROWING ERROR");
+                    log.Error($"ERROR -> PutVideo(int id = {id}, Video video = {video}: PUT REQUEST THROWING ERROR");
 
                     throw;
                 }
             }
-            log.Information($"NO CONTENT -> PutVideo(int id = {id}, Video video = {video}): PUT REQUEST Aucun contenu, aucun changement possible");
+            log.Warning($"NO CONTENT -> PutVideo(int id = {id}, Video video = {video}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -110,7 +110,7 @@ namespace StimulusAPI.Controllers
             var video = await _context.Videos.FindAsync(id);
             if (video == null)
             {
-                log.Information($"NULL PARAMETER -> DeleteVideo(int id = {id}): DELETE REQUEST video est null");
+                log.Warning($"NULL PARAMETER -> DeleteVideo(int id = {id}): DELETE REQUEST video est null");
 
                 return NotFound();
             }

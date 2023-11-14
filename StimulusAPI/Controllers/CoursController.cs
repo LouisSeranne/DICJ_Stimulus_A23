@@ -42,7 +42,7 @@ namespace StimulusAPI.Controllers
 
             if (cour == null)
             {
-                log.Information($"NULL PARAMETER -> GetCour(int id = {id}) : GET REQUEST cour = {cour}   Le cour est null"); 
+                log.Warning($"NULL PARAMETER -> GetCour(int id = {id}) : GET REQUEST cour = {cour}   Le cour est null"); 
 
                 return NotFound();
             }
@@ -74,19 +74,19 @@ namespace StimulusAPI.Controllers
             {
                 if (!CourExists(id))
                 {
-                    log.Information($"INVALID ID -> PutCour(int id = {id}, Cour cour = {cour}) : PUT REQUEST L'id fourni ne correspond à aucun cours"); //Watch for type issue, might need to convert ToString()
+                    log.Warning($"INVALID ID -> PutCour(int id = {id}, Cour cour = {cour}) : PUT REQUEST L'id fourni ne correspond à aucun cours"); //Watch for type issue, might need to convert ToString()
 
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($"INVALID ID -> PutCour(int id = {id}, Cour cour = {cour}) : PUT REQUEST THROWING ERROR"); //Watch for type issue, might need to convert ToString()
+                    log.Error($"INVALID ID -> PutCour(int id = {id}, Cour cour = {cour}) : PUT REQUEST THROWING ERROR"); //Watch for type issue, might need to convert ToString()
 
                     throw;
                 }
             }
 
-            log.Information($"NO CONTENT -> PutCour(int id = {id}, Cour cour = {cour}) : PUT REQUEST aucun contenu, aucun changement possible"); //Watch for type issue, might need to convert ToString()
+            log.Warning($"NO CONTENT -> PutCour(int id = {id}, Cour cour = {cour}) : PUT REQUEST aucun contenu, aucun changement possible"); //Watch for type issue, might need to convert ToString()
 
             return NoContent();
         }
@@ -111,7 +111,7 @@ namespace StimulusAPI.Controllers
             var cour = await _context.Cours.FindAsync(id);
             if (cour == null)
             {
-                log.Information($"NULL PARAMETER -> DeleteCour(int id = {id}) : DELETE REQUEST cour = {cour} Le cour est null"); //Watch for type issue, might need to convert ToString()
+                log.Warning($"NULL PARAMETER -> DeleteCour(int id = {id}) : DELETE REQUEST cour = {cour} Le cour est null"); //Watch for type issue, might need to convert ToString()
 
                 return NotFound();
             }
@@ -119,7 +119,6 @@ namespace StimulusAPI.Controllers
             _context.Cours.Remove(cour);
             await _context.SaveChangesAsync();
 
-            log.Information($"NO CONTENT -> DeleteCour(int id = {id}) : DELETE REQUEST cour = {cour} aucun contenu, aucun changement possible "); //Watch for type issue, might need to convert ToString()
 
             return NoContent();
         }

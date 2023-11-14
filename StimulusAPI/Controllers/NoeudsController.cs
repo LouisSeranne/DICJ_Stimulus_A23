@@ -44,7 +44,7 @@ namespace StimulusAPI.Controllers
 
             if (noeud == null)
             {
-                log.Information($"NULL PARAMETER -> GetNoeud(int id = {id}): GET REQUEST Le noeud est null");
+                log.Warning($"NULL PARAMETER -> GetNoeud(int id = {id}): GET REQUEST Le noeud est null");
 
                 return NotFound();
             }
@@ -64,7 +64,7 @@ namespace StimulusAPI.Controllers
 
             if (id != noeud.Id)
             {
-                log.Information($"INVALID ID -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST L'id fourni ne correspond pas à l'id du noeud : {id} != {noeud.Id}");
+                log.Warning($"INVALID ID -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST L'id fourni ne correspond pas à l'id du noeud : {id} != {noeud.Id}");
 
                 return BadRequest();
             }
@@ -88,18 +88,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!NoeudExists(id))
                 {
-                    log.Information($"INVALID ID -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST L'id fourni ne correspond à aucun noeud");
+                    log.Warning($"INVALID ID -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST L'id fourni ne correspond à aucun noeud");
 
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($"ERROR -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST THROWING ERROR");
+                    log.Error($"ERROR -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST THROWING ERROR");
 
                     throw;
                 }
             }
-            log.Information($"NO CONTENT -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST Aucun contenu, aucun changement possible");
+            log.Warning($"NO CONTENT -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -124,7 +124,7 @@ namespace StimulusAPI.Controllers
             var noeud = await _context.Noeuds.FindAsync(id);
             if (noeud == null)
             {
-                log.Information($"NULL PARAMETER -> DeleteNoeud(int id = {id}): DELETE REQUEST Le noeud est null");
+                log.Warning($"NULL PARAMETER -> DeleteNoeud(int id = {id}): DELETE REQUEST Le noeud est null");
 
                 return NotFound();
             }
