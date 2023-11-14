@@ -148,22 +148,19 @@ public class PageExerciceController : ControllerBase
                 using (var scp = new ScpClient(client.ConnectionInfo))
                 {
                     scp.Connect();
+
                     using (var fileStream = new FileStream(localMainPy, FileMode.Open))
                     {
                         scp.Upload(fileStream, remoteMainPy);
                     }
-                    scp.Disconnect();
-                }
 
-                client.RunCommand($"cd {name} && ./start.sh {name}");
+                    client.RunCommand($"cd {name} && ./start.sh {name}");
 
-                using (var scp = new ScpClient(client.ConnectionInfo))
-                {
-                    scp.Connect();
                     using (var fileStream = System.IO.File.Create(localOutput))
                     {
                         scp.Download(remoteOutput, fileStream);
                     }
+
                     scp.Disconnect();
                 }
 
