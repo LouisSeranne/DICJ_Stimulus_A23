@@ -1,0 +1,27 @@
+﻿﻿<!-- DeleteConfirmationSauvegarde.razor -->
+@page "/deleteconfirmationsauvegarde"
+
+<div class="icon-box class=" text-center"">
+    <img src="./Image/Danger-Icon.png" alt="Sample Photo" class="rounded mx-auto d-block" />
+</div>
+
+<h3 class="modal-confirm w-100">Confirmation de suppression</h3>
+
+<div class="modal-footer justify-content-center">
+    <button type="button" class="btn btn-danger" @onclick="() => ConfirmDelete()">Supprimer</button>
+    <button type="button" class="btn btn-secondary" @onclick="() => CancelDelete()">Annuler</button>
+</div>
+
+@code {
+    [Parameter] public EventCallback<bool?> OnConfirmation { get; set; }
+
+    private void ConfirmDelete()
+    {
+        OnConfirmation.InvokeAsync(true);
+    }
+
+    private void CancelDelete()
+    {
+        OnConfirmation.InvokeAsync(null); // Annuler sans action spécifique
+    }
+}
