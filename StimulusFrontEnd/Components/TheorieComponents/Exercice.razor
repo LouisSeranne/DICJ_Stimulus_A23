@@ -1,4 +1,5 @@
-﻿@inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage;
+
 @using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
@@ -10,10 +11,26 @@
     <div class="fileSelector">
         @foreach (Fichier fichier in FichierCode)
         {
-            <div>
-                <button @onclick="() => ChangeTab(fichier.Id)">@fichier.Nom</button>
-                <button @onclick="() => Delete(fichier.Id)">X</button>
+            <div class="file-tab">
+                <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@fichier.Nom</button>
+                <button class="close-button" @onclick="() => ShowDeleteConfirmationDialog(fichier.Id)">X</button>
             </div>
+            @if (showDeleteConfirmation && fichier.Id <= 0)
+            {
+                <div class="overlay" style="display: @(showDeleteConfirmation ? "block" : "none")">
+                    <div class="confirmation-box">
+                        <DeleteConfirmation OnConfirmation="HandleDeleteConfirmation" />
+                    </div>
+                </div>
+            }
+            else if ((showDeleteConfirmation && fichier.Id > 0))
+            {
+                <div class="overlay" style="display: @(showDeleteConfirmation ? "block" : "none")">
+                    <div class="confirmation-box">
+                        <DeleteConfirmationSauvegarde OnConfirmation="HandleDeleteConfirmation" />
+                    </div>
+                </div>
+            }
         }
         <button @onclick="AddPage">+</button>
     </div>
@@ -36,33 +53,54 @@
             <p style="white-space:pre-wrap">@Result</p>
         </div>
     </div>
-}
 
-<!-- Section bouton -->
-<div class="row">
-    <div class="d-flex flex-row-reverse" style="width: 800px">
-        <button @onclick=@Post class="boutonExerciceGauche">Éxecuter</button>
-        <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
+    <!-- Section bouton -->
+    <div class="row">
+        <div class="d-flex flex-row-reverse" style="width: 800px">
+            <button @onclick=@Post class="boutonExerciceGauche">Éxecuter</button>
+            <button @onclick=@Save class="boutonExerciceDroite">Sauvegarder</button>
+        </div>
     </div>
-</div>
 
-<style>
-    .focused {
-        display: block;
-    }
+    <style>
+        .focused {
+            display: block;
+        }
 
-    .hidden {
-        display: none;
-    }
+        .hidden {
+            display: none;
+        }
 
-    .monaco-editor-container { /* for all editor instances */
-        height: 600px;
-        width: 800px;
-    }
-</style>
+        .monaco-editor-container { /* for all editor instances */
+            height: 600px;
+            width: 800px;
+        }
+    </style>
 
-@code {
+    @code {
     private StandaloneCodeEditor _editor { get; set; }
+    private bool showDeleteConfirmation = false;
+    private int fileIdToDelete; // Pour stocker l'ID du fichier à supprimer
+
+    private void ShowDeleteConfirmationDialog(int id)
+    {
+        fileIdToDelete = id;
+        showDeleteConfirmation = true;
+    }
+
+    private async void HandleDeleteConfirmation(bool? result)
+    {
+        if (result == true)
+        {
+            Delete(fileIdToDelete);
+        }
+        else if (result == false)
+        {
+            Save();
+        }
+
+        showDeleteConfirmation = false;
+    }
 
     private async Task<string> GetCode()
     {
@@ -110,7 +148,6 @@
     /// Result : résultat du code python de l'étudiant
     /// InitDone : Dit si oui ou non l'initialisation du component est fait
     /// </summary>
-    /// Surveiller les string Result, devrait être visible par l'étudiant selon les infos laissé par les élèves de l'an passé, s'assurer de ne pas être redondant avec les logs -TM
     [Inject]
     private IJSRuntime JS { get; set; }
     private string FocusedTab { get; set; } = "focused";
@@ -203,12 +240,12 @@
     /// <param name="id"> id du fichier a supprimer </param>
     private async void Delete(int id)
     {
-        if (id <= 0)
-        {
-            Result = "Erreur : Ne peut pas supprimer ce qui n'existe pas. Avez-vous sauvegardé?";
-        }
-        else
-        {
+        //if (id <= 0)
+        //{
+        //    Result = "Erreur : Ne peut pas supprimer ce qui n'existe pas. Avez-vous sauvegardé?";
+        //}
+        //else
+        //{
             var log = Log.ForContext<StimulusFrontEnd.Models.Exercice>();
             log.Information($"Delete():Tentative de supprimer le fichier de sauvegarde #{id}");
             try
@@ -225,7 +262,7 @@
                 Result = "Échec de la supression des fichiers";
             }
             Result = "Fichier supprimé";
-        }
+        //}
         await SetCode();
         StateHasChanged();
     }
@@ -254,10 +291,7 @@
         string jsonString = "";
 
         Result = "Interprétation du code...";
-        //Console.WriteLine("Running python code...");
-        var log = Log.ForContext<StimulusFrontEnd.Models.Exercice>();
-        log.Information($"Post():Running Python code");
-
+        Console.WriteLine("Running python code...");
         StateHasChanged();
 
         foreach (var fichier in FichierCode)
@@ -331,12 +365,19 @@
         }
         Result = "Fichiers enregistrés";
 
-        //Console.WriteLine("File saved");
+        Console.WriteLine("File saved");
+
         var log = Log.ForContext<StimulusFrontEnd.Models.Exercice>();
+
         log.Information($"Save(): File saved");
 
-        if (id != -1)
+        if (FichierCode.Count() > 0)
+        {
+            if (id < 0)
+                id = FichierCode.Last().Id;
             await ChangeTab(id);
+        }
+
         StateHasChanged();
     }
 
@@ -354,7 +395,7 @@
                 fichier.Css = HiddenTab;
             }
         }
-        FichierCode.Find(f => f.Id == id).Css = FocusedTab;
+        FichierCode.Find(f => f.Id == id).Css = "focused";
         await SetCode(FichierCode.Find(f => f.Id == id).Contenu);
         StateHasChanged();
     }
@@ -409,4 +450,5 @@
     }
 
     public EventCallback<List<FichierSource>> FichierSourceChanged { get; set; }
+    }
 }
