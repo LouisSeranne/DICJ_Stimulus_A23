@@ -79,7 +79,6 @@ namespace StimulusAPI.Controllers
                     expiration = token.ValidTo
                 });
             }
-
             log.Information($"FAILED LOGIN ATTEMPT -> Login([FromBody] UtilisateurApplication model = {model}): UNAUTHORIZED LOGIN");
             return Unauthorized();
         }

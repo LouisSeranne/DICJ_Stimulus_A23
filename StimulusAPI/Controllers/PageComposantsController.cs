@@ -42,7 +42,7 @@ namespace StimulusAPI.Controllers
 
             if (pageComposant == null)
             {
-                log.Information($"NULL PARAMETER -> GetPageComposant(int id = {id}): GET REQUEST Le pageComposant = {pageComposant} est null");
+                log.Warning($"NULL PARAMETER -> GetPageComposant(int id = {id}): GET REQUEST Le pageComposant = {pageComposant} est null");
 
                 return NotFound();
             }
@@ -59,7 +59,7 @@ namespace StimulusAPI.Controllers
 
             if (id != pageComposant.Id)
             {
-                log.Information($"INVALID ID -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST L'id ne correspond pas à l'id de pageComposant: {id} != {pageComposant}");
+                log.Warning($"INVALID ID -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST L'id ne correspond pas à l'id de pageComposant: {id} != {pageComposant}");
 
                 return BadRequest();
             }
@@ -74,18 +74,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!PageComposantExists(id))
                 {
-                    log.Information($"INVALID ID -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST L'id ne correspond à aucun pageComposant");
+                    log.Warning($"INVALID ID -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST L'id ne correspond à aucun pageComposant");
 
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($"ERROR -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST THROWING ERROR");
+                    log.Error($"ERROR -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST THROWING ERROR");
 
                     throw;
                 }
             }
-            log.Information($"NO CONTENT -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST Aucun contenu, aucun changement possible");
+            log.Warning($"NO CONTENT -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -110,7 +110,7 @@ namespace StimulusAPI.Controllers
             var pageComposant = await _context.PageComposants.FindAsync(id);
             if (pageComposant == null)
             {
-                log.Information($"NULL PARAMETER -> DeletePageComposant(int id = {id}): DELETE REQUEST L'id est null");
+                log.Warning($"NULL PARAMETER -> DeletePageComposant(int id = {id}): DELETE REQUEST L'id est null");
 
                 return NotFound();
             }

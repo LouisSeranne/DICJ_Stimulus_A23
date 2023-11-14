@@ -220,7 +220,7 @@
             }
             catch (Exception e)
             {
-                log.Information($"Delete(): Échec de la suppression des fichiers : {e.Message}");
+                log.Error($"Delete(): Échec de la suppression des fichiers : {e.Message}");
 
                 Result = "Échec de la supression des fichiers";
             }

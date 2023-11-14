@@ -50,7 +50,7 @@ namespace StimulusAPI.Controllers
 
             if (graphe == null)
             {
-                log.Information($" NULL PARAMETER -> GetGraphe(int id = {id}): GET REQUEST Le graphe est null ");
+                log.Warning($" NULL PARAMETER -> GetGraphe(int id = {id}): GET REQUEST Le graphe est null ");
 
                 return NotFound();
             }
@@ -69,7 +69,7 @@ namespace StimulusAPI.Controllers
 
             if (id != graphe.Id)
             {
-                log.Information($" INVALID ID -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST L'id ne correspond pas au graphe: {id} =! {graphe.Id} ");
+                log.Warning($" INVALID ID -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST L'id ne correspond pas au graphe: {id} =! {graphe.Id} ");
 
                 return BadRequest();
             }
@@ -84,18 +84,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!GrapheExists(id))
                 {
-                    log.Information($" INVALID ID -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST L'id ne correspond à aucun graphe");
+                    log.Warning($" INVALID ID -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST L'id ne correspond à aucun graphe");
 
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($" ERROR -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST THROWING ERROR");
+                    log.Error($" ERROR -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST THROWING ERROR");
 
                     throw;
                 }
             }
-            log.Information($" NO CONTENT -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST Aucun contenu, aucune modification possible");
+            log.Warning($" NO CONTENT -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST Aucun contenu, aucune modification possible");
 
             return NoContent();
         }
@@ -120,7 +120,7 @@ namespace StimulusAPI.Controllers
             var graphe = await _context.Graphes.FindAsync(id);
             if (graphe == null)
             {
-                log.Information($"NULL PARAMETER -> DeleteGraphe(int id = {id}): DELETE REQUEST Le graphe est null");
+                log.Warning($"NULL PARAMETER -> DeleteGraphe(int id = {id}): DELETE REQUEST Le graphe est null");
 
                 return NotFound();
             }
@@ -128,7 +128,6 @@ namespace StimulusAPI.Controllers
             _context.Graphes.Remove(graphe);
             await _context.SaveChangesAsync();
 
-            log.Information($"NO CONTENT -> DeleteGraphe(int id = {id}): DELETE REQUEST Aucun contenu, aucune modification possible");
 
             return NoContent();
         }

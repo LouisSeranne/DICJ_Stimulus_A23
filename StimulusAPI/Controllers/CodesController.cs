@@ -41,7 +41,7 @@ namespace StimulusAPI.Controllers
 
             if (code == null)
             {
-                log.Information($"INVALID ID -> GetCode(int id = {id}) : GET REQUEST Le code est null : Code = {_context.Codes}");
+                log.Warning($"INVALID ID -> GetCode(int id = {id}) : GET REQUEST Le code est null : Code = {_context.Codes}");
 
                 return NotFound();
             }
@@ -58,7 +58,7 @@ namespace StimulusAPI.Controllers
 
             if (id != code.Id)
             {
-                log.Information($"INVALID ID -> PutCode(int id = {id}, Code code = {code}) : PUT REQUEST L'id fourni ne correspond pas au code : {id} != {code.Id}");
+                log.Warning($"INVALID ID -> PutCode(int id = {id}, Code code = {code}) : PUT REQUEST L'id fourni ne correspond pas au code : {id} != {code.Id}");
 
                 return BadRequest();
             }
@@ -73,18 +73,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!CodeExists(id))
                 {
-                    log.Information($"INVALID ID -> PutCode(int id = {id}, Code code = {code}) : PUT REQUEST L'id fourni ne correspond à aucun code");
+                    log.Warning($"INVALID ID -> PutCode(int id = {id}, Code code = {code}) : PUT REQUEST L'id fourni ne correspond à aucun code");
 
                     return NotFound();
                 }
                 else
                 {
-                    log.Information($"ERROR -> PutCode(int id = {id}, Code code = {code}) : PUT REQUEST THROWING ERROR");
+                    log.Error($"ERROR -> PutCode(int id = {id}, Code code = {code}) : PUT REQUEST THROWING ERROR");
 
                     throw;
                 }
             }
-            log.Information($"NO CONTENT -> PutCode(int id = {id}, Code code = {code}) : PUT REQUEST aucun contenu, aucun changement possible");
+            log.Warning($"NO CONTENT -> PutCode(int id = {id}, Code code = {code}) : PUT REQUEST aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -110,7 +110,7 @@ namespace StimulusAPI.Controllers
             var code = await _context.Codes.FindAsync(id);
             if (code == null)
             {
-                log.Information($"NULL PARAMETER -> DeleteCode(int id = {id}) : DELETE REQUEST Codes = {code}) Le code est null et donc ne peut pas être effacé");
+                log.Warning($"NULL PARAMETER -> DeleteCode(int id = {id}) : DELETE REQUEST Codes = {code}) Le code est null et donc ne peut pas être effacé");
 
                 return NotFound();
             }
