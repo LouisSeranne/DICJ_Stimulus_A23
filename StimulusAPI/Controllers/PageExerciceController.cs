@@ -164,7 +164,7 @@ public class PageExerciceController : ControllerBase
                     scp.Disconnect();
                 }
 
-                client.RunCommand($"rm {name}/* && rmdir {name}");
+                client.RunCommand($"rm -rf {name}");
                 client.Disconnect();
             }
         }
