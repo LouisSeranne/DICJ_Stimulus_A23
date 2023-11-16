@@ -66,31 +66,35 @@ public class PageExerciceController : ControllerBase
     {
         var log = Log.ForContext<StimulusAPI.Controllers.PageExerciceController>();
         DirectoryInfo dossier;
-        StreamWriter fichier = null;
         string path = "Python/" + idEtudiant;
         bool status = false;
+        List<string> filenames = new List<string> ();
         try
         {
-            JArray objetJson = JArray.Parse(codeJson);
-            string code = (string)objetJson[0]["Contenu"];
             if (!Directory.Exists(path))
                 dossier = Directory.CreateDirectory(path);
-            fichier = new StreamWriter(path + "/main.py");
-            fichier.Write(code);
+            JArray objetJson = JArray.Parse(codeJson);
+            foreach(var obj in objetJson)
+            {
+                string name = (string)obj["Nom"];
+                string code = (string)obj["Contenu"];
+                StreamWriter fichier = new StreamWriter($"{path}/{name}");
+                fichier.Write(code);
+                fichier.Close();
+
+                filenames.Add(name);
+            }
+
             status = true;
         }
         catch (Exception e)
         {
             log.Error($"{e.Source} -> GetPythonResult(string codeJson = {codeJson}, int idEtudiant = {idEtudiant}): {e.Message}");
         }
-        finally
-        {
-            fichier.Close();
-        }
 
         if (status)
         {
-            await Start_Script(idEtudiant);
+            await Start_Script(idEtudiant, filenames);
 
             string main = path + $"/output_{idEtudiant}.txt";
             string file = "";
@@ -123,7 +127,7 @@ public class PageExerciceController : ControllerBase
         }
     }
 
-    private async Task Start_Script(int id)
+    private async Task Start_Script(int id, List<string> filenames)
     {
         string host = "10.10.10.100";
         string username = "tech";
@@ -132,10 +136,7 @@ public class PageExerciceController : ControllerBase
         int rand = new Random().Next(0, 99999);
         string name = $"interpreteur_{id}_{rand}";
 
-        string localMainPy = $"Python/{id}/main.py";
         string localOutput = $"Python/{id}/output_{id}.txt";
-
-        string remoteMainPy = $"{name}/main.py";
         string remoteOutput = $"{name}/output_{name}.txt";
 
         try
@@ -149,9 +150,12 @@ public class PageExerciceController : ControllerBase
                 {
                     scp.Connect();
 
-                    using (var fileStream = new FileStream(localMainPy, FileMode.Open))
+                    foreach(var names in filenames)
                     {
-                        scp.Upload(fileStream, remoteMainPy);
+                        using (var fileStream = new FileStream($"Python/{id}/{names}", FileMode.Open))
+                        {
+                                scp.Upload(fileStream, $"{name}/upload/{names}");
+                        }
                     }
 
                     client.RunCommand($"cd {name} && ./start.sh {name}");
