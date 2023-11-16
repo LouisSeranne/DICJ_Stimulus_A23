@@ -11,9 +11,10 @@ using StimulusAPI.Models;
 using StimulusAPI.ViewModels;
 using System.Text.Json;
 using Newtonsoft.Json;
+using Serilog;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
+//J'ai remplacé les Console.Writelines sans les effacer vu qu'on n'a pas encore travaillé sur les pages de théories et qu'ils vont pouvoir nous donner de l'info sur le fonctionnement du controlleur
 namespace StimulusAPI.Controllers
 {
     [Route("api/[controller]")]
@@ -32,13 +33,15 @@ namespace StimulusAPI.Controllers
             var pageTheoryQuery = await _context.PageComposants.Where(x => x.PageId == id).OrderBy(x => x.Ordre).Select(x => new { x.IdReference, x.TypeComposant }).ToListAsync();
 
             List<string> theorieComponentVMs = new List<string>();
+            var log = Log.ForContext<StimulusAPI.Controllers.PageTheorieController>();
 
-            foreach(object o in pageTheoryQuery)
+            foreach (object o in pageTheoryQuery)
             {
-                Console.WriteLine(o.ToString());
+                //Console.WriteLine(o.ToString());
                 object typeComposant = o?.GetType()?.GetProperty("TypeComposant")?.GetValue(o, null);
                 object composantID= o?.GetType()?.GetProperty("IdReference")?.GetValue(o, null);
-                Console.WriteLine(typeComposant.ToString());
+                //Console.WriteLine(typeComposant.ToString());
+                log.Information($"GetPageTheorie(int id = {id}): {o.ToString()} \n     typeComposant.ToString()");
 
                 if (typeComposant.ToString() == "texte_formater")
                 {
@@ -85,8 +88,11 @@ namespace StimulusAPI.Controllers
             }
             foreach(string s in theorieComponentVMs)
             {
-                Console.WriteLine(s);
-                Console.WriteLine("\n");
+              //  Console.WriteLine(s);
+               // Console.WriteLine("\n");
+               
+                log.Information($"GetPageTheorie(int id = {id}): TheorieComponentVMs: {s} \n");
+
             }
             return theorieComponentVMs;
         }

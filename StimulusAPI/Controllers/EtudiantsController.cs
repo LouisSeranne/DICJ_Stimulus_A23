@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 using StimulusAPI.ViewModels;
@@ -26,6 +27,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Etudiant>>> GetEtudiants()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.EtudiantsController>();
+            log.Information($"GetEtudiants():  Context : {_context}"); //Surveiller, risque d'avoir besoin d'un ToString()
+
             return await _context.Etudiants.ToListAsync();
         }
 
@@ -33,11 +37,15 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<EtudiantVM>> GetEtudiant(string id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.EtudiantsController>();
+
             var etudiant =  _context.Etudiants.Where(e => e.CodeDa == id).Include(e => e.Groupes).FirstOrDefault();
 
 
             if (etudiant == null)
             {
+                log.Information($"NULL PARAMETER -> GetEtudiant(string id = {id}): GET REQUEST Le paramètre id est null"); //Surveiller, risque d'avoir besoin d'un ToString()
+
                 return NotFound();
             }
 
@@ -51,8 +59,12 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEtudiant(string id, Etudiant etudiant)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.EtudiantsController>();
+
             if (id != etudiant.CodeDa)
             {
+                log.Warning($"INVALID ID -> PutEtudiant(string id = {id}, Etudiant etudiant = {etudiant}): PUT REQUEST L'id ne correspond pas au code de DA de l'étudiant"); //Surveiller, risque d'avoir besoin d'un ToString()
+
                 return BadRequest();
             }
 
@@ -66,14 +78,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!EtudiantExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutEtudiant(string id = {id}, Etudiant etudiant = {etudiant}): PUT REQUEST L'id ne correspond à aucun étudiant"); //Surveiller les appels d'identifiant, appeler l'objet vs appeler son id ex: etudiant vs etudiant.CodeDa
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"INVALID ID -> PutEtudiant(string id = {id}, Etudiant etudiant = {etudiant}): PUT REQUEST THROWING ERROR"); 
+
                     throw;
                 }
             }
-
+            log.Warning($"NO CONTENT -> PutEtudiant(string id = {id}, Etudiant etudiant = {etudiant}): PUT REQUEST  aucun contenu, aucun changement possible ");
             return NoContent();
         }
 
@@ -82,6 +98,8 @@ namespace StimulusAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Etudiant>> PostEtudiant(Etudiant etudiant)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.EtudiantsController>();
+
             _context.Etudiants.Add(etudiant);
             try
             {
@@ -91,10 +109,14 @@ namespace StimulusAPI.Controllers
             {
                 if (EtudiantExists(etudiant.CodeDa))
                 {
+                    log.Warning($"CONFLICT -> PostEtudiant(Etudiant etudiant = {etudiant}): POST REQUEST  L'étudiant existe déjà et ne peut pas être ajouté ");
+
                     return Conflict();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PostEtudiant(Etudiant etudiant = {etudiant}): POST REQUEST  ÉCHEC DE L'AJOUT THROWING ERROR ");
+
                     throw;
                 }
             }
@@ -106,9 +128,13 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEtudiant(string id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.EtudiantsController>();
+
             var etudiant = await _context.Etudiants.FindAsync(id);
             if (etudiant == null)
             {
+                log.Warning($"INVALID ID -> DeleteEtudiant(string id = {id}): DELETE REQUEST  L'étudiant est null : etudiant = {etudiant} ");
+
                 return NotFound();
             }
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 using StimulusAPI.ViewModels;
@@ -26,6 +27,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GroupeVM>>> GetGroupes()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.GroupesController>();
+            log.Information($" GetGroupes(): Context : {_context}");
+
             List<Groupe> groupes = await _context.Groupes.ToListAsync();
             List<GroupeVM> response = new List<GroupeVM>();
             foreach(Groupe groupe in groupes)
@@ -41,10 +45,14 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GroupeVM>> GetGroupe(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.GroupesController>();
+
             var groupe = _context.Groupes.Include(g => g.EtudiantDa).Where(g => g.Id == id).FirstOrDefault();
 
             if (groupe == null)
             {
+                log.Warning($"NULL PARAMETER -> GetGroupe(int id = {id}): GET REQUEST Le groupe est null");
+
                 return NotFound();
             }
             var response = new GroupeVM(groupe);
@@ -57,8 +65,12 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGroupe(int id, Groupe groupe)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.GroupesController>();
+
             if (id != groupe.Id)
             {
+                log.Warning($"INVALID ID -> PutGroupe(int id = {id}, Groupe groupe = {groupe}): PUT REQUEST L'id ne correspond pas au groupe : {id} != {groupe.Id}");
+
                 return BadRequest();
             }
 
@@ -72,13 +84,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!GroupeExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutGroupe(int id = {id}, Groupe groupe = {groupe}): PUT REQUEST L'id ne correspond à aucun groupe");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutGroupe(int id = {id}, Groupe groupe = {groupe}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Warning($"NO CONTENT -> PutGroupe(int id = {id}, Groupe groupe = {groupe}): PUT REQUEST Aucun Contenu, aucune modification possible");
 
             return NoContent();
         }
@@ -99,14 +116,19 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGroupe(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.GroupesController>();
+
             var groupe = await _context.Groupes.FindAsync(id);
             if (groupe == null)
             {
+                log.Warning($"NULL PARAMETER -> DeleteGroupe(int id = {id}): DELETE REQUEST Le groupe est null");
+
                 return NotFound();
             }
 
             _context.Groupes.Remove(groupe);
             await _context.SaveChangesAsync();
+
 
             return NoContent();
         }

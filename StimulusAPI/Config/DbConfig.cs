@@ -9,7 +9,7 @@ namespace StimulusAPI.Config
 
             // Projet : ProjetStimulus
             // Test : TestStimulusProjet
-            string db = "ProjetStimulus";
+            string db = "TestStimulusProjet";
           
             var builder = WebApplication.CreateBuilder();
 

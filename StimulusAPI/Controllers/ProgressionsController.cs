@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -25,6 +26,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Progression>>> GetProgressions()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ProgressionsController>();
+            log.Information($"GetProgressions(): Context: {_context}");
+
             return await _context.Progressions.ToListAsync();
         }
 
@@ -32,10 +36,14 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Progression>> GetProgression(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ProgressionsController>();
+
             var progression = await _context.Progressions.FindAsync(id);
 
             if (progression == null)
             {
+                log.Information($"NULL PARAMETER -> GetProgression(int id = {id}): GET REQUEST progression est null");
+
                 return NotFound();
             }
 
@@ -47,8 +55,12 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProgression(int id, Progression progression)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ProgressionsController>();
+
             if (id != progression.PageId)
             {
+                log.Warning($"INVALID ID -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST L'id ne correspond pas à l'id de progression: {id} != {progression.PageId}");
+
                 return BadRequest();
             }
 
@@ -62,13 +74,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!ProgressionExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST L'id ne correspond à aucun id de progression");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Warning($"NO CONTENT -> PutProgression(int id = {id}, Progression progression = {progression}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -78,6 +95,8 @@ namespace StimulusAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Progression>> PostProgression(Progression progression)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ProgressionsController>();
+
             _context.Progressions.Add(progression);
             try
             {
@@ -87,10 +106,14 @@ namespace StimulusAPI.Controllers
             {
                 if (ProgressionExists(progression.PageId))
                 {
+                    log.Warning($"CONFLICT -> PostProgression(Progression progression ={progression}): POST REQUEST Un élément progression dont l'id = {progression.PageId} existe déjà");
+
                     return Conflict();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PostProgression(Progression progression ={progression}): POST REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
@@ -102,9 +125,13 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProgression(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ProgressionsController>();
+
             var progression = await _context.Progressions.FindAsync(id);
             if (progression == null)
             {
+                log.Warning($"NULL PARAMETER -> DeleteProgression(int id = {id}): DELETE REQUEST progression est null");
+
                 return NotFound();
             }
 
