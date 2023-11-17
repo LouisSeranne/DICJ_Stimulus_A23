@@ -36,6 +36,8 @@ namespace StimulusAPI.Controllers
 
             if (statusGraphe == null)
             {
+                log.Warning($"NULL PARAMETER -> GetStatusGraphe(string id = {id}): GET REQUEST statusGraphe est null");
+
                 return NotFound();
             }
 
@@ -49,6 +51,8 @@ namespace StimulusAPI.Controllers
         {
             if (id != statusGraphe.Code)
             {
+                log.Warning($"INVALID ID -> PutStatusGraphe(string id = {id}, StatusGraphe statusGraphe = {statusGraphe}): PUT REQUEST L'id ne correspond pas à statusGraphe.Code: {id} != {statusGraphe.Code}");
+
                 return BadRequest();
             }
 
@@ -62,13 +66,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!StatusGrapheExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutStatusGraphe(string id = {id}, StatusGraphe statusGraphe = {statusGraphe}): PUT REQUEST L'id ne correspond à aucun statusGraphe.Code");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutStatusGraphe(string id = {id}, StatusGraphe statusGraphe = {statusGraphe}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Warning($"NO CONTENT -> PutStatusGraphe(string id = {id}, StatusGraphe statusGraphe = {statusGraphe}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -87,10 +96,14 @@ namespace StimulusAPI.Controllers
             {
                 if (StatusGrapheExists(statusGraphe.Code))
                 {
+                    log.Warning($"CONFLICT -> PostStatusGraphe(StatusGraphe statusGraphe = {statusGraphe}): POST REQUEST Un StatusGraphes dont l'id = {statusGraphe.Code} existe déjà");
+
                     return Conflict();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PostStatusGraphe(StatusGraphe statusGraphe = {statusGraphe}): POST REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
@@ -105,6 +118,8 @@ namespace StimulusAPI.Controllers
             var statusGraphe = await _context.StatusGraphes.FindAsync(id);
             if (statusGraphe == null)
             {
+                log.Warning($"NULL PARAMETER-> DeleteStatusGraphe(string id = {id}): DELETE REQUEST statusGraphe est null");
+
                 return NotFound();
             }
 

@@ -25,6 +25,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Exercice>>> GetExercices()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ExercicesController>();
+            log.Debug($"GetExercices(): Context : {_context}"); 
+
             return await _context.Exercices.ToListAsync();
         }
 
@@ -36,6 +39,8 @@ namespace StimulusAPI.Controllers
 
             if (exercice == null)
             {
+                log.Warning($"NULL PARAMETER -> GetExercice(int id = {id}):  exercice = {exercice}");
+
                 return NotFound();
             }
 
@@ -49,6 +54,8 @@ namespace StimulusAPI.Controllers
         {
             if (id != exercice.Id)
             {
+                log.Warning($"INVALID ID -> PutExercice(int id = {id}, Exercice exercice = {exercice}):  PUT REQUEST L'id fourni ne correspond pas à l'exercice : {id} != {exercice}");
+
                 return BadRequest();
             }
 
@@ -62,13 +69,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!ExerciceExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutExercice(int id = {id}, Exercice exercice = {exercice}):  PUT REQUEST L'id fourni ne à aucun exercice");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutExercice(int id = {id}, Exercice exercice = {exercice}):  PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Warning($"NO CONTENT -> PutExercice(int id = {id}, Exercice exercice = {exercice}):  PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -87,10 +99,14 @@ namespace StimulusAPI.Controllers
             {
                 if (ExerciceExists(exercice.Id))
                 {
+                    log.Warning($"CONFLICT -> PostExercice(Exercice exercice = {exercice}):  POST REQUEST Un exercice dont l'id = {exercice.Id} existe déjà");
+
                     return Conflict();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PostExercice(Exercice exercice = {exercice}):  POST REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
@@ -105,6 +121,8 @@ namespace StimulusAPI.Controllers
             var exercice = await _context.Exercices.FindAsync(id);
             if (exercice == null)
             {
+                log.Warning($"NULL PARAMETER -> DeleteExercice(int id = {id}):  DELETE REQUEST L'exercice est null, il ne peut pas être supprimé");
+
                 return NotFound();
             }
 

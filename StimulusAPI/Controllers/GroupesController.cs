@@ -45,6 +45,8 @@ namespace StimulusAPI.Controllers
 
             if (groupe == null)
             {
+                log.Warning($"NULL PARAMETER -> GetGroupe(int id = {id}): GET REQUEST Le groupe est null");
+
                 return NotFound();
             }
             var response = new GroupeVM(groupe);
@@ -59,6 +61,8 @@ namespace StimulusAPI.Controllers
         {
             if (id != groupe.Id)
             {
+                log.Warning($"INVALID ID -> PutGroupe(int id = {id}, Groupe groupe = {groupe}): PUT REQUEST L'id ne correspond pas au groupe : {id} != {groupe.Id}");
+
                 return BadRequest();
             }
 
@@ -72,13 +76,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!GroupeExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutGroupe(int id = {id}, Groupe groupe = {groupe}): PUT REQUEST L'id ne correspond à aucun groupe");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutGroupe(int id = {id}, Groupe groupe = {groupe}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Warning($"NO CONTENT -> PutGroupe(int id = {id}, Groupe groupe = {groupe}): PUT REQUEST Aucun Contenu, aucune modification possible");
 
             return NoContent();
         }
@@ -102,11 +111,14 @@ namespace StimulusAPI.Controllers
             var groupe = await _context.Groupes.FindAsync(id);
             if (groupe == null)
             {
+                log.Warning($"NULL PARAMETER -> DeleteGroupe(int id = {id}): DELETE REQUEST Le groupe est null");
+
                 return NotFound();
             }
 
             _context.Groupes.Remove(groupe);
             await _context.SaveChangesAsync();
+
 
             return NoContent();
         }

@@ -37,6 +37,8 @@ namespace StimulusAPI.Controllers
 
             if (cour == null)
             {
+                log.Warning($"NULL PARAMETER -> GetCour(int id = {id}) : GET REQUEST cour = {cour}   Le cour est null"); 
+
                 return NotFound();
             }
 
@@ -63,13 +65,19 @@ namespace StimulusAPI.Controllers
             {
                 if (!CourExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutCour(int id = {id}, Cour cour = {cour}) : PUT REQUEST L'id fourni ne correspond à aucun cours"); //Watch for type issue, might need to convert ToString()
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"INVALID ID -> PutCour(int id = {id}, Cour cour = {cour}) : PUT REQUEST THROWING ERROR"); //Watch for type issue, might need to convert ToString()
+
                     throw;
                 }
             }
+
+            log.Warning($"NO CONTENT -> PutCour(int id = {id}, Cour cour = {cour}) : PUT REQUEST aucun contenu, aucun changement possible"); //Watch for type issue, might need to convert ToString()
 
             return NoContent();
         }
@@ -92,11 +100,14 @@ namespace StimulusAPI.Controllers
             var cour = await _context.Cours.FindAsync(id);
             if (cour == null)
             {
+                log.Warning($"NULL PARAMETER -> DeleteCour(int id = {id}) : DELETE REQUEST cour = {cour} Le cour est null"); //Watch for type issue, might need to convert ToString()
+
                 return NotFound();
             }
 
             _context.Cours.Remove(cour);
             await _context.SaveChangesAsync();
+
 
             return NoContent();
         }

@@ -36,6 +36,8 @@ namespace StimulusAPI.Controllers
 
             if (texteFormater == null)
             {
+                log.Warning($"NULL PARAMETER -> GetTexteFormater(int id = {id}): GET REQUEST texteFormater est null");
+
                 return NotFound();
             }
 
@@ -49,6 +51,8 @@ namespace StimulusAPI.Controllers
         {
             if (id != texteFormater.Id)
             {
+                log.Warning($"INVALID ID -> PutTexteFormater(int id = {id}, TexteFormater texteFormater = {texteFormater}): PUT REQUEST L'id ne correspond pas à texteFormater.Id: {id} != {texteFormater.Id}");
+
                 return BadRequest();
             }
 
@@ -62,13 +66,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!TexteFormaterExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutTexteFormater(int id = {id}, TexteFormater texteFormater = {texteFormater}): PUT REQUEST L'id ne correspond à aucun texteFormater.Id");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutTexteFormater(int id = {id}, TexteFormater texteFormater = {texteFormater}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Warning($"NO CONTENT -> PutTexteFormater(int id = {id}, TexteFormater texteFormater = {texteFormater}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -87,10 +96,14 @@ namespace StimulusAPI.Controllers
             {
                 if (TexteFormaterExists(texteFormater.Id))
                 {
+                    log.Warning($"CONFLICT -> PostTexteFormater(TexteFormater texteFormater = {texteFormater}): POST REQUEST Un texteFormater dont l'id = {texteFormater.Id} existe déjà");
+
                     return Conflict();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PostTexteFormater(TexteFormater texteFormater = {texteFormater}): POST REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
@@ -105,6 +118,8 @@ namespace StimulusAPI.Controllers
             var texteFormater = await _context.TexteFormaters.FindAsync(id);
             if (texteFormater == null)
             {
+                log.Warning($"NULL PARAMETER -> DeleteTexteFormater(int id = {id}): DELETE REQUEST texteFormater est null");
+
                 return NotFound();
             }
 

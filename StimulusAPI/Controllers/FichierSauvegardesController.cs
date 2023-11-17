@@ -31,6 +31,8 @@ namespace StimulusAPI.Controllers
 
             if (fichierSauvegarde == null)
             {
+                log.Warning($"NULL PARAMETER -> GetFichierSauvegarde(int idPage = {idPage}, int idExercice = {idExercice}, string daEtudiant = {daEtudiant}): GET REQUEST Le fichier de sauvegarde est null");
+
                 return null;
             }
 
@@ -49,6 +51,8 @@ namespace StimulusAPI.Controllers
         {
             if (id != fichierSauvegarde.Id)
             {
+                log.Warning($"INVALID ID -> PutFichierSauvegarde(int id = {id}, FichierSauvegarde fichierSauvegarde = {fichierSauvegarde}): PUT REQUEST L'id fourni ne correspond pas au fichier de sauvegarde : {id} != {fichierSauvegarde.Id}");
+
                 return BadRequest();
             }
 
@@ -62,13 +66,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!FichierSauvegardeExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutFichierSauvegarde(int id = {id}, FichierSauvegarde fichierSauvegarde = {fichierSauvegarde}): PUT REQUEST L'id fourni ne correspond à aucun fichier de sauvegarde");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutFichierSauvegarde(int id = {id}, FichierSauvegarde fichierSauvegarde = {fichierSauvegarde}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Warning($"NO CONTENT -> PutFichierSauvegarde(int id = {id}, FichierSauvegarde fichierSauvegarde = {fichierSauvegarde}): PUT REQUEST aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -101,6 +110,8 @@ namespace StimulusAPI.Controllers
             }
             catch(DbUpdateConcurrencyException)
             {
+                log.Warning($"FAILED UPDATE -> SauvegarderFichiersExerciceEtudiant(List<FichierSauvegarde> fichiersSauvegarde = {fichiersSauvegarde}): ADD/UPDATE REQUEST échec de la sauvegarde des fichiers");
+
                 return BadRequest();
             }
             
@@ -125,6 +136,8 @@ namespace StimulusAPI.Controllers
             var fichierSauvegarde = await _context.FichierSauvegardes.FindAsync(id);
             if (fichierSauvegarde == null)
             {
+                log.Warning($"NULL PARAMETER -> DeleteFichierSauvegarde(int id = {id}): DELETE REQUEST Le fichier de sauvegarde est null");
+
                 return NotFound();
             }
 

@@ -36,6 +36,8 @@ namespace StimulusAPI.Controllers
 
             if (professeur == null)
             {
+                log.Warning($"NULL PARAMETER -> GetProfesseur(int id = {id}): GET REQUEST professeur est null");
+
                 return NotFound();
             }
 
@@ -49,6 +51,8 @@ namespace StimulusAPI.Controllers
         {
             if (id != professeur.Id)
             {
+                log.Warning($"INVALID ID -> PutProfesseur(int id = {id}, Professeur professeur = {professeur}): PUT REQUEST L'id ne correspond pas a l'id de professeur : {id} != {professeur.Id}");
+
                 return BadRequest();
             }
 
@@ -62,13 +66,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!ProfesseurExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutProfesseur(int id = {id}, Professeur professeur = {professeur}): PUT REQUEST L'id ne correspond à aucun professeur");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutProfesseur(int id = {id}, Professeur professeur = {professeur}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Warning($"NO CONTENT -> PutProfesseur(int id = {id}, Professeur professeur = {professeur}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -91,6 +100,8 @@ namespace StimulusAPI.Controllers
             var professeur = await _context.Professeurs.FindAsync(id);
             if (professeur == null)
             {
+                log.Warning($"NULL PARAMETER -> DeleteProfesseur(int id = {id}): DELETE REQUEST professeur est null");
+
                 return NotFound();
             }
 

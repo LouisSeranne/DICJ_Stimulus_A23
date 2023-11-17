@@ -36,6 +36,8 @@ namespace StimulusAPI.Controllers
 
             if (fichierSource == null)
             {
+                log.Warning($"NULL PARAMETER -> GetFichierSource(int id = {id}): GET REQUEST Le fichierSource est null");
+
                 return NotFound();
             }
 
@@ -49,6 +51,8 @@ namespace StimulusAPI.Controllers
         {
             if (id != fichierSource.Id)
             {
+                log.Warning($"INVALID ID -> PutFichierSource(int id = {id}, FichierSource fichierSource = {fichierSource}): PUT REQUEST L'id fourni ne correspond pas au fichierSource : {id} != {fichierSource}");
+
                 return BadRequest();
             }
 
@@ -62,13 +66,19 @@ namespace StimulusAPI.Controllers
             {
                 if (!FichierSourceExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutFichierSource(int id = {id}, FichierSource fichierSource = {fichierSource}): PUT REQUEST L'id fourni ne correspond à aucun fichierSource");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutFichierSource(int id = {id}, FichierSource fichierSource = {fichierSource}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+
+            log.Warning($"NO CONTENT -> PutFichierSource(int id = {id}, FichierSource fichierSource = {fichierSource}): PUT REQUEST Aucun contenu, aucun changement possible");
 
             return NoContent();
         }
@@ -91,6 +101,8 @@ namespace StimulusAPI.Controllers
             var fichierSource = await _context.FichierSources.FindAsync(id);
             if (fichierSource == null)
             {
+                log.Warning($"NULL PARAMETER -> DeleteFichierSource(int id = {id} ): DELETE REQUEST Le fichierSource est null");
+
                 return NotFound();
             }
 

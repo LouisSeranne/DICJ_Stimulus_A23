@@ -30,6 +30,8 @@ namespace StimulusAPI.Controllers
 
             if (hover == null)
             {
+                log.Warning($"NULL PARAMETER -> GetHover(int id = {id}): GET REQUEST Le hover est null");
+
                 return NotFound();
             }
 

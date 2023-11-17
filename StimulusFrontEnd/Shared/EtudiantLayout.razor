@@ -16,7 +16,7 @@
 <!---->
 @if(initDone)
 {
-    <div class="page">
+    <div class="page" style="overflow: hidden;">
         <main>          
             @if(identifier)
             {
@@ -113,9 +113,10 @@
                     updateService.CallRequestRefresh();
                 }
 
-                Console.WriteLine("layout afterRender identifier = true");
+                //Console.WriteLine("layout afterRender identifier = true");
                 identifier = true;
-                
+                log.Information($"OnAfterRender(bool firstRender = {firstRender}): layout afterrender identifier = {identifier}");
+
                 await InvokeAsync(StateHasChanged);
 
             }

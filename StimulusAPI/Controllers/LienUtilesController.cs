@@ -64,6 +64,8 @@ namespace StimulusAPI.Controllers
         {
             if (id != lienUtile.Id)
             {
+                log.Warning($"INVALID ID -> PutLienUtile(int id = {id}, LienUtile lienUtile = {lienUtile}): PUT REQUEST L'id ne correspond pas au lienUtile : {id} != {lienUtile.Id}");
+
                 return BadRequest();
             }
 
@@ -77,13 +79,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!LienUtileExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutLienUtile(int id = {id}, LienUtile lienUtile = {lienUtile}): PUT REQUEST L'id ne correspond à aucun lienUtile");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutLienUtile(int id = {id}, LienUtile lienUtile = {lienUtile}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Warning($"NO CONTENT -> PutLienUtile(int id = {id}, LienUtile lienUtile = {lienUtile}): PUT REQUEST Aucun contenu, aucune modification possible");
 
             return NoContent();
         }
@@ -106,11 +113,14 @@ namespace StimulusAPI.Controllers
             var lienUtile = await _context.LienUtiles.FindAsync(id);
             if (lienUtile == null)
             {
+                log.Warning($"INVALID ID ->  DeleteLienUtile(int id = {id}): DELETE REQUEST Le lienUtile est null");
+
                 return NotFound();
             }
 
             _context.LienUtiles.Remove(lienUtile);
             await _context.SaveChangesAsync();
+            log.Information($"NO CONTENT ->  DeleteLienUtile(int id = {id}): DELETE REQUEST Élément supprimé");
 
             return NoContent();
         }

@@ -53,6 +53,8 @@ namespace StimulusAPI.Controllers
         {
             if (id != page.Id)
             {
+                log.Warning($"INVALID ID -> PutPage(int id = {id}, Page page = {page}): PUT REQUEST L'id fourni ne correspond pas à l'id de page: {id} != {page.Id}");
+
                 return BadRequest();
             }
 
@@ -66,10 +68,14 @@ namespace StimulusAPI.Controllers
             {
                 if (!PageExists(id))
                 {
+                    log.Warning($"INVALID ID -> PutPage(int id = {id}, Page page = {page}): PUT REQUEST L'id fourni ne correspond à aucune page");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($"ERROR -> PutPage(int id = {id}, Page page = {page}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
@@ -95,6 +101,8 @@ namespace StimulusAPI.Controllers
             var page = await _context.Pages.FindAsync(id);
             if (page == null)
             {
+                log.Warning($"NULL PARAMETER -> DeletePage(int id = {id}): DELETE REQUEST La page est null");
+
                 return NotFound();
             }
 

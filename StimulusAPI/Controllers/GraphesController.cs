@@ -44,6 +44,8 @@ namespace StimulusAPI.Controllers
 
             if (graphe == null)
             {
+                log.Warning($" NULL PARAMETER -> GetGraphe(int id = {id}): GET REQUEST Le graphe est null ");
+
                 return NotFound();
             }
 
@@ -59,6 +61,8 @@ namespace StimulusAPI.Controllers
         {
             if (id != graphe.Id)
             {
+                log.Warning($" INVALID ID -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST L'id ne correspond pas au graphe: {id} =! {graphe.Id} ");
+
                 return BadRequest();
             }
 
@@ -72,13 +76,18 @@ namespace StimulusAPI.Controllers
             {
                 if (!GrapheExists(id))
                 {
+                    log.Warning($" INVALID ID -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST L'id ne correspond à aucun graphe");
+
                     return NotFound();
                 }
                 else
                 {
+                    log.Error($" ERROR -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST THROWING ERROR");
+
                     throw;
                 }
             }
+            log.Warning($" NO CONTENT -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST Aucun contenu, aucune modification possible");
 
             return NoContent();
         }
@@ -101,11 +110,14 @@ namespace StimulusAPI.Controllers
             var graphe = await _context.Graphes.FindAsync(id);
             if (graphe == null)
             {
+                log.Warning($"NULL PARAMETER -> DeleteGraphe(int id = {id}): DELETE REQUEST Le graphe est null");
+
                 return NotFound();
             }
 
             _context.Graphes.Remove(graphe);
             await _context.SaveChangesAsync();
+
 
             return NoContent();
         }
