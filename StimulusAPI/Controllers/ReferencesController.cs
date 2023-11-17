@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -26,9 +25,6 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Reference>>> GetReferences()
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.ReferencesController>();
-            log.Information($"GetReferences(): Context: {_context}");
-
             return await _context.References.ToListAsync();
         }
 
@@ -36,8 +32,6 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Reference>> GetReference(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.ReferencesController>();
-
             var reference = await _context.References.FindAsync(id);
 
             if (reference == null)
@@ -55,8 +49,6 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReference(int id, Reference reference)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.ReferencesController>();
-
             if (id != reference.Id)
             {
                 log.Warning($"INVALID ID -> PutReference(int id = {id}, Reference reference = {reference}): PUT REQUEST L'id ne correspond pas à l'id de reference: {id} != {reference.Id}");
@@ -105,8 +97,6 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReference(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.ReferencesController>();
-
             var reference = await _context.References.FindAsync(id);
             if (reference == null)
             {

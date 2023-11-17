@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 using StimulusAPI.ViewModels;
@@ -27,9 +26,6 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Etudiant>>> GetEtudiants()
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.EtudiantsController>();
-            log.Information($"GetEtudiants():  Context : {_context}"); //Surveiller, risque d'avoir besoin d'un ToString()
-
             return await _context.Etudiants.ToListAsync();
         }
 
@@ -37,15 +33,11 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<EtudiantVM>> GetEtudiant(string id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.EtudiantsController>();
-
             var etudiant =  _context.Etudiants.Where(e => e.CodeDa == id).Include(e => e.Groupes).FirstOrDefault();
 
 
             if (etudiant == null)
             {
-                log.Information($"NULL PARAMETER -> GetEtudiant(string id = {id}): GET REQUEST Le paramètre id est null"); //Surveiller, risque d'avoir besoin d'un ToString()
-
                 return NotFound();
             }
 
@@ -59,8 +51,6 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEtudiant(string id, Etudiant etudiant)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.EtudiantsController>();
-
             if (id != etudiant.CodeDa)
             {
                 log.Warning($"INVALID ID -> PutEtudiant(string id = {id}, Etudiant etudiant = {etudiant}): PUT REQUEST L'id ne correspond pas au code de DA de l'étudiant"); //Surveiller, risque d'avoir besoin d'un ToString()
@@ -98,8 +88,6 @@ namespace StimulusAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Etudiant>> PostEtudiant(Etudiant etudiant)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.EtudiantsController>();
-
             _context.Etudiants.Add(etudiant);
             try
             {
@@ -128,8 +116,6 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEtudiant(string id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.EtudiantsController>();
-
             var etudiant = await _context.Etudiants.FindAsync(id);
             if (etudiant == null)
             {

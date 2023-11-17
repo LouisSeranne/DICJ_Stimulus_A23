@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -26,9 +25,6 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PageComposant>>> GetPageComposants()
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.PageComposantsController>();
-            log.Information($"GetPageComposants(): Context : {_context}");
-
             return await _context.PageComposants.ToListAsync();
         }
 
@@ -36,8 +32,6 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PageComposant>> GetPageComposant(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.PageComposantsController>();
-
             var pageComposant = await _context.PageComposants.FindAsync(id);
 
             if (pageComposant == null)
@@ -55,8 +49,6 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPageComposant(int id, PageComposant pageComposant)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.PageComposantsController>();
-
             if (id != pageComposant.Id)
             {
                 log.Warning($"INVALID ID -> PutPageComposant(int id = {id}, PageComposant pageComposant = {pageComposant}): PUT REQUEST L'id ne correspond pas à l'id de pageComposant: {id} != {pageComposant}");
@@ -105,8 +97,6 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePageComposant(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.PageComposantsController>();
-
             var pageComposant = await _context.PageComposants.FindAsync(id);
             if (pageComposant == null)
             {

@@ -15,11 +15,9 @@ using StimulusAPI.Context;
 using StimulusAPI.LoginContext;
 using Microsoft.Data.SqlClient;
 using StimulusAPI.Config;
-using Serilog;
 
 namespace StimulusAPI.Controllers
 {
-    //LoginController a son propre système de logs, 
     [Route("api/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
@@ -43,9 +41,7 @@ namespace StimulusAPI.Controllers
         [Route("login")]
         public async Task<ActionResult<Reponse>> Login([FromBody] UtilisateurApplication model)
         {
-            
             var user = await userManager.FindByNameAsync(model.UserName);
-            var log = Log.ForContext<StimulusAPI.Controllers.LoginController>();
             if (user != null && await userManager.CheckPasswordAsync(user, model.PasswordHash))
             {
                 var userRoles = await userManager.GetRolesAsync(user);
@@ -87,7 +83,6 @@ namespace StimulusAPI.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] ModelEnregistrement model)
         {
-
             var userExists = await userManager.FindByNameAsync(model.Code);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "L'utilisateur existe!" });
@@ -99,7 +94,7 @@ namespace StimulusAPI.Controllers
             };
 
             var result = await userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)  
+            if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Reponse { Status = "Error", Message = "Création d'utilisateur a échoué! Vérifié les détails de l'utilisateur et réessayer." });
             if (!await roleManager.RoleExistsAsync(RolesUtilisateurs.Etudiant))
                 await roleManager.CreateAsync(new IdentityRole(RolesUtilisateurs.Etudiant));

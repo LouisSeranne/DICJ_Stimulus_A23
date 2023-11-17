@@ -21,7 +21,6 @@ namespace StimulusFrontEnd.Services.Base
     using StimulusAPI.Models;
     using StimulusAPI.ViewModels;
     using System = global::System;
-    using Serilog;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.16.1.0 (NJsonSchema v10.7.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial interface IClient

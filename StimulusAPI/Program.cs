@@ -87,7 +87,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Host.UseSerilog((ctx, lc) =>
     lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
-
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll",
         b => b.AllowAnyMethod()

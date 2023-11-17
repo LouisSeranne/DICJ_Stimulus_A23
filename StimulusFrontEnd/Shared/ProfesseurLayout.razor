@@ -10,7 +10,7 @@
 @using Microsoft.AspNetCore.Authentication
 @using StimulusFrontEnd.Models
 @using Newtonsoft.Json
-@using Serilog
+
 
 <!---->
 @if (initDone)
@@ -80,9 +80,7 @@
         if (firstRender)
         {
             //JSRuntim.InvokeVoidAsync("console.log","debut onAfterender");
-            //Console.WriteLine("layout afterrender first");
-            var log = Log.ForContext<StimulusFrontEnd.Shared.ProfesseurLayout>();
-            log.Information($"OnAfterRender(bool firstRender = {firstRender}): layout afterrender first");
+            Console.WriteLine("layout afterrender first");
 
             if (await sessionStorage.ContainKeyAsync("idConnexion") && await sessionStorage.GetItemAsync<string>("idConnexion") != null) //Garde le num employe en session
             {
@@ -112,8 +110,7 @@
                 }
 
 
-                //Console.WriteLine("layout afterRender identifier = true");
-                log.Information($"OnAfterRender(bool firstRender = {firstRender}): layout afterrender identifier = true");
+                Console.WriteLine("layout afterRender identifier = true");
                 identifier = true;
 
                 await InvokeAsync(StateHasChanged);

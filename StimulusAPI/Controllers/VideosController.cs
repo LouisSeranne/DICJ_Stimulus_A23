@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -26,9 +25,6 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Video>>> GetVideos()
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.VideosController>();
-            log.Information($"GetVideos(): Context: {_context}");
-
             return await _context.Videos.ToListAsync();
         }
 
@@ -36,8 +32,6 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Video>> GetVideo(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.VideosController>();
-
             var video = await _context.Videos.FindAsync(id);
 
             if (video == null)
@@ -55,8 +49,6 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVideo(int id, Video video)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.VideosController>();
-
             if (id != video.Id)
             {
                 log.Warning($"INVALID ID -> PutVideo(int id = {id}, Video video = {video}: PUT REQUEST L'id ne correspond pas à video.Id: {id} != {video.Id}");
@@ -105,8 +97,6 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVideo(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.VideosController>();
-
             var video = await _context.Videos.FindAsync(id);
             if (video == null)
             {

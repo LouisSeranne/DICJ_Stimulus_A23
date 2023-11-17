@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -26,8 +25,6 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Professeur>>> GetProfesseurs()
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.ProfesseursController>();
-            log.Information($"GetProfesseurs(): Context: {_context}");
             return await _context.Professeurs.ToListAsync();
         }
 
@@ -35,8 +32,6 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Professeur>> GetProfesseur(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.ProfesseursController>();
-
             var professeur = await _context.Professeurs.FindAsync(id);
 
             if (professeur == null)
@@ -54,8 +49,6 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProfesseur(int id, Professeur professeur)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.ProfesseursController>();
-
             if (id != professeur.Id)
             {
                 log.Warning($"INVALID ID -> PutProfesseur(int id = {id}, Professeur professeur = {professeur}): PUT REQUEST L'id ne correspond pas a l'id de professeur : {id} != {professeur.Id}");
@@ -104,8 +97,6 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProfesseur(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.ProfesseursController>();
-
             var professeur = await _context.Professeurs.FindAsync(id);
             if (professeur == null)
             {

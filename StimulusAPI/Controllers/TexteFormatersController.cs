@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -26,9 +25,6 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TexteFormater>>> GetTexteFormaters()
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.TexteFormatersController>();
-            log.Information($"GetTexteFormaters(): Context: {_context}");
-
             return await _context.TexteFormaters.ToListAsync();
         }
 
@@ -36,8 +32,6 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TexteFormater>> GetTexteFormater(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.TexteFormatersController>();
-
             var texteFormater = await _context.TexteFormaters.FindAsync(id);
 
             if (texteFormater == null)
@@ -55,8 +49,6 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTexteFormater(int id, TexteFormater texteFormater)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.TexteFormatersController>();
-
             if (id != texteFormater.Id)
             {
                 log.Warning($"INVALID ID -> PutTexteFormater(int id = {id}, TexteFormater texteFormater = {texteFormater}): PUT REQUEST L'id ne correspond pas à texteFormater.Id: {id} != {texteFormater.Id}");
@@ -95,8 +87,6 @@ namespace StimulusAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<TexteFormater>> PostTexteFormater(TexteFormater texteFormater)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.TexteFormatersController>();
-
             _context.TexteFormaters.Add(texteFormater);
             try
             {
@@ -125,8 +115,6 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTexteFormater(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.TexteFormatersController>();
-
             var texteFormater = await _context.TexteFormaters.FindAsync(id);
             if (texteFormater == null)
             {

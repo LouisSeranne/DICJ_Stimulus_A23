@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 using StimulusAPI.ViewModels;
@@ -27,9 +26,6 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LienUtileVM>>> GetLienUtiles()
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.LienUtilesController>();
-            log.Information($"GetLienUtiles(): Context : {_context}");
-
             var lienUtile = await _context.LienUtiles.Include(l => l.Graphe).ToListAsync();
 
             List<LienUtileVM> result = new List<LienUtileVM>();
@@ -48,7 +44,6 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<List<LienUtileVM>> GetLienUtile(int id)
         {
-
             var lienUtile = await _context.LienUtiles.Where(x =>x.GrapheId == id).ToListAsync();
 
             List<LienUtileVM> lienUtileVMs = new List<LienUtileVM>();
@@ -67,8 +62,6 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLienUtile(int id, LienUtile lienUtile)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.LienUtilesController>();
-
             if (id != lienUtile.Id)
             {
                 log.Warning($"INVALID ID -> PutLienUtile(int id = {id}, LienUtile lienUtile = {lienUtile}): PUT REQUEST L'id ne correspond pas au lienUtile : {id} != {lienUtile.Id}");
@@ -117,8 +110,6 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLienUtile(int id)
         {
-            var log = Log.ForContext<StimulusAPI.Controllers.LienUtilesController>();
-
             var lienUtile = await _context.LienUtiles.FindAsync(id);
             if (lienUtile == null)
             {
