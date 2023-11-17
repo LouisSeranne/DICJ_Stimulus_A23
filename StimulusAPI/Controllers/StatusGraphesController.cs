@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -25,6 +26,10 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<StatusGraphe>>> GetStatusGraphes()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.StatusGraphesController>();
+            log.Information($"GetStatusGraphes(): Context: {_context}");
+
+
             return await _context.StatusGraphes.ToListAsync();
         }
 
@@ -32,6 +37,8 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<StatusGraphe>> GetStatusGraphe(string id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.StatusGraphesController>();
+
             var statusGraphe = await _context.StatusGraphes.FindAsync(id);
 
             if (statusGraphe == null)
@@ -49,6 +56,8 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutStatusGraphe(string id, StatusGraphe statusGraphe)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.StatusGraphesController>();
+
             if (id != statusGraphe.Code)
             {
                 log.Warning($"INVALID ID -> PutStatusGraphe(string id = {id}, StatusGraphe statusGraphe = {statusGraphe}): PUT REQUEST L'id ne correspond pas à statusGraphe.Code: {id} != {statusGraphe.Code}");
@@ -87,6 +96,8 @@ namespace StimulusAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<StatusGraphe>> PostStatusGraphe(StatusGraphe statusGraphe)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.StatusGraphesController>();
+
             _context.StatusGraphes.Add(statusGraphe);
             try
             {
@@ -115,6 +126,8 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStatusGraphe(string id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.StatusGraphesController>();
+
             var statusGraphe = await _context.StatusGraphes.FindAsync(id);
             if (statusGraphe == null)
             {

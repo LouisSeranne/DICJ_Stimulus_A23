@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -25,6 +26,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Image>>> GetImages()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ImagesController>();
+            log.Information($"GetImages(): Context : {_context}");
+
             return await _context.Images.ToListAsync();
         }
 
@@ -32,6 +36,8 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Image>> GetImage(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ImagesController>();
+
             var image = await _context.Images.FindAsync(id);
 
             if (image == null)
@@ -48,6 +54,8 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutImage(int id, Image image)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ImagesController>();
+
             if (id != image.Id)
             {
                 log.Warning($"INVALID ID -> PutImage(int id = {id}, Image image ={image}): PUT REQUEST L'image est null");
@@ -95,6 +103,8 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteImage(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.ImagesController>();
+
             var image = await _context.Images.FindAsync(id);
             if (image == null)
             {

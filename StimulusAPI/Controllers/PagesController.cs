@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 using StimulusAPI.ViewModels;
@@ -51,6 +52,9 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPage(int id, Page page)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.PageComposantsController>();
+
+
             if (id != page.Id)
             {
                 log.Warning($"INVALID ID -> PutPage(int id = {id}, Page page = {page}): PUT REQUEST L'id fourni ne correspond pas à l'id de page: {id} != {page.Id}");
@@ -98,6 +102,8 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePage(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.PageComposantsController>();
+
             var page = await _context.Pages.FindAsync(id);
             if (page == null)
             {

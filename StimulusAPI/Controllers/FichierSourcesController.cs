@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 
@@ -25,6 +26,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FichierSource>>> GetFichierSources()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.FichierSourcesController>();
+            log.Information($"GetFichierSources(): Context : {_context}");
+
             return await _context.FichierSources.ToListAsync();
         }
 
@@ -32,6 +36,8 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FichierSource>> GetFichierSource(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.FichierSourcesController>();
+
             var fichierSource = await _context.FichierSources.FindAsync(id);
 
             if (fichierSource == null)
@@ -49,6 +55,8 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFichierSource(int id, FichierSource fichierSource)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.FichierSourcesController>();
+
             if (id != fichierSource.Id)
             {
                 log.Warning($"INVALID ID -> PutFichierSource(int id = {id}, FichierSource fichierSource = {fichierSource}): PUT REQUEST L'id fourni ne correspond pas au fichierSource : {id} != {fichierSource}");
@@ -98,6 +106,8 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFichierSource(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.FichierSourcesController>();
+
             var fichierSource = await _context.FichierSources.FindAsync(id);
             if (fichierSource == null)
             {

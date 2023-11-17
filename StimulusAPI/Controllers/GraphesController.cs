@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
 using StimulusAPI.ViewModels;
@@ -26,20 +27,25 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GrapheVM>>> GetGraphes()
         {
-            List<Graphe> response  = await _context.Graphes.ToListAsync();
+            var log = Log.ForContext<StimulusAPI.Controllers.GraphesController>();
+            log.Information($"GetGraphes(): Context : {_context}");
+
+            List<Graphe> response = await _context.Graphes.ToListAsync();
             List<GrapheVM> retour = new List<GrapheVM>();
-            foreach(Graphe graphe in response)
+            foreach (Graphe graphe in response)
             {
                 retour.Add(new GrapheVM(graphe));
             }
             return retour;
-            
+
         }
 
         // GET: api/Graphes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<GrapheVM>> GetGraphe(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.GraphesController>();
+
             var graphe = await _context.Graphes.FindAsync(id);
 
             if (graphe == null)
@@ -59,6 +65,8 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGraphe(int id, Graphe graphe)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.GraphesController>();
+
             if (id != graphe.Id)
             {
                 log.Warning($" INVALID ID -> PutGraphe(int id = {id}, Graphe graphe = {graphe}): PUT REQUEST L'id ne correspond pas au graphe: {id} =! {graphe.Id} ");
@@ -107,6 +115,8 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGraphe(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.GraphesController>();
+
             var graphe = await _context.Graphes.FindAsync(id);
             if (graphe == null)
             {

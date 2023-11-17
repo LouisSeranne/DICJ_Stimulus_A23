@@ -10,6 +10,7 @@
 @using Microsoft.AspNetCore.Authentication
 @using StimulusFrontEnd.Models
 @using Newtonsoft.Json
+@using Serilog
 
 <PageTitle>StimulusFrontEndEtudiant</PageTitle>
 
@@ -42,8 +43,11 @@
     //Initialisation de l'id du graph a la main pour l'instant en attente de la page de connexion pour avoir directement le graph avec l'étuidant
     protected override async void OnInitialized()
     {
-        Console.WriteLine("layout initialized");
-        ViewOption.OnChanged = () => { 
+        //Console.WriteLine("layout initialized");
+        var log = Log.ForContext<StimulusFrontEnd.Shared.EtudiantLayout>();
+        log.Information($"OnInitialized(): layout initialized");
+        ViewOption.OnChanged = () =>
+        {
             StateHasChanged();//Refresh
         };
 
@@ -76,7 +80,9 @@
     {
         if(firstRender)
         {
-            Console.WriteLine("layout afterrender first");
+            //Console.WriteLine("layout afterrender first");
+            var log = Log.ForContext<StimulusFrontEnd.Shared.EtudiantLayout>();
+            log.Information($"OnAfterRender(bool firstRender = {firstRender}): layout afterrender first");
             //JSRuntim.InvokeVoidAsync("console.log","debut onAfterender");
 
             if (await sessionStorage.ContainKeyAsync("idConnexion") && await sessionStorage.GetItemAsync<string>("idConnexion") != null)
