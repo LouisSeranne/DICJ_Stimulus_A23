@@ -11,26 +11,37 @@
     <div class="fileSelector">
         @foreach (Fichier fichier in FichierCode)
         {
-            <div class="file-tab">
-                <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@fichier.Nom</button>
-                <button class="close-button" @onclick="() => ShowDeleteConfirmationDialog(fichier.Id)">X</button>
-            </div>
-            @if (showDeleteConfirmation && fichier.Id <= 0)
+            @if (fichier.Nom == "Main.py" || fichier.Nom == "main.py")
             {
-                <div class="overlay" style="display: @(showDeleteConfirmation ? "block" : "none")">
-                    <div class="confirmation-box">
-                        <DeleteConfirmation OnConfirmation="HandleDeleteConfirmation" />
-                    </div>
+                <div class="file-tab">
+                    <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@fichier.Nom</button>
                 </div>
             }
-            else if ((showDeleteConfirmation && fichier.Id > 0))
+            else
             {
-                <div class="overlay" style="display: @(showDeleteConfirmation ? "block" : "none")">
-                    <div class="confirmation-box">
-                        <DeleteConfirmationSauvegarde OnConfirmation="HandleDeleteConfirmation" />
-                    </div>
+                <div class="file-tab">
+                    <button @onclick="() => ChangeTab(fichier.Id)" style="color: @(fichier.Css == "focused" ? "white" : "grey")">@fichier.Nom</button>
+                    <button class="close-button" @onclick="() => ShowDeleteConfirmationDialog(fichier.Id)">X</button>
                 </div>
+                @if (showDeleteConfirmation && fichier.Id <= 0)
+                {
+                    <div class="overlay" style="display: @(showDeleteConfirmation ? "block" : "none")">
+                        <div class="confirmation-box">
+                            <DeleteConfirmation OnConfirmation="HandleDeleteConfirmation" />
+                        </div>
+                    </div>
+                }
+                else if ((showDeleteConfirmation && fichier.Id > 0))
+                {
+                    <div class="overlay" style="display: @(showDeleteConfirmation ? "block" : "none")">
+                        <div class="confirmation-box">
+                            <DeleteConfirmationSauvegarde OnConfirmation="HandleDeleteConfirmation" />
+                        </div>
+                    </div>
+                }
+                
             }
+          
         }
         <button @onclick="AddPage">+</button>
     </div>
