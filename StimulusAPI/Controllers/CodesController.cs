@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StimulusAPI.Context;
 using StimulusAPI.Models;
+using Serilog;
 
 namespace StimulusAPI.Controllers
 {
@@ -26,6 +27,8 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Code>>> GetCodes()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.CodesController>();
+            log.Information($"GetCodes() : Codes = {_context.Codes}");
             return await _context.Codes.ToListAsync();
         }
 
@@ -34,6 +37,7 @@ namespace StimulusAPI.Controllers
         public async Task<ActionResult<Code>> GetCode(int id)
         {
             var code = await _context.Codes.FindAsync(id);
+            var log = Log.ForContext<StimulusAPI.Controllers.CodesController>();
 
             if (code == null)
             {
@@ -50,6 +54,8 @@ namespace StimulusAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCode(int id, Code code)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.CodesController>();
+
             if (id != code.Id)
             {
                 log.Warning($"INVALID ID -> PutCode(int id = {id}, Code code = {code}) : PUT REQUEST L'id fourni ne correspond pas au code : {id} != {code.Id}");
@@ -90,7 +96,8 @@ namespace StimulusAPI.Controllers
         {
             _context.Codes.Add(code);
             await _context.SaveChangesAsync();
-
+            var log = Log.ForContext<StimulusAPI.Controllers.CodesController>();
+            log.Information($"PostCode(Code code = {code}) : POST REQUEST ");
             return CreatedAtAction("GetCode", new { id = code.Id }, code);
         }
 
@@ -98,6 +105,8 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCode(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.CodesController>();
+
             var code = await _context.Codes.FindAsync(id);
             if (code == null)
             {
@@ -108,7 +117,6 @@ namespace StimulusAPI.Controllers
 
             _context.Codes.Remove(code);
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
 

@@ -9,6 +9,7 @@ using StimulusAPI.Context;
 using StimulusAPI.Models;
 using System.Reflection;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace StimulusAPI.Controllers
 {
@@ -27,6 +28,9 @@ namespace StimulusAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Noeud>>> GetNoeuds()
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.NoeudsController>();
+            log.Information($"GetNoeuds(): Context : {_context}");
+
             return await _context.Noeuds.ToListAsync();
         }
 
@@ -34,6 +38,8 @@ namespace StimulusAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Noeud>> GetNoeud(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.NoeudsController>();
+
             var noeud = await _context.Noeuds.FindAsync(id);
 
             if (noeud == null)
@@ -54,6 +60,8 @@ namespace StimulusAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<string>> PutNoeud(int id, Noeud noeud)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.NoeudsController>();
+
             if (id != noeud.Id)
             {
                 log.Warning($"INVALID ID -> PutNoeud(int id = {id}, Noeud noeud = {noeud}): PUT REQUEST L'id fourni ne correspond pas à l'id du noeud : {id} != {noeud.Id}");
@@ -111,6 +119,8 @@ namespace StimulusAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteNoeud(int id)
         {
+            var log = Log.ForContext<StimulusAPI.Controllers.NoeudsController>();
+
             var noeud = await _context.Noeuds.FindAsync(id);
             if (noeud == null)
             {
