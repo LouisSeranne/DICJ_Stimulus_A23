@@ -431,7 +431,7 @@
     private async void AddPage()
     {
         string nomFichier = await JS.InvokeAsync<string>("PromptFunction.promptFunc", null);
-        nomFichier = String.Concat(nomFichier.Where(c => !Char.IsWhiteSpace(c)));
+        nomFichier = String.Concat(nomFichier.Where(c => !Char.IsWhiteSpace(c))).ToLower();
 
         if (String.IsNullOrWhiteSpace(nomFichier))
         {
@@ -441,7 +441,7 @@
         {
             Result = "Nom de fichier trop court";
         }
-        else if (FichierCode.Any(f => f.Nom == nomFichier.ToLower()))
+        else if (FichierCode.Any(f => f.Nom == nomFichier))
         {
             Result = "Nom de fichier déjà utilisé";
         }
